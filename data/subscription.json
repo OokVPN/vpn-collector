@@ -1,1 +1,45 @@
-
+[
+  {
+    "remarks": "🤖 AUTO",
+    "inbounds": [
+      {
+        "tag": "auto-socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        }
+      }
+    ],
+    "outbounds": [],
+    "burstObservatory": {
+      "subjectSelector": [],
+      "pingConfig": {
+        "destination": "https://www.gstatic.com/generate_204",
+        "connectivity": "https://www.gstatic.com/generate_204"
+      }
+    },
+    "routing": {
+      "balancers": [
+        {
+          "tag": "AUTO",
+          "selector": [],
+          "strategy": {
+            "type": "leastPing"
+          }
+        }
+      ],
+      "rules": [
+        {
+          "type": "field",
+          "inboundTag": [
+            "auto-socks"
+          ],
+          "balancerTag": "AUTO"
+        }
+      ]
+    }
+  }
+]
