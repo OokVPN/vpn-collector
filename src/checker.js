@@ -1,382 +1,96 @@
-import fs from "fs";
-import os from "os";
-import path from "path";
-import {
-  spawn
-} from "child_process";
+const fs = require("fs");
+const net = require("net");
 
-import {
-  uriToOutbound,
-  buildCheckConfig
-} from "./xray.js";
+const MAX_LATENCY = Number(process.env.MAX_LATENCY || 150);
+const TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
 
-const XRAY =
-  process.env.XRAY_PATH ||
-  "/usr/local/bin/xray";
+const input = JSON.parse(
+  fs.readFileSync("data/raw.json", "utf8")
+);
 
-const TEST_URL =
-  process.env.TEST_URL ||
-  "https://www.gstatic.com/generate_204";
+function tcpPing(host, port) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    const start = performance.now();
 
-const MAX_LATENCY =
-  Number(
-    process.env.MAX_LATENCY || 150
-  );
+    let finished = false;
 
-function sleep(ms) {
-  return new Promise(
-    resolve =>
-      setTimeout(resolve, ms)
-  );
-}
+    const done = (result) => {
+      if (finished) return;
+      finished = true;
 
-function run(
-  command,
-  args,
-  timeout
-) {
-  return new Promise(resolve => {
-    const child =
-      spawn(
-        command,
-        args,
-        {
-          stdio: [
-            "ignore",
-            "pipe",
-            "pipe"
-          ]
-        }
-      );
+      socket.destroy();
+      resolve(result);
+    };
 
-    let stdout = "";
-    let stderr = "";
+    socket.setTimeout(TIMEOUT);
 
-    const timer =
-      setTimeout(() => {
-        child.kill(
-          "SIGKILL"
-        );
+    socket.once("connect", () => {
+      const latency = Math.round(performance.now() - start);
 
-        resolve({
-          code: -1,
-          stdout,
-          stderr,
-          timeout: true
-        });
-      }, timeout);
+      done({
+        ok: latency <= MAX_LATENCY,
+        latency
+      });
+    });
 
-    child.stdout.on(
-      "data",
-      data => {
-        stdout +=
-          data.toString();
-      }
-    );
+    socket.once("timeout", () => {
+      done({
+        ok: false,
+        latency: null,
+        error: "timeout"
+      });
+    });
 
-    child.stderr.on(
-      "data",
-      data => {
-        stderr +=
-          data.toString();
-      }
-    );
+    socket.once("error", (err) => {
+      done({
+        ok: false,
+        latency: null,
+        error: err.code || "connection_error"
+      });
+    });
 
-    child.on(
-      "close",
-      code => {
-        clearTimeout(timer);
-
-        resolve({
-          code,
-          stdout,
-          stderr,
-          timeout: false
-        });
-      }
-    );
-
-    child.on(
-      "error",
-      error => {
-        clearTimeout(timer);
-
-        resolve({
-          code: -1,
-          stdout,
-          stderr:
-            stderr +
-            "\n" +
-            error.message,
-
-          timeout: false
-        });
-      }
-    );
+    socket.connect(Number(port), host);
   });
 }
 
-function freePort() {
-  return (
-    20000 +
-    Math.floor(
-      Math.random() *
-      20000
-    )
-  );
-}
-
-async function request(
-  method,
-  port
-) {
-  const result =
-    await run(
-      "curl",
-      [
-        "--silent",
-        "--show-error",
-
-        "--output",
-        "/dev/null",
-
-        "--connect-timeout",
-        "5",
-
-        "--max-time",
-        "10",
-
-        "--socks5-hostname",
-        `127.0.0.1:${port}`,
-
-        "-X",
-        method,
-
-        "-w",
-        "%{time_total}",
-
-        TEST_URL
-      ],
-      12000
-    );
-
-  if (
-    result.code !== 0
-  ) {
-    return null;
-  }
-
-  const seconds =
-    Number(
-      result.stdout.trim()
-    );
-
-  if (
-    !Number.isFinite(seconds)
-  ) {
-    return null;
-  }
-
-  return Math.round(
-    seconds * 1000
-  );
-}
-
-async function check(uri) {
-  const port =
-    freePort();
-
-  const filename =
-    path.join(
-      os.tmpdir(),
-      `xray-${process.pid}-${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2)}.json`
-    );
-
-  let xray = null;
-
-  try {
-    const outbound =
-      uriToOutbound(
-        uri,
-        `node-${Date.now()}`
-      );
-
-    const config =
-      buildCheckConfig(
-        outbound,
-        port
-      );
-
-    fs.writeFileSync(
-      filename,
-      JSON.stringify(
-        config
-      )
-    );
-
-    const validation =
-      await run(
-        XRAY,
-        [
-          "run",
-          "-test",
-          "-config",
-          filename
-        ],
-        10000
-      );
-
-    if (
-      validation.code !== 0
-    ) {
-      return {
-        ok: false,
-        reason: "invalid-xray",
-        get: null,
-        head: null,
-        latency: null
-      };
-    }
-
-    xray =
-      spawn(
-        XRAY,
-        [
-          "run",
-          "-config",
-          filename
-        ],
-        {
-          stdio: "ignore"
-        }
-      );
-
-    await sleep(800);
-
-    const get =
-      await request(
-        "GET",
-        port
-      );
-
-    const head =
-      await request(
-        "HEAD",
-        port
-      );
-
-    if (
-      get === null ||
-      head === null
-    ) {
-      return {
-        ok: false,
-        reason: "request-failed",
-        get,
-        head,
-        latency: null
-      };
-    }
-
-    const latency =
-      Math.max(
-        get,
-        head
-      );
-
-    return {
-      ok:
-        latency <=
-        MAX_LATENCY,
-
-      reason:
-        latency <= MAX_LATENCY
-          ? "ok"
-          : "slow",
-
-      get,
-      head,
-      latency
-    };
-  } catch (error) {
-    return {
-      ok: false,
-
-      reason:
-        error.message ||
-        "exception",
-
-      get: null,
-      head: null,
-      latency: null
-    };
-  } finally {
-    if (xray) {
-      try {
-        xray.kill(
-          "SIGKILL"
-        );
-      } catch {}
-    }
-
-    try {
-      fs.unlinkSync(
-        filename
-      );
-    } catch {}
-  }
-}
-
 async function main() {
-  const configs =
-    JSON.parse(
-      fs.readFileSync(
-        "./data/raw.json",
-        "utf8"
-      )
-    );
-
   const results = [];
 
-  for (
-    let i = 0;
-    i < configs.length;
-    i++
-  ) {
-    const uri =
-      configs[i];
+  for (const node of input) {
+    try {
+      const host = node.host;
+      const port = Number(node.port);
 
-    console.log(
-      `[${i + 1}/${configs.length}] checking`
-    );
+      if (!host || !port) continue;
 
-    const result =
-      await check(uri);
+      const result = await tcpPing(host, port);
 
-    console.log(
-      result
-    );
+      console.log(
+        `${result.ok ? "✅" : "❌"} ${host}:${port} ${
+          result.latency !== null
+            ? result.latency + " ms"
+            : result.error
+        }`
+      );
 
-    results.push({
-      uri,
-      ...result
-    });
+      if (result.ok) {
+        results.push({
+          ...node,
+          latency: result.latency
+        });
+      }
+    } catch {
+      // skip broken node
+    }
   }
 
   fs.writeFileSync(
-    "./data/checked.json",
-    JSON.stringify(
-      results,
-      null,
-      2
-    )
+    "data/checked.json",
+    JSON.stringify(results, null, 2)
   );
 
-  console.log(
-    "CHECK FINISHED"
-  );
+  console.log(`\nWorking: ${results.length}`);
 }
 
 main();
