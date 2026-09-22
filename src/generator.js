@@ -79,7 +79,7 @@ function vmessHost(uri) {
         ).toString("utf8")
       );
 
-    return data.add;
+    return data.add || null;
   } catch {
     return null;
   }
@@ -108,21 +108,33 @@ async function main() {
   const alive =
     checked.filter(
       item =>
-        item.ok &&
-        item.latency !== null &&
-        item.latency <= 150
+        typeof item?.uri === "string" &&
+        Number.isFinite(
+          Number(item.latency)
+        ) &&
+        Number(item.latency) <= 150
     );
+
+  console.log(
+    `CHECKED: ${checked.length}`
+  );
+
+  console.log(
+    `ALIVE: ${alive.length}`
+  );
 
   const nodes = [];
 
-  const counts = {};
-
   for (const item of alive) {
     try {
+      const uri =
+        item.uri;
+
+      const protocol =
+        protocolOf(uri);
+
       const host =
-        hostFromUri(
-          item.uri
-        );
+        hostFromUri(uri);
 
       if (!host) {
         continue;
@@ -133,48 +145,39 @@ async function main() {
           host
         );
 
-      if (!geo) {
-        continue;
-      }
-
       const code =
-        (
-          geo.countryCode ||
-          "UN"
+        String(
+          geo?.countryCode || "UN"
         ).toUpperCase();
-
-      counts[code] =
-        (counts[code] || 0) + 1;
 
       const tag =
         `node-${nodes.length + 1}`;
 
       const outbound =
         uriToOutbound(
-          item.uri,
+          uri,
           tag
         );
 
+      if (
+        !outbound ||
+        !outbound.tag
+      ) {
+        continue;
+      }
+
       nodes.push({
         tag,
+
         outbound,
 
         countryCode:
           code,
 
         latency:
-          item.latency,
+          Number(item.latency),
 
-        get:
-          item.get,
-
-        head:
-          item.head,
-
-        protocol:
-          protocolOf(
-            item.uri
-          )
+        protocol
       });
     } catch (error) {
       console.log(
@@ -187,17 +190,14 @@ async function main() {
 
   const profiles =
     nodes.map(node => {
-      countryIndexes[
-        node.countryCode
-      ] =
-        (countryIndexes[
-          node.countryCode
-        ] || 0) + 1;
+      const code =
+        node.countryCode;
+
+      countryIndexes[code] =
+        (countryIndexes[code] || 0) + 1;
 
       const number =
-        countryIndexes[
-          node.countryCode
-        ];
+        countryIndexes[code];
 
       const suffix =
         number === 1
@@ -206,9 +206,7 @@ async function main() {
 
       return {
         remarks:
-          `${countryName(
-            node.countryCode
-          )}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
+          `${countryName(code)}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
 
         inbounds: [],
 
@@ -221,6 +219,11 @@ async function main() {
   const tags =
     nodes.map(
       node => node.tag
+    );
+
+  const autoOutbounds =
+    nodes.map(
+      node => node.outbound
     );
 
   const auto = {
@@ -245,9 +248,7 @@ async function main() {
     ],
 
     outbounds:
-      nodes.map(
-        node => node.outbound
-      ),
+      autoOutbounds,
 
     burstObservatory: {
       subjectSelector:
@@ -306,6 +307,13 @@ async function main() {
     )
   );
 
+  fs.mkdirSync(
+    "./public",
+    {
+      recursive: true
+    }
+  );
+
   fs.writeFileSync(
     "./data/subscription.json",
     JSON.stringify(
@@ -313,13 +321,6 @@ async function main() {
       null,
       2
     )
-  );
-
-  fs.mkdirSync(
-    "./public",
-    {
-      recursive: true
-    }
   );
 
   fs.writeFileSync(
@@ -338,6 +339,13 @@ async function main() {
   console.log(
     `PROFILES: ${profiles.length}`
   );
+
+  console.log(
+    `AUTO NODES: ${tags.length}`
+  );
 }
 
-main();
+main().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
