@@ -43,6 +43,7 @@ jobs:
         env:
           MAX_LATENCY: 150
           TCP_TIMEOUT: 5000
+          CONCURRENCY: 200
 
       - name: Generate subscription
         run: npm run generate
