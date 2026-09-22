@@ -1,14 +1,11 @@
 {
-  "name": "ru-vpn-collector",
+  "name": "vpn-collector",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.js",
     "collect": "node src/collector.js",
+    "check": "node src/checker.js",
     "generate": "node src/generator.js"
-  },
-  "dependencies": {
-    "express": "^5.1.0"
   }
 }
