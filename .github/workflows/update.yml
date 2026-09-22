@@ -1,0 +1,80 @@
+name: Update VPN
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Xray
+        run: |
+          curl -fsSL \
+            https://github.com/XTLS/Xray-install/raw/main/install-release.sh \
+            -o /tmp/install-xray.sh
+
+          sudo bash /tmp/install-xray.sh install
+
+          xray version
+
+      - name: Collect
+        run: npm run collect
+
+      - name: Check
+        env:
+          XRAY_PATH: /usr/local/bin/xray
+          MAX_LATENCY: 150
+          TEST_URL: https://www.gstatic.com/generate_204
+        run: npm run check
+
+      - name: Generate
+        run: npm run generate
+
+      - name: Statistics
+        run: |
+          echo "RAW:"
+          jq 'length' data/raw.json
+
+          echo "CHECKED:"
+          jq 'length' data/checked.json
+
+          echo "ALIVE:"
+          jq '[.[] | select(.ok == true)] | length' data/checked.json
+
+          echo "SUBSCRIPTION:"
+          jq 'length' data/subscription.json
+
+      - name: Commit
+        run: |
+          git config user.name "vpn-collector"
+          git config user.email "actions@github.com"
+
+          git add data/ public/subscription.json
+
+          if git diff --cached --quiet; then
+            echo "Nothing changed"
+          else
+            git commit -m "update VPN subscription"
+            git push
+          fi
