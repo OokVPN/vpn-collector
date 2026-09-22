@@ -4,9 +4,14 @@ const os = require("os");
 const path = require("path");
 const { spawn } = require("child_process");
 
+const BATCH_SIZE = Number(process.env.BATCH_SIZE || 200);
+const CONCURRENCY = Number(process.env.CONCURRENCY || 200);
+const HY2_CONCURRENCY = Number(process.env.HY2_CONCURRENCY || 20);
+
 const MAX_LATENCY = Number(process.env.MAX_LATENCY || 150);
 const TCP_TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
-const CONCURRENCY = Number(process.env.CONCURRENCY || 200);
+const HTTP_TIMEOUT = Number(process.env.HTTP_TIMEOUT || 7000);
+
 const XRAY = process.env.XRAY_PATH || "/usr/local/bin/xray";
 
 const input = JSON.parse(
@@ -89,9 +94,9 @@ function tcpPing(host, port) {
   });
 }
 
-function waitPort(port, timeout = 3000) {
+function waitPort(port, timeout = 4000) {
   return new Promise((resolve, reject) => {
-    const start = Date.now();
+    const started = Date.now();
 
     const check = () => {
       const socket = net.createConnection({
@@ -107,11 +112,12 @@ function waitPort(port, timeout = 3000) {
       socket.once("error", () => {
         socket.destroy();
 
-        if (Date.now() - start >= timeout) {
+        if (Date.now() - started >= timeout) {
           reject(new Error("xray_start_timeout"));
-        } else {
-          setTimeout(check, 30);
+          return;
         }
+
+        setTimeout(check, 30);
       });
     };
 
@@ -119,7 +125,7 @@ function waitPort(port, timeout = 3000) {
   });
 }
 
-function socks5Connect(port, targetHost, targetPort) {
+function socks5Connect(port, host, targetPort) {
   return new Promise((resolve, reject) => {
     const socket = net.createConnection({
       host: "127.0.0.1",
@@ -128,73 +134,86 @@ function socks5Connect(port, targetHost, targetPort) {
 
     let stage = 0;
     let buffer = Buffer.alloc(0);
-    const start = performance.now();
+
+    const started = performance.now();
 
     const timer = setTimeout(() => {
       socket.destroy();
-      reject(new Error("proxy_timeout"));
+      reject(new Error("socks_timeout"));
     }, TCP_TIMEOUT);
 
-    const fail = () => {
+    const fail = (error = "socks_error") => {
       clearTimeout(timer);
       socket.destroy();
-      reject(new Error("proxy_error"));
+      reject(new Error(error));
     };
 
-    socket.on("error", fail);
+    socket.once("error", () => {
+      fail();
+    });
 
     socket.on("data", (chunk) => {
-      buffer = Buffer.concat([buffer, chunk]);
+      buffer = Buffer.concat([
+        buffer,
+        chunk
+      ]);
 
       if (stage === 0) {
-        if (buffer.length < 2) return;
+        if (buffer.length < 2) {
+          return;
+        }
 
         if (
           buffer[0] !== 0x05 ||
           buffer[1] !== 0x00
         ) {
-          fail();
+          fail("socks_auth_failed");
           return;
         }
 
         buffer = buffer.subarray(2);
 
-        const host = Buffer.from(targetHost);
+        const hostBuffer =
+          Buffer.from(host);
 
-        const request = Buffer.concat([
-          Buffer.from([
-            0x05,
-            0x01,
-            0x00,
-            0x03,
-            host.length
-          ]),
-          host,
-          Buffer.from([
-            (targetPort >> 8) & 0xff,
-            targetPort & 0xff
+        socket.write(
+          Buffer.concat([
+            Buffer.from([
+              0x05,
+              0x01,
+              0x00,
+              0x03,
+              hostBuffer.length
+            ]),
+            hostBuffer,
+            Buffer.from([
+              (targetPort >> 8) & 0xff,
+              targetPort & 0xff
+            ])
           ])
-        ]);
+        );
 
-        socket.write(request);
         stage = 1;
+        return;
       }
 
       if (stage === 1) {
-        if (buffer.length < 5) return;
+        if (buffer.length < 5) {
+          return;
+        }
 
         if (
           buffer[0] !== 0x05 ||
           buffer[1] !== 0x00
         ) {
-          fail();
+          fail("socks_connect_failed");
           return;
         }
 
         clearTimeout(timer);
 
         const latency = Math.round(
-          performance.now() - start
+          performance.now() - started
         );
 
         socket.destroy();
@@ -213,18 +232,147 @@ function socks5Connect(port, targetHost, targetPort) {
   });
 }
 
+async function httpThroughSocks(port) {
+  return new Promise((resolve) => {
+    const socket = net.createConnection({
+      host: "127.0.0.1",
+      port
+    });
+
+    let stage = 0;
+    let buffer = Buffer.alloc(0);
+
+    const timer = setTimeout(() => {
+      socket.destroy();
+      resolve(false);
+    }, HTTP_TIMEOUT);
+
+    const finish = (ok) => {
+      clearTimeout(timer);
+      socket.destroy();
+      resolve(ok);
+    };
+
+    socket.once("error", () => {
+      finish(false);
+    });
+
+    socket.on("data", (chunk) => {
+      buffer = Buffer.concat([
+        buffer,
+        chunk
+      ]);
+
+      if (stage === 0) {
+        if (buffer.length < 2) {
+          return;
+        }
+
+        if (
+          buffer[0] !== 0x05 ||
+          buffer[1] !== 0x00
+        ) {
+          finish(false);
+          return;
+        }
+
+        buffer = buffer.subarray(2);
+
+        const host = Buffer.from(
+          "www.youtube.com"
+        );
+
+        socket.write(
+          Buffer.concat([
+            Buffer.from([
+              0x05,
+              0x01,
+              0x00,
+              0x03,
+              host.length
+            ]),
+            host,
+            Buffer.from([
+              0x01,
+              0xbb
+            ])
+          ])
+        );
+
+        stage = 1;
+        return;
+      }
+
+      if (stage === 1) {
+        if (buffer.length < 5) {
+          return;
+        }
+
+        if (
+          buffer[0] !== 0x05 ||
+          buffer[1] !== 0x00
+        ) {
+          finish(false);
+          return;
+        }
+
+        buffer = Buffer.alloc(0);
+
+        socket.write(
+          Buffer.from(
+            "GET /generate_204 HTTP/1.1\r\n" +
+            "Host: www.youtube.com\r\n" +
+            "Connection: close\r\n" +
+            "User-Agent: Mozilla/5.0\r\n" +
+            "\r\n"
+          )
+        );
+
+        stage = 2;
+        return;
+      }
+
+      if (stage === 2) {
+        const text =
+          buffer.toString("utf8");
+
+        if (
+          text.includes("HTTP/1.1 204") ||
+          text.includes("HTTP/2 204") ||
+          text.includes("HTTP/1.1 200") ||
+          text.includes("HTTP/1.1 301") ||
+          text.includes("HTTP/1.1 302")
+        ) {
+          finish(true);
+        }
+      }
+    });
+
+    socket.write(
+      Buffer.from([
+        0x05,
+        0x01,
+        0x00
+      ])
+    );
+  });
+}
+
 async function hysteria2Check(uri) {
-  const { uriToOutbound, buildCheckConfig } =
-    await loadXrayModule();
+  const {
+    uriToOutbound,
+    buildCheckConfig
+  } = await loadXrayModule();
 
   const localPort =
     20000 +
     Math.floor(Math.random() * 20000);
 
-  const tag = "check-hy2";
-
   const outbound =
-    uriToOutbound(uri, tag);
+    uriToOutbound(
+      uri,
+      "check-hy2"
+    );
 
   const config =
     buildCheckConfig(
@@ -232,12 +380,13 @@ async function hysteria2Check(uri) {
       localPort
     );
 
-  const dir = fs.mkdtempSync(
-    path.join(
-      os.tmpdir(),
-      "hy2-check-"
-    )
-  );
+  const dir =
+    fs.mkdtempSync(
+      path.join(
+        os.tmpdir(),
+        "hy2-check-"
+      )
+    );
 
   const configPath =
     path.join(
@@ -250,41 +399,56 @@ async function hysteria2Check(uri) {
     JSON.stringify(config)
   );
 
-  const start = performance.now();
-
-  const proc = spawn(
-    XRAY,
-    [
-      "run",
-      "-c",
-      configPath
-    ],
-    {
-      stdio: [
-        "ignore",
-        "ignore",
-        "ignore"
-      ]
-    }
-  );
+  const proc =
+    spawn(
+      XRAY,
+      [
+        "run",
+        "-c",
+        configPath
+      ],
+      {
+        stdio: "ignore"
+      }
+    );
 
   try {
     await waitPort(
       localPort,
-      3000
+      4000
     );
 
-    const latency =
+    const tcp =
       await socks5Connect(
         localPort,
-        "1.1.1.1",
+        "www.youtube.com",
         443
       );
 
+    if (
+      tcp > MAX_LATENCY
+    ) {
+      return {
+        ok: false,
+        latency: tcp
+      };
+    }
+
+    const internet =
+      await httpThroughSocks(
+        localPort
+      );
+
+    if (!internet) {
+      return {
+        ok: false,
+        latency: tcp
+      };
+    }
+
     return {
-      ok:
-        latency <= MAX_LATENCY,
-      latency
+      ok: true,
+      latency: tcp
     };
   } catch {
     return {
@@ -306,6 +470,33 @@ async function hysteria2Check(uri) {
   }
 }
 
+async function normalCheck(uri) {
+  const server =
+    parseHostPort(uri);
+
+  if (!server) {
+    return {
+      ok: false,
+      latency: null
+    };
+  }
+
+  const tcp =
+    await tcpPing(
+      server.host,
+      server.port
+    );
+
+  if (!tcp.ok) {
+    return tcp;
+  }
+
+  return {
+    ok: true,
+    latency: tcp.latency
+  };
+}
+
 async function checkNode(uri) {
   const protocol =
     protocolOf(uri);
@@ -317,34 +508,18 @@ async function checkNode(uri) {
     return hysteria2Check(uri);
   }
 
-  const server =
-    parseHostPort(uri);
-
-  if (!server) {
-    return {
-      ok: false,
-      latency: null
-    };
-  }
-
-  return tcpPing(
-    server.host,
-    server.port
-  );
+  return normalCheck(uri);
 }
 
-async function main() {
-  const unique = new Map();
+function uniqueNodes(list) {
+  const map = new Map();
 
-  for (const uri of input) {
+  for (const uri of list) {
     if (
       typeof uri !== "string"
     ) {
       continue;
     }
-
-    const protocol =
-      protocolOf(uri);
 
     const server =
       parseHostPort(uri);
@@ -353,35 +528,21 @@ async function main() {
       continue;
     }
 
+    const protocol =
+      protocolOf(uri);
+
     const key =
       `${protocol}:${server.host}:${server.port}`;
 
-    if (!unique.has(key)) {
-      unique.set(key, uri);
+    if (!map.has(key)) {
+      map.set(key, uri);
     }
   }
 
-  const nodes =
-    [...unique.values()];
+  return [...map.values()];
+}
 
-  console.log(
-    `Raw configs: ${input.length}`
-  );
-
-  console.log(
-    `Unique servers: ${nodes.length}`
-  );
-
-  console.log(
-    `Concurrency: ${CONCURRENCY}`
-  );
-
-  console.log(
-    `Max latency: ${MAX_LATENCY} ms`
-  );
-
-  console.log("");
-
+async function runWorkers(nodes) {
   const results = [];
 
   let nextIndex = 0;
@@ -416,10 +577,15 @@ async function main() {
           console.log(
             `✅ ${protocolOf(uri)} ${result.latency} ms`
           );
+        } else {
+          console.log(
+            `❌ ${protocolOf(uri)}`
+          );
         }
 
         if (
-          completed % 1000 === 0
+          completed % 25 === 0 ||
+          completed === nodes.length
         ) {
           console.log(
             `Progress: ${completed}/${nodes.length} | Working: ${results.length}`
@@ -447,6 +613,69 @@ async function main() {
 
   await Promise.all(workers);
 
+  return results;
+}
+
+async function main() {
+  const nodes =
+    uniqueNodes(input);
+
+  const batchIndex =
+    Number(
+      process.env.BATCH_INDEX || 0
+    );
+
+  const start =
+    batchIndex * BATCH_SIZE;
+
+  const batch =
+    nodes.slice(
+      start,
+      start + BATCH_SIZE
+    );
+
+  console.log(
+    `Raw configs: ${input.length}`
+  );
+
+  console.log(
+    `Unique servers: ${nodes.length}`
+  );
+
+  console.log(
+    `Batch: ${batchIndex + 1}`
+  );
+
+  console.log(
+    `Batch size: ${batch.length}`
+  );
+
+  console.log(
+    `Range: ${start + 1}-${start + batch.length}`
+  );
+
+  console.log(
+    `Max latency: ${MAX_LATENCY} ms`
+  );
+
+  console.log("");
+
+  if (!batch.length) {
+    console.log(
+      "No servers in this batch"
+    );
+
+    fs.writeFileSync(
+      "data/checked.json",
+      "[]"
+    );
+
+    return;
+  }
+
+  const results =
+    await runWorkers(batch);
+
   results.sort(
     (a, b) =>
       a.latency - b.latency
@@ -466,7 +695,7 @@ async function main() {
     "============================"
   );
   console.log(
-    `Checked: ${nodes.length}`
+    `Batch checked: ${batch.length}`
   );
   console.log(
     `Working: ${results.length}`
