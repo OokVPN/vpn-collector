@@ -27,11 +27,19 @@ jobs:
 
       - name: Install Xray
         run: |
-          curl -fsSL \
-            https://github.com/XTLS/Xray-install/raw/main/install-release.sh \
-            -o /tmp/install-xray.sh
+          set -e
 
-          sudo bash /tmp/install-xray.sh install
+          XRAY_VERSION="v26.3.27"
+
+          curl -fL \
+            "https://github.com/XTLS/Xray-core/releases/download/${XRAY_VERSION}/Xray-linux-64.zip" \
+            -o /tmp/xray.zip
+
+          unzip -o /tmp/xray.zip -d /tmp/xray
+
+          sudo install -m 755 \
+            /tmp/xray/xray \
+            /usr/local/bin/xray
 
           xray version
 
