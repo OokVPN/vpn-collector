@@ -2,7 +2,6 @@ name: Update VPN
 
 on:
   workflow_dispatch:
-
   schedule:
     - cron: "*/30 * * * *"
 
@@ -12,14 +11,13 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-
     timeout-minutes: 45
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -37,43 +35,28 @@ jobs:
 
           xray version
 
-      - name: Collect
+      - name: Collect configs
         run: npm run collect
 
-      - name: Check
-        env:
-          XRAY_PATH: /usr/local/bin/xray
-          MAX_LATENCY: 150
-          TEST_URL: https://www.gstatic.com/generate_204
+      - name: TCP check
         run: npm run check
+        env:
+          MAX_LATENCY: 150
+          TCP_TIMEOUT: 5000
 
-      - name: Generate
+      - name: Generate subscription
         run: npm run generate
 
-      - name: Statistics
+      - name: Commit results
         run: |
-          echo "RAW:"
-          jq 'length' data/raw.json
-
-          echo "CHECKED:"
-          jq 'length' data/checked.json
-
-          echo "ALIVE:"
-          jq '[.[] | select(.ok == true)] | length' data/checked.json
-
-          echo "SUBSCRIPTION:"
-          jq 'length' data/subscription.json
-
-      - name: Commit
-        run: |
-          git config user.name "vpn-collector"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add data/ public/subscription.json
 
           if git diff --cached --quiet; then
             echo "Nothing changed"
           else
-            git commit -m "update VPN subscription"
+            git commit -m "Update VPN servers"
             git push
           fi
