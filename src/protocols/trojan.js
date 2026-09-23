@@ -6,10 +6,7 @@ function number(value, fallback) {
     : fallback;
 }
 
-export function parseTrojan(
-  uri,
-  tag
-) {
+export function parseTrojan(uri, tag) {
   const url =
     new URL(uri);
 
@@ -77,6 +74,16 @@ export function parseTrojan(
     };
   }
 
+  if (network === "httpupgrade") {
+    stream.httpupgradeSettings = {
+      path:
+        q.get("path") || "/",
+
+      host:
+        q.get("host") || ""
+    };
+  }
+
   if (security === "tls") {
     stream.tlsSettings = {
       serverName:
@@ -87,12 +94,31 @@ export function parseTrojan(
         q.get("fp") ||
         "chrome"
     };
+
+    const pinned =
+      q.get("pinSHA256") ||
+      q.get("pinnedPeerCertSha256");
+
+    if (pinned) {
+      stream.tlsSettings.pinnedPeerCertSha256 =
+        pinned;
+    }
+
+    const verifyName =
+      q.get("verifyPeerCertByName") ||
+      q.get("vcn");
+
+    if (verifyName) {
+      stream.tlsSettings.verifyPeerCertByName =
+        verifyName;
+    }
   }
 
   return {
     tag,
 
-    protocol: "trojan",
+    protocol:
+      "trojan",
 
     settings: {
       address:
