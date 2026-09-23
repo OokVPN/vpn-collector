@@ -2,7 +2,6 @@ name: Update VPN
 
 on:
   workflow_dispatch:
-
   schedule:
     - cron: "*/15 * * * *"
 
@@ -12,7 +11,6 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-
     timeout-minutes: 60
 
     env:
@@ -32,145 +30,180 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install dependencies
         run: npm install
 
       - name: Install Xray
+        env:
+          XRAY_VERSION: "v26.3.27"
         run: |
           set -e
 
-          sudo apt-get update
-          sudo apt-get install -y unzip curl
-
-          XRAY_VERSION="v26.3.27"
+          mkdir -p /tmp/xray
 
           curl -fL \
             "https://github.com/XTLS/Xray-core/releases/download/${XRAY_VERSION}/Xray-linux-64.zip" \
-            -o /tmp/xray.zip
+            -o /tmp/xray/xray.zip
 
-          rm -rf /tmp/xray
-          mkdir -p /tmp/xray
+          unzip -o /tmp/xray/xray.zip -d /tmp/xray
 
-          unzip -o \
-            /tmp/xray.zip \
-            -d /tmp/xray
-
-          sudo install \
-            -m 755 \
-            /tmp/xray/xray \
-            /usr/local/bin/xray
+          sudo install -m 0755 /tmp/xray/xray /usr/local/bin/xray
 
           xray version
 
-      - name: Collect configs
-        run: npm run collect
+      - name: Collect VPN nodes
+        run: |
+          set -e
+          npm run collect
 
-      - name: Check servers
-        run: npm run check
+      - name: Check VPN nodes
+        run: |
+          set -e
+          npm run check
 
-      - name: Generate subscription
-        run: npm run generate
+      - name: Generate subscriptions
+        run: |
+          set -e
+          npm run generate
 
-      - name: Validate subscription
+      - name: Validate generated subscription
         run: |
           set -e
 
-          node - <<'NODE'
+          test -s public/subscription.json
+          test -s data/nodes.json
+          test -s data/checked.json
+
+          node <<'NODE'
           const fs = require("fs");
 
-          const file =
-            "public/subscription.json";
-
-          if (!fs.existsSync(file)) {
-            throw new Error(
-              "subscription.json does not exist"
-            );
-          }
-
-          const data =
-            JSON.parse(
-              fs.readFileSync(
-                file,
-                "utf8"
-              )
-            );
+          const file = "public/subscription.json";
+          const data = JSON.parse(fs.readFileSync(file, "utf8"));
 
           if (!Array.isArray(data)) {
-            throw new Error(
-              "Subscription is not an array"
-            );
+            throw new Error("subscription.json is not an array");
           }
 
-          if (!data.length) {
-            throw new Error(
-              "Subscription is empty"
-            );
+          if (data.length === 0) {
+            throw new Error("subscription.json is empty");
           }
 
-          if (
-            data[0]?.remarks !==
-            "🇪🇺 АВТО ⚡"
-          ) {
-            throw new Error(
-              "AUTO must be the first profile"
-            );
-          }
+          const auto = data.find(x => x.remark === "AUTO");
 
-          const auto =
-            data[0];
-
-          if (
-            !Array.isArray(
-              auto.outbounds
-            )
-          ) {
-            throw new Error(
-              "AUTO outbounds missing"
-            );
+          if (!auto) {
+            throw new Error("AUTO profile is missing");
           }
 
           if (
+            !Array.isArray(auto.outbounds) ||
             auto.outbounds.length === 0
           ) {
-            throw new Error(
-              "AUTO has no working nodes"
-            );
+            throw new Error("AUTO profile has no outbounds");
           }
 
-          console.log(
-            `Subscription profiles: ${data.length}`
-          );
-
-          console.log(
-            `AUTO nodes: ${auto.outbounds.length}`
-          );
+          console.log(`Profiles: ${data.length}`);
+          console.log(`AUTO outbounds: ${auto.outbounds.length}`);
           NODE
 
-      - name: Commit results
+      - name: Show check statistics
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+
+          function read(path) {
+            try {
+              return JSON.parse(fs.readFileSync(path, "utf8"));
+            } catch {
+              return null;
+            }
+          }
+
+          const raw = read("data/raw.json");
+          const checked = read("data/checked.json");
+          const nodes = read("data/nodes.json");
+          const subscription = read("public/subscription.json");
+
+          console.log("");
+          console.log("========== VPN STATS ==========");
+
+          if (Array.isArray(raw)) {
+            console.log(`Raw nodes: ${raw.length}`);
+          }
+
+          if (Array.isArray(checked)) {
+            console.log(`Checked nodes: ${checked.length}`);
+
+            const countries = {};
+
+            for (const node of checked) {
+              const country = node.countryCode || "UN";
+              countries[country] = (countries[country] || 0) + 1;
+            }
+
+            console.log("Countries:");
+
+            for (const [country, count] of Object.entries(countries)) {
+              console.log(`  ${country}: ${count}`);
+            }
+
+            const latencies = checked
+              .map(x => Number(x.proxyLatency ?? x.latency))
+              .filter(Number.isFinite)
+              .sort((a, b) => a - b);
+
+            if (latencies.length) {
+              console.log(`Fastest proxy ping: ${latencies[0]} ms`);
+              console.log(
+                `Slowest accepted proxy ping: ${latencies[latencies.length - 1]} ms`
+              );
+            }
+          }
+
+          if (Array.isArray(nodes)) {
+            console.log(`Generated nodes: ${nodes.length}`);
+          }
+
+          if (Array.isArray(subscription)) {
+            console.log(`Generated profiles: ${subscription.length}`);
+
+            const auto = subscription.find(x => x.remark === "AUTO");
+
+            if (auto && Array.isArray(auto.outbounds)) {
+              console.log(`AUTO outbounds: ${auto.outbounds.length}`);
+            }
+          }
+
+          console.log("===============================");
+          console.log("");
+          NODE
+
+      - name: Commit generated data
         run: |
           set -e
 
-          git config user.name \
-            "github-actions[bot]"
-
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add \
-            data/ \
+            data/raw.json \
+            data/checked.json \
+            data/nodes.json \
             public/subscription.json
 
           if git diff --cached --quiet; then
-            echo "Nothing changed"
-          else
-            git commit \
-              -m "Update VPN servers"
-
-            git push
+            echo "No changes to commit."
+            exit 0
           fi
+
+          git commit -m "chore: update VPN nodes"
+          git push
