@@ -1,32 +1,212 @@
 [
   {
-    "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@176.108.246.73:9873?type=grpc&security=reality&serviceName=grpc-tunnel&sni=dl.google.com&pbk=bnRIb3Er1i-K6NGGByCO9UbGfOvu43ZoiK7ulPd1SzU&sid=aabbccdd&fp=qq&encryption=none#%D0%90%D0%B2%D1%82%D0%BE%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%28AUTO%29%2022",
+    "uri": "vless://ebdfaf99-41d8-4e48-8196-d54510ffb556@45.129.242.56:443?type=tcp&security=reality&sni=www.cloudflare.com&pbk=YURKlEQ3rap4KOXXGsVFZyYev2oDU2gCEbNTXPdKWRY&sid=abcdef&fp=chrome&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%201",
+    "latency": 112,
+    "tcpLatency": 112,
+    "checkedAt": "2026-09-23T10:41:34.358Z"
+  },
+  {
+    "uri": "vless://b61c7f29-276f-44db-9663-1a1db88aa100@91.186.209.157:31658?type=tcp&security=reality&sni=laplandhotels.com&pbk=NxJ78HvQV0FXkTBt2hgASN1Po2Iv3-_Kw-NLGbKoWms&sid=e3&fp=chrome&spx=/&encryption=none#%F0%9F%87%AB%F0%9F%87%AE%D0%A4%D0%B8%D0%BD%D0%BB%D1%8F%D0%BD%D0%B4%D0%B8%D1%8F",
+    "latency": 133,
+    "tcpLatency": 133,
+    "checkedAt": "2026-09-23T10:41:34.613Z"
+  },
+  {
+    "uri": "vless://2774670a-c782-4aeb-b066-1b13f9bf2b50@89.125.68.56:443?type=tcp&security=reality&pbk=JIQ--eW5P9RCiSWmxW1kWXXqQEM5tGN-SK4I2t0PEV0&sid=e2&fp=chrome&spx=/&encryption=none#%F0%9F%87%A9%F0%9F%87%AA%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%202",
+    "latency": 111,
+    "tcpLatency": 111,
+    "checkedAt": "2026-09-23T10:41:34.361Z"
+  },
+  {
+    "uri": "vless://9fe71109-d46a-4c72-bc7e-b1d14e8642d1@195.63.136.25:49444?type=tcp&security=reality&sni=www.amazon.com&pbk=i01HzMxgA4arK3PW4CLn7b2QfpDsZPPu-vL-pLdzHyE&sid=cc6ba1&fp=chrome&spx=/&encryption=none#%F0%9F%87%B3%F0%9F%87%B1%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B",
+    "latency": 103,
+    "tcpLatency": 103,
+    "checkedAt": "2026-09-23T10:41:34.408Z"
+  },
+  {
+    "uri": "vless://d9d0f208-d582-41d5-bb7b-742671402810@185.255.179.11:9443?type=grpc&security=tls&sni=hub-pl-01.hanvpn.cc&fp=firefox&serviceName=pl01-grpc-8e47a&encryption=none#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0",
+    "latency": 123,
+    "tcpLatency": 123,
+    "checkedAt": "2026-09-23T10:41:35.104Z"
+  },
+  {
+    "uri": "vless://8a02c9f7-936a-4d78-a88f-c1e9229f4d5d@31.58.50.200:8443?encryption=none&flow=xtls-rprx-vision&fp=firefox&pbk=mr5AF0LFyDzYDRoYAwH6QNcHXL77-LoiwRx50ZzU8QU&security=reality&sni=tradingview.com&type=tcp#%F0%9F%8C%90%20%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%201",
+    "latency": 56,
+    "tcpLatency": 56,
+    "checkedAt": "2026-09-23T10:41:34.301Z"
+  },
+  {
+    "uri": "vless://35359b56-5e80-4163-8ebe-eeeeb0ae4b4b@195.133.39.202:8443?type=tcp&security=reality&sni=amaimosh.ru&pbk=J4uXXgEjYtMEHbwkcBGud2__XeXKNXV9mBokksE0wwM&sid=dad7d18221a83a03&fp=chrome&spx=/&encryption=none#%F0%9F%87%B3%F0%9F%87%B1%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B",
+    "latency": 109,
+    "tcpLatency": 109,
+    "checkedAt": "2026-09-23T10:41:34.471Z"
+  },
+  {
+    "uri": "vless://252b4a9c-520d-459c-9dbc-366995206089@31.184.253.134:53869?type=tcp&security=reality&sni=www.moddb.com&pbk=rtc2Krk2fVhHCRG82EsUc4_mlw304HKHkl6MggQZEAU&sid=0f2cc340a69ed7&fp=chrome&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%203",
+    "latency": 132,
+    "tcpLatency": 132,
+    "checkedAt": "2026-09-23T10:41:34.650Z"
+  },
+  {
+    "uri": "vless://f2cc079c-7a9b-4d16-beea-0aef847f0a0d@95.81.97.107:26464?type=grpc&security=reality&sni=www.amd.com&pbk=UtF1ECySzN53WoZwY5DlxKoxOYUrdfqZnrVY8O7HmwI&sid=f6937a99f7e40d&fp=chrome&spx=/&encryption=none#%F0%9F%87%B3%F0%9F%87%B1%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B",
+    "latency": 102,
+    "tcpLatency": 102,
+    "checkedAt": "2026-09-23T10:41:34.420Z"
+  },
+  {
+    "uri": "vless://9e029424-481b-467d-906a-95b2a574cf86@38.180.85.219:18543?type=tcp&security=reality&pbk=LwqUSRvM2L5BKP2fW_2luseGGbSZlJJCe916Rcu3-wo&sid=52eccbdbe8ca2e6b&fp=chrome&spx=/&encryption=none#%F0%9F%87%A8%F0%9F%87%AD%D0%A8%D0%B2%D0%B5%D0%B9%D1%86%D0%B0%D1%80%D0%B8%D1%8F",
+    "latency": 115,
+    "tcpLatency": 115,
+    "checkedAt": "2026-09-23T10:41:35.019Z"
+  },
+  {
+    "uri": "vless://2de9ac89-bcef-4cc6-a328-bdc4f24d85d5@77.90.27.164:443?type=grpc&security=reality&sni=ya.ru&pbk=qvHDXNn8Q_j5-AseJS2jbsPk1z0RMp2K6bhcVEF8An8&sid=fffffffffffF&fp=firefox&spx=/&encryption=none#%F0%9F%87%A9%F0%9F%87%AA%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F",
+    "latency": 100,
+    "tcpLatency": 100,
+    "checkedAt": "2026-09-23T10:41:35.097Z"
+  },
+  {
+    "uri": "vless://dcec1f6d-0584-48ee-9e67-c2e16f23904a@2.27.122.221:443?type=tcp&security=reality&sni=www.nvidia.com&pbk=YuFm9PUkI61urw2Uzk_bulQJdblxqxebBafwKHW-8TE&sid=b484941b4767eb&fp=chrome&spx=/&encryption=none#%F0%9F%87%AB%F0%9F%87%AE%D0%A4%D0%B8%D0%BD%D0%BB%D1%8F%D0%BD%D0%B4%D0%B8%D1%8F",
+    "latency": 131,
+    "tcpLatency": 131,
+    "checkedAt": "2026-09-23T10:41:35.266Z"
+  },
+  {
+    "uri": "vless://10b02295-912c-4f09-af6d-96d5caf57ce8@45.43.79.92:443?type=tcp&security=reality&sni=vikt659.isgood.host&pbk=M4Y9h339sntl5wEpiCa7f4IKhJ_8JLzPnAz2IzKlngM&sid=af4ca5d16438c938&fp=firefox&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%B1%F0%9F%87%BB%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F",
+    "latency": 133,
+    "tcpLatency": 133,
+    "checkedAt": "2026-09-23T10:41:35.137Z"
+  },
+  {
+    "uri": "vless://c8b63643-e37a-4527-ba51-535fbce994a6@5.35.103.120:443?type=tcp&security=reality&sni=google.com&pbk=B2r4d09QU1cYDrM9oJXJX8eWa7OIMMLQXyyO7u6Dy1c&sid=e30c103dcbdd28&fp=chrome&spx=/&encryption=none#%F0%9F%87%B8%F0%9F%87%B0%D0%A1%D0%BB%D0%BE%D0%B2%D0%B0%D0%BA%D0%B8%D1%8F",
+    "latency": 115,
+    "tcpLatency": 115,
+    "checkedAt": "2026-09-23T10:41:35.126Z"
+  },
+  {
+    "uri": "vless://cebc5f19-18d9-48e6-9029-fb4b04caf393@45.38.143.210:30584?type=tcp&security=reality&sni=m.vk.com&pbk=2hV4TY2ygvQ7ISa5o4u_FUKXzlIhLgbsScE8M1h0m3Y&sid=67ece882d65d0f1a&fp=chrome&spx=/&encryption=none#%F0%9F%87%B1%F0%9F%87%BB%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F",
+    "latency": 132,
+    "tcpLatency": 132,
+    "checkedAt": "2026-09-23T10:41:35.339Z"
+  },
+  {
+    "uri": "vless://b6ec2ed4-03ac-479f-a76d-46752f5304c4@150.241.77.27:35718?type=tcp&security=reality&sni=aws.amazon.com&pbk=SR0FsZ2AW_Q9E6ODfUxa7IWpeqp9BVMdK_pmkZDLXAg&sid=71&fp=chrome&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F",
+    "latency": 114,
+    "tcpLatency": 114,
+    "checkedAt": "2026-09-23T10:41:35.285Z"
+  },
+  {
+    "uri": "vless://4d259556-57f7-4e5a-9a4a-48868787fb38@31.58.171.53:443?type=tcp&security=reality&sni=dl.google.com&pbk=iCy_Y2B58KB39rw94EycaBO-aldt2PaMmWz62arreSo&sid=f77f3068&fp=chrome&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%B1%F0%9F%87%BB%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F",
+    "latency": 132,
+    "tcpLatency": 132,
+    "checkedAt": "2026-09-23T10:41:35.820Z"
+  },
+  {
+    "uri": "vless://a2451839-7148-4b0e-a580-cccca60fc895@144.31.26.12:7443?type=ws&security=tls&sni=marz.kojevartem.ru&fp=chrome&path=/vless-ws&encryption=none#%F0%9F%87%A9%F0%9F%87%AA%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F",
+    "latency": 109,
+    "tcpLatency": 109,
+    "checkedAt": "2026-09-23T10:41:35.784Z"
+  },
+  {
+    "uri": "vless://252b4a9c-520d-459c-9dbc-366995206089@31.184.253.134:16501?type=tcp&security=reality&sni=www.moddb.com&pbk=g-9eSse3wwSOZ7tzAMFZajr5byr8I3Rs7Gt-hYEhgXg&sid=1ed507777b11&fp=chrome&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%BA%F0%9F%87%B8%D0%A1%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%20%D0%A8%D1%82%D0%B0%D1%82%D1%8B",
     "latency": 147,
     "tcpLatency": 147,
-    "checkedAt": "2026-09-23T10:33:33.685Z"
+    "checkedAt": "2026-09-23T10:41:37.254Z"
+  },
+  {
+    "uri": "vless://eb5e57b3-1e5f-4b8a-b31b-bf3f67edf754@45.87.121.182:443?type=tcp&security=reality&sni=yahoo.com&pbk=zf7uAwWBeSzyR6z8MpAIvFtLaPQzUzkiK9zcrmHTfVg&sid=dc905a&fp=chrome&spx=/&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%B3%F0%9F%87%B1%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B",
+    "latency": 99,
+    "tcpLatency": 99,
+    "checkedAt": "2026-09-23T10:41:36.131Z"
+  },
+  {
+    "uri": "vless://0dacb5f0-004a-4f88-8ee3-de042efa3914@31.57.47.155:36891?type=tcp&security=reality&sni=yandex.by&pbk=DTp5DXvHioO03wXkWiFTuoA0VPLroWANZ4M3Pm45L3E&sid=fe41bbe6b0758964&fp=firefox&spx=/&encryption=none#%F0%9F%87%BA%F0%9F%87%B8%D0%A1%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%20%D0%A8%D1%82%D0%B0%D1%82%D1%8B",
+    "latency": 56,
+    "tcpLatency": 56,
+    "checkedAt": "2026-09-23T10:41:36.249Z"
+  },
+  {
+    "uri": "vless://d72f05b0-b182-4783-a6f2-21cecc7d841a@31.76.101.39:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=dzen.ru&fp=firefox&pbk=SibLV5WBGdljTiUCmKx77KhHQfErCwjDMD_ZLoha3js&sid=a1b2c3d4e5f67890&spx=%2F&type=tcp&headerType=none#%F0%9F%87%A9%F0%9F%87%AA%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%204%20%7C%20TG%3A%20%40ASTROVPNLINK",
+    "latency": 126,
+    "tcpLatency": 126,
+    "checkedAt": "2026-09-23T10:41:39.291Z"
+  },
+  {
+    "uri": "vless://f4ba862a-4d64-431a-9213-dd7aaafd476a@94.183.209.33:8443?encryption=none&security=reality&sni=timeline.www.cloudflare.com&fp=firefox&pbk=S_13TsXuoNyvkx6uf7JHJeuPX3G-nmSRMzn_hgcF3mk&sid=bafa6f22a3&type=tcp&headerType=none#%F0%9F%87%B5%F0%9F%87%B1%20%D0%9F%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%20%7C%20TG%3A%20%40ASTROVPNLINK",
+    "latency": 133,
+    "tcpLatency": 133,
+    "checkedAt": "2026-09-23T10:41:37.553Z"
+  },
+  {
+    "uri": "vless://d72f05b0-b182-4783-a6f2-21cecc7d841a@179.198.49.43:443?flow=xtls-rprx-vision&encryption=none&security=reality&sni=dzen.ru&fp=firefox&pbk=SibLV5WBGdljTiUCmKx77KhHQfErCwjDMD_ZLoha3js&sid=a1b2c3d4e5f67890&spx=%2F&type=tcp&headerType=none#%D0%98%D0%B3%D1%80%D0%BE%D0%B2%D0%BE%D0%B9%20%7C%20TG%3A%20%40ASTROVPNLINK",
+    "latency": 122,
+    "tcpLatency": 122,
+    "checkedAt": "2026-09-23T10:41:39.618Z"
+  },
+  {
+    "uri": "vless://cd3bb7d9-7df3-4644-ac05-c260990ac277@66.90.104.42:2083?encryption=none&security=none&type=grpc&mode=gun&authority=&serviceName=vless#%F0%9F%87%AC%F0%9F%87%A7%20United%20Kingdom%20%7C%20TG%3A%20%40ASTROVPNLINK",
+    "latency": 99,
+    "tcpLatency": 99,
+    "checkedAt": "2026-09-23T10:41:36.938Z"
+  },
+  {
+    "uri": "vless://8d2196c0-2ec7-4867-8d66-d5d19bf8fb23@185.170.211.194:443?type=tcp&security=reality&sni=www.samsung.com&pbk=eZXyfQzQgQSreAbhKSorx38cgnKmGuSOiQbthBfG5k0&sid=0e903b415d812c59&fp=firefox&spx=%2F&encryption=none&flow=xtls-rprx-vision#%F0%9F%87%AB%F0%9F%87%B2%F0%9F%8C%90%20AUTO%20%7C%20%D0%A3%D0%BC%D0%BD%D1%8B%D0%B9%20%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%202",
+    "latency": 107,
+    "tcpLatency": 107,
+    "checkedAt": "2026-09-23T10:41:37.317Z"
+  },
+  {
+    "uri": "vless://8057eabc-921d-0003-9acb-80ccc6b48379@201.24.50.94:443?encryption=none&type=grpc&serviceName=Sosat&mode=multi&security=reality&sni=kerbal.mafioznik.xyz&fp=firefox&pbk=wG3BS0H2EKpY2tpv9bWipTmafwIdXuUXPAZCpr1eZ0M#%F0%9F%87%AB%F0%9F%87%B7%20%D0%A4%D1%80%D0%B0%D0%BD%D1%86%D0%B8%D1%8F%201",
+    "latency": 147,
+    "tcpLatency": 147,
+    "checkedAt": "2026-09-23T10:41:38.327Z"
+  },
+  {
+    "uri": "vless://871bfce7-8440-4394-8d82-56b51f20fdad@18.183.215.124:28573?flow=xtls-rprx-vision&host=www.sony.com&path=%2F&pbk=1DJr9toke7FRuSXjibBVuNvRnLnJnN5kXwUBG6Romzg&security=reality&sid=03653bc03be10c97&sni=www.sony.com&type=tcp&fp=chrome#%F0%9F%87%AF%F0%9F%87%B5%20Japan%2C%20Shibuya%20City%20%7C%20%F0%9F%8C%90%20%7C%20%5BBL%5D",
+    "latency": 147,
+    "tcpLatency": 147,
+    "checkedAt": "2026-09-23T10:41:38.295Z"
+  },
+  {
+    "uri": "vless://d0e771c5-024e-4393-bb90-4a3e3c561656@31.76.7.227:443?encryption=none&flow=xtls-rprx-vision&fp=firefox&pbk=nIL5EeUo2XUkCaLJGbzgRm6zhF-96kWvV2VmhEt3CX4&security=reality&sid=4af4102cb26e59&sni=origin.vpnoodles.ru&spx=%2F42618003b1db127&type=tcp#🌐سرور 3 | Sha-29| MTSRVRS",
+    "latency": 132,
+    "tcpLatency": 132,
+    "checkedAt": "2026-09-23T10:41:39.458Z"
+  },
+  {
+    "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@176.109.104.195:9882?encryption=none&security=reality&type=grpc&sni=dl.google.com&fp=qq&pbk=bnRIb3Er1i-K6NGGByCO9UbGfOvu43ZoiK7ulPd1SzU&sid=aa&serviceName=grpc-tunnel&mode=gun#%D0%9A%D0%B0%D0%B7%D0%B0%D1%85%D1%81%D1%82%D0%B0%D0%BD%20%F0%9F%87%B0%F0%9F%87%BF",
+    "latency": 140,
+    "tcpLatency": 140,
+    "checkedAt": "2026-09-23T10:41:42.649Z"
+  },
+  {
+    "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@176.108.246.73:9873?type=grpc&security=reality&serviceName=grpc-tunnel&sni=dl.google.com&pbk=bnRIb3Er1i-K6NGGByCO9UbGfOvu43ZoiK7ulPd1SzU&sid=aabbccdd&fp=qq&encryption=none#%D0%90%D0%B2%D1%82%D0%BE%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%28AUTO%29%2022",
+    "latency": 148,
+    "tcpLatency": 148,
+    "checkedAt": "2026-09-23T10:42:06.729Z"
   },
   {
     "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@176.108.246.58:9889?type=grpc&security=reality&serviceName=grpc-tunnel&sni=dl.google.com&pbk=ycPIUcY6ci2yi7YA_OHc20e4gzxEdJTqpmeShxSuHRU&fp=qq&encryption=none#%D0%90%D0%B2%D1%82%D0%BE%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%28AUTO%29%2014",
-    "latency": 144,
-    "tcpLatency": 144,
-    "checkedAt": "2026-09-23T10:33:33.449Z"
+    "latency": 145,
+    "tcpLatency": 145,
+    "checkedAt": "2026-09-23T10:42:01.654Z"
   },
   {
-    "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@213.171.25.29:9889?type=grpc&security=reality&serviceName=grpc-tunnel&sni=dl.google.com&pbk=ycPIUcY6ci2yi7YA_OHc20e4gzxEdJTqpmeShxSuHRU&sid=aabb&fp=qq&encryption=none#%D0%90%D0%B2%D1%82%D0%BE%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%28AUTO%29%207",
-    "latency": 142,
-    "tcpLatency": 142,
-    "checkedAt": "2026-09-23T10:33:37.888Z"
+    "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@176.108.246.58:9881?type=grpc&security=reality&serviceName=grpc-tunnel&sni=dl.google.com&pbk=ycPIUcY6ci2yi7YA_OHc20e4gzxEdJTqpmeShxSuHRU&fp=qq&encryption=none#%D0%90%D0%B2%D1%82%D0%BE%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%28AUTO%29%2011",
+    "latency": 143,
+    "tcpLatency": 143,
+    "checkedAt": "2026-09-23T10:42:01.845Z"
   },
   {
     "uri": "vless://5d16ac22-6eea-426f-b778-6f4c2961faef@176.108.243.18:9872?type=grpc&security=reality&serviceName=grpc-tunnel&sni=dl.google.com&pbk=sm3E3hjmT6_Gmg_O9rBz4nfXYrHpnl6-LvcCp6T6_xc&sid=aabb&fp=qq&encryption=none#%D0%90%D0%B2%D1%82%D0%BE%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%28AUTO%29%201",
-    "latency": 147,
-    "tcpLatency": 147,
-    "checkedAt": "2026-09-23T10:33:35.858Z"
+    "latency": 143,
+    "tcpLatency": 143,
+    "checkedAt": "2026-09-23T10:42:03.356Z"
   },
   {
     "uri": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpjNThkMTZlNTkzZDQ0ZjQy@158.173.221.214:11001#hamedp71%3A%3A%F0%9F%87%AC%F0%9F%87%A7",
-    "latency": 97,
-    "tcpLatency": 97,
-    "checkedAt": "2026-09-23T10:33:31.545Z"
+    "latency": 99,
+    "tcpLatency": 99,
+    "checkedAt": "2026-09-23T10:42:01.447Z"
   }
 ]
