@@ -40,43 +40,15 @@ Happ
 
 GitHub Actions автоматически запускает обновление, собирает новые конфигурации и проверяет их перед публикацией.
 
-Подписка Happ
+Подписка Happ:
 
-Добавьте URL:
-
-https://YOUR-VERCEL-DOMAIN/subscription.json
+https://vpn-collector.vercel.app/subscription.json
 
 После добавления Happ получает:
 
 - название подписки: OokVPN
 - трафик: 0 / ∞
 - без заданного срока окончания
-
-Структура проекта
-
-vpn-collector/
-├── .github/
-│   └── workflows/
-│       └── update.yml
-├── data/
-│   ├── raw.json
-│   ├── checked.json
-│   ├── nodes.json
-│   └── subscription.json
-├── public/
-│   └── subscription.json
-├── src/
-│   ├── collector.js
-│   ├── parser.js
-│   ├── checker.cjs
-│   ├── geoip.js
-│   ├── generator.js
-│   ├── xray.js
-│   └── protocols/
-├── sources.json
-├── vercel.json
-├── package.json
-└── README.md
 
 Автоматическое обновление
 
