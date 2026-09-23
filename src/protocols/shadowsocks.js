@@ -1,9 +1,8 @@
-function decode(value) {
-  let input =
-    decodeURIComponent(value)
-      .replace(/-/g, "+")
-      .replace(/_/g, "/")
-      .replace(/\s+/g, "");
+function decodeBase64(value) {
+  let input = value
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .replace(/\s+/g, "");
 
   input += "=".repeat(
     (4 - input.length % 4) % 4
@@ -14,121 +13,150 @@ function decode(value) {
     .toString("utf8");
 }
 
+function number(value, fallback) {
+  const n = Number(value);
+
+  return Number.isFinite(n)
+    ? n
+    : fallback;
+}
+
 export function parseShadowsocks(
   uri,
   tag
 ) {
   const raw =
-    uri.slice(
-      "ss://".length
+    uri.slice("ss://".length);
+
+  /*
+   * Legacy / SIP002:
+   *
+   * ss://BASE64@host:port
+   */
+
+  let url;
+
+  try {
+    url =
+      new URL(uri);
+  } catch {
+    throw new Error(
+      "Invalid Shadowsocks URI"
     );
-
-  const hash =
-    raw.indexOf("#");
-
-  const value =
-    hash >= 0
-      ? raw.slice(0, hash)
-      : raw;
-
-  let credentials;
-  let host;
-  let port;
-
-  if (value.includes("@")) {
-    const index =
-      value.lastIndexOf("@");
-
-    credentials =
-      decode(
-        value.slice(
-          0,
-          index
-        )
-      );
-
-    const server =
-      value.slice(
-        index + 1
-      );
-
-    const match =
-      server.match(
-        /^\[?([^\]]+)\]?:([0-9]+)$/
-      );
-
-    if (!match) {
-      throw new Error(
-        "Invalid SS server"
-      );
-    }
-
-    host =
-      match[1];
-
-    port =
-      Number(match[2]);
-  } else {
-    const decoded =
-      decode(value);
-
-    const at =
-      decoded.lastIndexOf("@");
-
-    if (at < 1) {
-      throw new Error(
-        "Invalid SS URI"
-      );
-    }
-
-    credentials =
-      decoded.slice(
-        0,
-        at
-      );
-
-    const server =
-      decoded.slice(
-        at + 1
-      );
-
-    const match =
-      server.match(
-        /^\[?([^\]]+)\]?:([0-9]+)$/
-      );
-
-    if (!match) {
-      throw new Error(
-        "Invalid SS server"
-      );
-    }
-
-    host =
-      match[1];
-
-    port =
-      Number(match[2]);
   }
 
-  const colon =
-    credentials.indexOf(":");
+  let userInfo =
+    url.username;
 
-  if (colon < 1) {
+  let host =
+    url.hostname;
+
+  let port =
+    number(
+      url.port,
+      0
+    );
+
+  /*
+   * Если username полностью
+   * закодирован в base64.
+   */
+
+  if (
+    userInfo &&
+    !userInfo.includes(":")
+  ) {
+    try {
+      const decoded =
+        decodeBase64(
+          userInfo
+        );
+
+      if (
+        decoded.includes(":")
+      ) {
+        userInfo =
+          decoded;
+      }
+    } catch {}
+  }
+
+  /*
+   * Иногда весь authority
+   * находится в base64:
+   *
+   * ss://BASE64
+   */
+
+  if (
+    (!host || !port) &&
+    raw &&
+    !raw.includes("@")
+  ) {
+    try {
+      const decoded =
+        decodeBase64(
+          raw.split("#")[0]
+        );
+
+      const match =
+        decoded.match(
+          /^([^:]+):([^@]+)@(.+):(\d+)$/
+        );
+
+      if (match) {
+        userInfo =
+          `${match[1]}:${match[2]}`;
+
+        host =
+          match[3];
+
+        port =
+          Number(match[4]);
+      }
+    } catch {}
+  }
+
+  if (
+    !userInfo ||
+    !host ||
+    !port
+  ) {
     throw new Error(
-      "Invalid SS credentials"
+      "Invalid Shadowsocks URI"
+    );
+  }
+
+  const separator =
+    userInfo.indexOf(":");
+
+  if (
+    separator <= 0
+  ) {
+    throw new Error(
+      "Invalid Shadowsocks credentials"
     );
   }
 
   const method =
-    credentials.slice(
+    userInfo.slice(
       0,
-      colon
+      separator
     );
 
   const password =
-    credentials.slice(
-      colon + 1
+    userInfo.slice(
+      separator + 1
     );
+
+  if (
+    !method ||
+    !password
+  ) {
+    throw new Error(
+      "Shadowsocks method/password missing"
+    );
+  }
 
   return {
     tag,
@@ -144,7 +172,9 @@ export function parseShadowsocks(
 
       method,
 
-      password
+      password,
+
+      uot: true
     }
   };
 }
