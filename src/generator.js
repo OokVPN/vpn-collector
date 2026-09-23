@@ -18,27 +18,43 @@ const checked =
   );
 
 const countries = {
-  RU: ["🇷🇺", "Россия"],
-  NL: ["🇳🇱", "Нидерланды"],
+  AT: ["🇦🇹", "Австрия"],
+  BE: ["🇧🇪", "Бельгия"],
+  BG: ["🇧🇬", "Болгария"],
+  CA: ["🇨🇦", "Канада"],
+  CH: ["🇨🇭", "Швейцария"],
+  CZ: ["🇨🇿", "Чехия"],
   DE: ["🇩🇪", "Германия"],
+  DK: ["🇩🇰", "Дания"],
+  EE: ["🇪🇪", "Эстония"],
+  ES: ["🇪🇸", "Испания"],
   FI: ["🇫🇮", "Финляндия"],
-  US: ["🇺🇸", "США"],
-  PL: ["🇵🇱", "Польша"],
   FR: ["🇫🇷", "Франция"],
   GB: ["🇬🇧", "Великобритания"],
-  SE: ["🇸🇪", "Швеция"],
-  CH: ["🇨🇭", "Швейцария"],
-  AT: ["🇦🇹", "Австрия"],
-  CA: ["🇨🇦", "Канада"],
-  JP: ["🇯🇵", "Япония"],
-  SG: ["🇸🇬", "Сингапур"],
+  GR: ["🇬🇷", "Греция"],
   HK: ["🇭🇰", "Гонконг"],
-  TR: ["🇹🇷", "Турция"],
-  CZ: ["🇨🇿", "Чехия"],
-  RO: ["🇷🇴", "Румыния"],
+  HU: ["🇭🇺", "Венгрия"],
+  IE: ["🇮🇪", "Ирландия"],
   IT: ["🇮🇹", "Италия"],
-  ES: ["🇪🇸", "Испания"],
-  NO: ["🇳🇴", "Норвегия"]
+  JP: ["🇯🇵", "Япония"],
+  KR: ["🇰🇷", "Южная Корея"],
+  LT: ["🇱🇹", "Литва"],
+  LU: ["🇱🇺", "Люксембург"],
+  LV: ["🇱🇻", "Латвия"],
+  NL: ["🇳🇱", "Нидерланды"],
+  NO: ["🇳🇴", "Норвегия"],
+  PL: ["🇵🇱", "Польша"],
+  PT: ["🇵🇹", "Португалия"],
+  RO: ["🇷🇴", "Румыния"],
+  RU: ["🇷🇺", "Россия"],
+  SE: ["🇸🇪", "Швеция"],
+  SG: ["🇸🇬", "Сингапур"],
+  SK: ["🇸🇰", "Словакия"],
+  TR: ["🇹🇷", "Турция"],
+  UA: ["🇺🇦", "Украина"],
+  US: ["🇺🇸", "США"],
+  VN: ["🇻🇳", "Вьетнам"],
+  KZ: ["🇰🇿", "Казахстан"]
 };
 
 function countryName(code) {
@@ -55,15 +71,23 @@ function countryName(code) {
   return `${item[0]} ${item[1]}`;
 }
 
+function countryLabel(code) {
+  const item =
+    countries[
+      String(code || "")
+        .toUpperCase()
+    ];
+
+  return item
+    ? item[1]
+    : String(code || "UNKNOWN");
+}
+
 function vmessHost(uri) {
   try {
-    const encoded =
-      uri.slice(
-        "vmess://".length
-      );
-
     let value =
-      encoded
+      uri
+        .slice("vmess://".length)
         .replace(/-/g, "+")
         .replace(/_/g, "/");
 
@@ -73,10 +97,12 @@ function vmessHost(uri) {
 
     const data =
       JSON.parse(
-        Buffer.from(
-          value,
-          "base64"
-        ).toString("utf8")
+        Buffer
+          .from(
+            value,
+            "base64"
+          )
+          .toString("utf8")
       );
 
     return data.add || null;
@@ -96,9 +122,7 @@ function hostFromUri(uri) {
   }
 
   try {
-    return new URL(
-      uri
-    ).hostname;
+    return new URL(uri).hostname;
   } catch {
     return null;
   }
@@ -108,11 +132,15 @@ async function main() {
   const alive =
     checked.filter(
       item =>
-        typeof item?.uri === "string" &&
+        typeof item?.uri ===
+          "string" &&
+
         Number.isFinite(
           Number(item.latency)
         ) &&
-        Number(item.latency) <= 150
+
+        Number(item.latency) <=
+          150
     );
 
   console.log(
@@ -125,7 +153,9 @@ async function main() {
 
   const nodes = [];
 
-  for (const item of alive) {
+  for (
+    const item of alive
+  ) {
     try {
       const uri =
         item.uri;
@@ -141,13 +171,12 @@ async function main() {
       }
 
       const geo =
-        await resolveGeo(
-          host
-        );
+        await resolveGeo(host);
 
       const code =
         String(
-          geo?.countryCode || "UN"
+          geo?.countryCode ||
+          "UN"
         ).toUpperCase();
 
       const tag =
@@ -175,7 +204,9 @@ async function main() {
           code,
 
         latency:
-          Number(item.latency),
+          Number(
+            item.latency
+          ),
 
         protocol
       });
@@ -186,69 +217,137 @@ async function main() {
     }
   }
 
+  /*
+   * Сначала сортируем по стране,
+   * затем внутри страны по ping.
+   */
+
+  nodes.sort(
+    (a, b) => {
+      const countryA =
+        countryLabel(
+          a.countryCode
+        );
+
+      const countryB =
+        countryLabel(
+          b.countryCode
+        );
+
+      const countryCompare =
+        countryA.localeCompare(
+          countryB,
+          "ru"
+        );
+
+      if (
+        countryCompare !== 0
+      ) {
+        return countryCompare;
+      }
+
+      return (
+        a.latency -
+        b.latency
+      );
+    }
+  );
+
+  /*
+   * После сортировки перенумеровываем
+   * node-теги, чтобы порядок был
+   * последовательным.
+   */
+
+  nodes.forEach(
+    (node, index) => {
+      node.tag =
+        `node-${index + 1}`;
+
+      node.outbound.tag =
+        node.tag;
+    }
+  );
+
   const countryIndexes = {};
 
   const profiles =
-    nodes.map(node => {
-      const code =
-        node.countryCode;
+    nodes.map(
+      node => {
+        const code =
+          node.countryCode;
 
-      countryIndexes[code] =
-        (countryIndexes[code] || 0) + 1;
+        countryIndexes[code] =
+          (
+            countryIndexes[code] ||
+            0
+          ) + 1;
 
-      const number =
-        countryIndexes[code];
+        const number =
+          countryIndexes[code];
 
-      const suffix =
-        number === 1
-          ? ""
-          : ` #${number}`;
+        const suffix =
+          number === 1
+            ? ""
+            : ` #${number}`;
 
-      return {
-        remarks:
-          `${countryName(code)}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
+        return {
+          remarks:
+            `${countryName(code)}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
 
-        inbounds: [],
+          inbounds: [],
 
-        outbounds: [
-          node.outbound
-        ]
-      };
-    });
+          outbounds: [
+            node.outbound
+          ]
+        };
+      }
+    );
 
   const tags =
     nodes.map(
-      node => node.tag
+      node =>
+        node.tag
     );
 
-  const autoOutbounds =
-    nodes.map(
-      node => node.outbound
-    );
+  /*
+   * AUTO создаётся отдельно
+   * и ставится самым первым.
+   */
 
   const auto = {
-    remarks: "🤖 AUTO",
+    remarks:
+      "🇪🇺 АВТО ⚡",
 
     inbounds: [
       {
-        tag: "auto-socks",
+        tag:
+          "auto-socks",
 
         listen:
           "127.0.0.1",
 
-        port: 10808,
+        port:
+          10808,
 
-        protocol: "socks",
+        protocol:
+          "socks",
 
         settings: {
-          auth: "noauth",
-          udp: true
+          auth:
+            "noauth",
+
+          udp:
+            true
         }
       }
     ],
 
     outbounds:
-      autoOutbounds,
+      nodes.map(
+        node =>
+          node.outbound
+      ),
 
     burstObservatory: {
       subjectSelector:
@@ -266,7 +365,8 @@ async function main() {
     routing: {
       balancers: [
         {
-          tag: "AUTO",
+          tag:
+            "AUTO",
 
           selector:
             tags,
@@ -280,7 +380,8 @@ async function main() {
 
       rules: [
         {
-          type: "field",
+          type:
+            "field",
 
           inboundTag: [
             "auto-socks"
@@ -293,9 +394,14 @@ async function main() {
     }
   };
 
+  /*
+   * ВАЖНО:
+   * AUTO всегда первый.
+   */
+
   const result = [
-    ...profiles,
-    auto
+    auto,
+    ...profiles
   ];
 
   fs.writeFileSync(
@@ -310,7 +416,8 @@ async function main() {
   fs.mkdirSync(
     "./public",
     {
-      recursive: true
+      recursive:
+        true
     }
   );
 
@@ -343,9 +450,18 @@ async function main() {
   console.log(
     `AUTO NODES: ${tags.length}`
   );
+
+  console.log(
+    "ORDER: AUTO -> COUNTRY -> PING"
+  );
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+main().catch(
+  error => {
+    console.error(
+      error
+    );
+
+    process.exit(1);
+  }
+);
