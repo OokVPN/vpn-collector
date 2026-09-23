@@ -12,7 +12,6 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-
     timeout-minutes: 45
 
     steps:
@@ -21,7 +20,6 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
-
         with:
           node-version: 22
 
@@ -42,7 +40,6 @@ jobs:
             -o /tmp/xray.zip
 
           rm -rf /tmp/xray
-
           mkdir -p /tmp/xray
 
           unzip -o \
@@ -150,13 +147,9 @@ jobs:
             exit 1
           fi
 
-          BATCH_COUNT=$(
-            ((TOTAL + BATCH_SIZE - 1) / BATCH_SIZE)
-          )
+          BATCH_COUNT=$(( (TOTAL + BATCH_SIZE - 1) / BATCH_SIZE ))
 
-          CURRENT=$(
-            $(git rev-list --count HEAD) % BATCH_COUNT
-          )
+          CURRENT=$(( $(git rev-list --count HEAD) % BATCH_COUNT ))
 
           echo "batch_index=$CURRENT" >> "$GITHUB_OUTPUT"
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
@@ -167,16 +160,12 @@ jobs:
 
       - name: Hard server check
         run: npm run check
-
         env:
           BATCH_SIZE: 200
           BATCH_INDEX: ${{ steps.batch.outputs.batch_index }}
-
           MAX_LATENCY: 150
-
           TCP_TIMEOUT: 5000
           HTTP_TIMEOUT: 7000
-
           CONCURRENCY: 200
           XRAY_CONCURRENCY: 20
 
@@ -226,6 +215,14 @@ jobs:
           ) {
             throw new Error(
               "AUTO outbounds missing"
+            );
+          }
+
+          if (
+            auto.outbounds.length === 0
+          ) {
+            throw new Error(
+              "AUTO has no working nodes"
             );
           }
 
