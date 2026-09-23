@@ -22,10 +22,7 @@ function number(value, fallback) {
     : fallback;
 }
 
-export function parseVmess(
-  uri,
-  tag
-) {
+export function parseVmess(uri, tag) {
   const encoded =
     uri.slice(
       "vmess://".length
@@ -36,10 +33,7 @@ export function parseVmess(
       decode(encoded)
     );
 
-  if (
-    !data.add ||
-    !data.id
-  ) {
+  if (!data.add || !data.id) {
     throw new Error(
       "Invalid VMess"
     );
@@ -134,9 +128,7 @@ export function parseVmess(
     };
   }
 
-  if (
-    stream.security === "tls"
-  ) {
+  if (stream.security === "tls") {
     stream.tlsSettings = {
       serverName:
         data.sni ||
@@ -147,6 +139,24 @@ export function parseVmess(
         data.fp ||
         "chrome"
     };
+
+    const pinned =
+      data.pinSHA256 ||
+      data.pinnedPeerCertSha256;
+
+    if (pinned) {
+      stream.tlsSettings.pinnedPeerCertSha256 =
+        pinned;
+    }
+
+    const verifyName =
+      data.verifyPeerCertByName ||
+      data.vcn;
+
+    if (verifyName) {
+      stream.tlsSettings.verifyPeerCertByName =
+        verifyName;
+    }
   }
 
   return {
