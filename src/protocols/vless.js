@@ -1,15 +1,10 @@
 function number(value, fallback) {
   const n = Number(value);
-
-  return Number.isFinite(n)
-    ? n
-    : fallback;
+  return Number.isFinite(n) ? n : fallback;
 }
 
 function alpn(value) {
-  if (!value) {
-    return undefined;
-  }
+  if (!value) return undefined;
 
   return value
     .split(",")
@@ -17,25 +12,14 @@ function alpn(value) {
     .filter(Boolean);
 }
 
-export function parseVless(
-  uri,
-  tag
-) {
-  const url =
-    new URL(uri);
+export function parseVless(uri, tag) {
+  const url = new URL(uri);
+  const q = url.searchParams;
 
-  const q =
-    url.searchParams;
-
-  const id =
-    decodeURIComponent(
-      url.username
-    );
+  const id = decodeURIComponent(url.username);
 
   if (!id) {
-    throw new Error(
-      "VLESS UUID missing"
-    );
+    throw new Error("VLESS UUID missing");
   }
 
   let network =
@@ -58,17 +42,14 @@ export function parseVless(
 
   if (network === "ws") {
     stream.wsSettings = {
-      path:
-        q.get("path") || "/",
+      path: q.get("path") || "/",
       headers: {}
     };
 
-    const host =
-      q.get("host");
+    const host = q.get("host");
 
     if (host) {
-      stream.wsSettings.headers.Host =
-        host;
+      stream.wsSettings.headers.Host = host;
     }
   }
 
@@ -83,19 +64,15 @@ export function parseVless(
 
   if (network === "xhttp") {
     stream.xhttpSettings = {
-      path:
-        q.get("path") || "/",
-      host:
-        q.get("host") || ""
+      path: q.get("path") || "/",
+      host: q.get("host") || ""
     };
   }
 
   if (network === "httpupgrade") {
     stream.httpupgradeSettings = {
-      path:
-        q.get("path") || "/",
-      host:
-        q.get("host") || ""
+      path: q.get("path") || "/",
+      host: q.get("host") || ""
     };
   }
 
@@ -106,7 +83,8 @@ export function parseVless(
         url.hostname,
 
       fingerprint:
-        q.get("fp") || "chrome"
+        q.get("fp") ||
+        "chrome"
     };
 
     const protocols =
@@ -117,11 +95,22 @@ export function parseVless(
         protocols;
     }
 
-    if (
-      q.get("allowInsecure") === "1"
-    ) {
-      stream.tlsSettings.allowInsecure =
-        true;
+    const pinned =
+      q.get("pinSHA256") ||
+      q.get("pinnedPeerCertSha256");
+
+    if (pinned) {
+      stream.tlsSettings.pinnedPeerCertSha256 =
+        pinned;
+    }
+
+    const verifyName =
+      q.get("verifyPeerCertByName") ||
+      q.get("vcn");
+
+    if (verifyName) {
+      stream.tlsSettings.verifyPeerCertByName =
+        verifyName;
     }
   }
 
@@ -171,12 +160,12 @@ export function parseVless(
               id,
 
               encryption:
-                q.get(
-                  "encryption"
-                ) || "none",
+                q.get("encryption") ||
+                "none",
 
               flow:
-                q.get("flow") || ""
+                q.get("flow") ||
+                ""
             }
           ]
         }
