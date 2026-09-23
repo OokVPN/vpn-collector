@@ -5,18 +5,40 @@ const { spawn, execFile } = require("child_process");
 const RAW_FILE = "data/raw.json";
 const OUT_FILE = "data/checked.json";
 
-const BATCH_SIZE = Number(process.env.BATCH_SIZE || 200);
-const BATCH_INDEX = Number(process.env.BATCH_INDEX || 0);
+const TARGET = Number(
+  process.env.TARGET_NODES || 200
+);
 
-const MAX_LATENCY = Number(process.env.MAX_LATENCY || 150);
-const TCP_TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
-const XRAY_TIMEOUT = Number(process.env.XRAY_TIMEOUT || 10000);
-const CURL_TIMEOUT = Number(process.env.CURL_TIMEOUT || 12000);
+const BATCH_SIZE = Number(
+  process.env.CHECK_BATCH_SIZE || 200
+);
 
-const CONCURRENCY = Number(process.env.CONCURRENCY || 100);
-const XRAY_CONCURRENCY = Number(process.env.XRAY_CONCURRENCY || 10);
+const MAX_LATENCY = Number(
+  process.env.MAX_LATENCY || 150
+);
 
-const TEST_URL = "https://www.gstatic.com/generate_204";
+const TCP_TIMEOUT = Number(
+  process.env.TCP_TIMEOUT || 5000
+);
+
+const XRAY_TIMEOUT = Number(
+  process.env.XRAY_TIMEOUT || 10000
+);
+
+const CURL_TIMEOUT = Number(
+  process.env.CURL_TIMEOUT || 7000
+);
+
+const CONCURRENCY = Number(
+  process.env.CONCURRENCY || 100
+);
+
+const XRAY_CONCURRENCY = Number(
+  process.env.XRAY_CONCURRENCY || 10
+);
+
+const TEST_URL =
+  "https://www.gstatic.com/generate_204";
 
 let uriToOutbound;
 let protocolOf;
@@ -25,10 +47,6 @@ const errorStats = new Map();
 let printedErrors = 0;
 
 const MAX_ERROR_PRINTS = 20;
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function addError(reason) {
   errorStats.set(
@@ -46,6 +64,17 @@ function protocol(uri) {
   return protocolOf(uri);
 }
 
+function cleanError(error) {
+  return String(error)
+    .replace(/\r/g, " ")
+    .replace(/\n+/g, " ")
+    .replace(
+      /[0-9a-f]{8}-[0-9a-f-]{27,}/gi,
+      "<uuid>"
+    )
+    .slice(0, 500);
+}
+
 function safeNodeInfo(uri) {
   try {
     if (protocol(uri) === "vmess") {
@@ -59,7 +88,9 @@ function safeNodeInfo(uri) {
       );
 
       const data = JSON.parse(
-        Buffer.from(value, "base64").toString("utf8")
+        Buffer
+          .from(value, "base64")
+          .toString("utf8")
       );
 
       return `${protocol(uri)}://${data.add}:${data.port}`;
@@ -86,7 +117,9 @@ function parseHostPort(uri) {
       );
 
       const data = JSON.parse(
-        Buffer.from(value, "base64").toString("utf8")
+        Buffer
+          .from(value, "base64")
+          .toString("utf8")
       );
 
       if (!data.add) {
@@ -239,13 +272,17 @@ function buildConfig(outbound, port) {
 
 function runCommand(command, args, timeout) {
   return new Promise(resolve => {
-    const child = spawn(command, args, {
-      stdio: [
-        "ignore",
-        "pipe",
-        "pipe"
-      ]
-    });
+    const child = spawn(
+      command,
+      args,
+      {
+        stdio: [
+          "ignore",
+          "pipe",
+          "pipe"
+        ]
+      }
+    );
 
     let stdout = "";
     let stderr = "";
@@ -290,6 +327,7 @@ function runCommand(command, args, timeout) {
       }
 
       finished = true;
+
       clearTimeout(timer);
 
       resolve({
@@ -306,6 +344,7 @@ function runCommand(command, args, timeout) {
       }
 
       finished = true;
+
       clearTimeout(timer);
 
       resolve({
@@ -385,6 +424,7 @@ function startXray(configFile) {
 
   return {
     child,
+
     getOutput() {
       return {
         stdout,
@@ -460,12 +500,14 @@ function curlThroughProxy(port) {
       "--silent",
       "--show-error",
       "--location",
+
       "--max-time",
       String(
         Math.ceil(
           CURL_TIMEOUT / 1000
         )
       ),
+
       "--connect-timeout",
       String(
         Math.min(
@@ -492,19 +534,22 @@ function curlThroughProxy(port) {
       "curl",
       args,
       {
-        timeout: CURL_TIMEOUT + 2000,
-        maxBuffer: 1024 * 1024
+        timeout:
+          CURL_TIMEOUT + 2000,
+
+        maxBuffer:
+          1024 * 1024
       },
+
       (error, stdout, stderr) => {
         if (error) {
-          const message =
-            stderr.trim() ||
-            error.message ||
-            "curl failed";
-
           resolve({
             ok: false,
-            error: cleanError(message)
+            error: cleanError(
+              stderr.trim() ||
+              error.message ||
+              "curl failed"
+            )
           });
 
           return;
@@ -529,22 +574,12 @@ function curlThroughProxy(port) {
 
         resolve({
           ok: false,
-          error: `HTTP ${status || "unknown"}`
+          error:
+            `HTTP ${status || "unknown"}`
         });
       }
     );
   });
-}
-
-function cleanError(error) {
-  return String(error)
-    .replace(/\r/g, " ")
-    .replace(/\n+/g, " ")
-    .replace(
-      /[0-9a-f]{8}-[0-9a-f-]{27,}/gi,
-      "<uuid>"
-    )
-    .slice(0, 500);
 }
 
 async function checkNode(uri, tcpLatency) {
@@ -560,10 +595,9 @@ async function checkNode(uri, tcpLatency) {
           "proxy"
         );
     } catch (error) {
-      const reason =
-        `PARSE ${error.message}`;
-
-      addError(reason);
+      addError(
+        `PARSE ${error.message}`
+      );
 
       return null;
     }
@@ -581,9 +615,7 @@ async function checkNode(uri, tcpLatency) {
 
     fs.writeFileSync(
       configFile,
-      JSON.stringify(
-        config
-      )
+      JSON.stringify(config)
     );
 
     const valid =
@@ -617,13 +649,14 @@ async function checkNode(uri, tcpLatency) {
       const output =
         started.getOutput();
 
-      const error =
-        output.stderr.trim() ||
-        output.stdout.trim() ||
-        "SOCKS inbound did not start";
-
       addError(
-        `XRAY START ${cleanError(error)}`
+        `XRAY START ${
+          cleanError(
+            output.stderr.trim() ||
+            output.stdout.trim() ||
+            "SOCKS inbound did not start"
+          )
+        }`
       );
 
       return null;
@@ -678,16 +711,13 @@ async function mapLimit(
   fn
 ) {
   const results =
-    new Array(
-      items.length
-    );
+    new Array(items.length);
 
   let index = 0;
 
   async function worker() {
     while (true) {
-      const i =
-        index++;
+      const i = index++;
 
       if (
         i >= items.length
@@ -703,11 +733,14 @@ async function mapLimit(
           );
       } catch (error) {
         addError(
-          `WORKER ${cleanError(error.message)}`
+          `WORKER ${
+            cleanError(
+              error.message
+            )
+          }`
         );
 
-        results[i] =
-          null;
+        results[i] = null;
       }
     }
   }
@@ -736,8 +769,7 @@ function uniqueNodes(input) {
 
   for (const uri of input) {
     if (
-      typeof uri !==
-      "string"
+      typeof uri !== "string"
     ) {
       continue;
     }
@@ -750,9 +782,7 @@ function uniqueNodes(input) {
     }
 
     const hp =
-      parseHostPort(
-        value
-      );
+      parseHostPort(value);
 
     if (!hp) {
       continue;
@@ -797,103 +827,131 @@ async function main() {
     );
 
   const nodes =
-    uniqueNodes(
-      raw
-    );
-
-  const start =
-    BATCH_INDEX *
-    BATCH_SIZE;
-
-  const batch =
-    nodes.slice(
-      start,
-      start + BATCH_SIZE
-    );
+    uniqueNodes(raw);
 
   console.log(
     `Unique nodes: ${nodes.length}`
   );
 
-  console.log(
-    `Batch: ${BATCH_INDEX + 1}`
-  );
+  const successful = [];
 
-  console.log(
-    `Batch size: ${batch.length}`
-  );
+  for (
+    let start = 0;
+    start < nodes.length;
+    start += BATCH_SIZE
+  ) {
+    if (
+      successful.length >= TARGET
+    ) {
+      break;
+    }
 
-  const tcpResults =
-    await mapLimit(
-      batch,
-      CONCURRENCY,
-      async uri => {
-        const hp =
-          parseHostPort(
-            uri
-          );
+    const batch =
+      nodes.slice(
+        start,
+        start + BATCH_SIZE
+      );
 
-        if (!hp) {
-          return null;
+    console.log(
+      `\nCHECK BATCH ${
+        Math.floor(
+          start / BATCH_SIZE
+        ) + 1
+      }`
+    );
+
+    console.log(
+      `Candidates: ${batch.length}`
+    );
+
+    const tcpResults =
+      await mapLimit(
+        batch,
+        CONCURRENCY,
+        async uri => {
+          const hp =
+            parseHostPort(uri);
+
+          if (!hp) {
+            return null;
+          }
+
+          const result =
+            await tcpCheck(
+              hp.host,
+              hp.port
+            );
+
+          if (!result.ok) {
+            return null;
+          }
+
+          if (
+            result.latency >
+            MAX_LATENCY
+          ) {
+            return null;
+          }
+
+          return {
+            uri,
+            latency:
+              result.latency
+          };
         }
+      );
 
-        const result =
-          await tcpCheck(
-            hp.host,
-            hp.port
-          );
+    const alive =
+      tcpResults.filter(
+        Boolean
+      );
 
-        if (
-          !result.ok
-        ) {
-          return null;
-        }
-
-        if (
-          result.latency >
-          MAX_LATENCY
-        ) {
-          return null;
-        }
-
-        return {
-          uri,
-          latency:
-            result.latency
-        };
-      }
+    console.log(
+      `TCP alive: ${alive.length}/${batch.length}`
     );
 
-  const alive =
-    tcpResults.filter(
-      Boolean
+    const checked =
+      await mapLimit(
+        alive,
+        XRAY_CONCURRENCY,
+        async node =>
+          checkNode(
+            node.uri,
+            node.latency
+          )
+      );
+
+    const passed =
+      checked.filter(
+        Boolean
+      );
+
+    successful.push(
+      ...passed
     );
 
-  console.log(
-    `TCP alive: ${alive.length}/${batch.length}`
-  );
-
-  const checked =
-    await mapLimit(
-      alive,
-      XRAY_CONCURRENCY,
-      async node =>
-        checkNode(
-          node.uri,
-          node.latency
-        )
+    console.log(
+      `REAL VPN alive: ${passed.length}/${alive.length}`
     );
 
-  const success =
-    checked.filter(
-      Boolean
+    console.log(
+      `TOTAL WORKING: ${successful.length}/${TARGET}`
+    );
+  }
+
+  const finalNodes =
+    successful.slice(
+      0,
+      TARGET
     );
 
   console.log(
-    `REAL VPN alive: ${success.length}/${alive.length}`
+    `\nFINAL: ${finalNodes.length}/${TARGET} working nodes`
   );
 
-  if (errorStats.size) {
+  if (
+    errorStats.size
+  ) {
     console.log(
       "\nFailure summary:"
     );
@@ -913,21 +971,18 @@ async function main() {
   fs.writeFileSync(
     OUT_FILE,
     JSON.stringify(
-      success,
+      finalNodes,
       null,
       2
     )
   );
 
   console.log(
-    `Saved ${success.length} nodes`
+    `Saved ${finalNodes.length} nodes`
   );
 }
 
 main().catch(error => {
-  console.error(
-    error
-  );
-
+  console.error(error);
   process.exit(1);
 });
