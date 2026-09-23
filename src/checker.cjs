@@ -5,13 +5,8 @@ const { spawn, execFile } = require("child_process");
 const RAW_FILE = "data/raw.json";
 const OUT_FILE = "data/checked.json";
 
-const TARGET = Number(
-  process.env.TARGET_NODES || 200
-);
-
-const BATCH_SIZE = Number(
-  process.env.CHECK_BATCH_SIZE || 200
-);
+const TARGET = Number(process.env.TARGET_NODES || 200);
+const BATCH_SIZE = Number(process.env.CHECK_BATCH_SIZE || 200);
 
 const MAX_PROXY_LATENCY = Number(
   process.env.MAX_PROXY_LATENCY || 200
@@ -41,8 +36,11 @@ const XRAY_CONCURRENCY = Number(
   process.env.XRAY_CONCURRENCY || 10
 );
 
-const TEST_URL =
+const PING_URL =
   "https://www.gstatic.com/generate_204";
+
+const IP_URL =
+  "https://api.ipify.org";
 
 let uriToOutbound;
 let protocolOf;
@@ -52,7 +50,7 @@ const errorStats = new Map();
 
 let printedErrors = 0;
 
-const MAX_ERROR_PRINTS = 20;
+const MAX_ERROR_PRINTS = 30;
 
 function addError(reason) {
   errorStats.set(
@@ -60,64 +58,45 @@ function addError(reason) {
     (errorStats.get(reason) || 0) + 1
   );
 
-  if (
-    printedErrors <
-    MAX_ERROR_PRINTS
-  ) {
-    console.log(
-      `FAIL ${reason}`
-    );
-
+  if (printedErrors < MAX_ERROR_PRINTS) {
+    console.log(`FAIL ${reason}`);
     printedErrors++;
   }
+}
+
+function cleanError(error) {
+  return String(error || "")
+    .replace(/\r/g, " ")
+    .replace(/\n+/g, " ")
+    .slice(0, 500);
 }
 
 function protocol(uri) {
   return protocolOf(uri);
 }
 
-function cleanError(error) {
-  return String(error)
-    .replace(/\r/g, " ")
-    .replace(/\n+/g, " ")
-    .replace(
-      /[0-9a-f]{8}-[0-9a-f-]{27,}/gi,
-      "<uuid>"
-    )
-    .slice(0, 500);
-}
-
 function safeNodeInfo(uri) {
   try {
-    if (
-      protocol(uri) ===
-      "vmess"
-    ) {
-      let value =
-        uri
-          .slice(8)
-          .replace(/-/g, "+")
-          .replace(/_/g, "/");
+    if (protocol(uri) === "vmess") {
+      let value = uri
+        .slice(8)
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
 
       value += "=".repeat(
         (4 - value.length % 4) % 4
       );
 
-      const data =
-        JSON.parse(
-          Buffer
-            .from(
-              value,
-              "base64"
-            )
-            .toString("utf8")
-        );
+      const data = JSON.parse(
+        Buffer
+          .from(value, "base64")
+          .toString("utf8")
+      );
 
       return `${protocol(uri)}://${data.add}:${data.port}`;
     }
 
-    const u =
-      new URL(uri);
+    const u = new URL(uri);
 
     return `${protocol(uri)}://${u.hostname}:${u.port || 443}`;
   } catch {
@@ -127,36 +106,27 @@ function safeNodeInfo(uri) {
 
 function parseHostPort(uri) {
   try {
-    if (
-      protocol(uri) ===
-      "vmess"
-    ) {
-      let value =
-        uri
-          .slice(8)
-          .replace(/-/g, "+")
-          .replace(/_/g, "/");
+    if (protocol(uri) === "vmess") {
+      let value = uri
+        .slice(8)
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
 
       value += "=".repeat(
         (4 - value.length % 4) % 4
       );
 
-      const data =
-        JSON.parse(
-          Buffer
-            .from(
-              value,
-              "base64"
-            )
-            .toString("utf8")
-        );
+      const data = JSON.parse(
+        Buffer
+          .from(value, "base64")
+          .toString("utf8")
+      );
 
       if (!data.add) {
         return null;
       }
 
-      const port =
-        Number(data.port);
+      const port = Number(data.port);
 
       if (
         !Number.isInteger(port) ||
@@ -172,15 +142,12 @@ function parseHostPort(uri) {
       };
     }
 
-    const u =
-      new URL(uri);
+    const u = new URL(uri);
 
-    let port =
-      Number(u.port);
+    let port = Number(u.port);
 
     if (!port) {
-      const p =
-        protocol(uri);
+      const p = protocol(uri);
 
       port =
         p === "ss" ||
@@ -208,79 +175,65 @@ function parseHostPort(uri) {
   }
 }
 
-function tcpCheck(
-  host,
-  port
-) {
-  return new Promise(
-    resolve => {
-      const started =
-        Date.now();
+function tcpCheck(host, port) {
+  return new Promise(resolve => {
+    const started = Date.now();
 
-      const socket =
-        net.createConnection({
-          host,
-          port
-        });
+    const socket = net.createConnection({
+      host,
+      port
+    });
 
-      let done = false;
+    let done = false;
 
-      const finish = (
+    const finish = (
+      ok,
+      latency = null
+    ) => {
+      if (done) {
+        return;
+      }
+
+      done = true;
+
+      socket.destroy();
+
+      resolve({
         ok,
-        latency = null
-      ) => {
-        if (done) {
-          return;
-        }
+        latency
+      });
+    };
 
-        done = true;
+    socket.setTimeout(
+      TCP_TIMEOUT
+    );
 
-        socket.destroy();
+    socket.once(
+      "connect",
+      () =>
+        finish(
+          true,
+          Date.now() - started
+        )
+    );
 
-        resolve({
-          ok,
-          latency
-        });
-      };
+    socket.once(
+      "timeout",
+      () => finish(false)
+    );
 
-      socket.setTimeout(
-        TCP_TIMEOUT
-      );
-
-      socket.once(
-        "connect",
-        () => {
-          finish(
-            true,
-            Date.now() -
-              started
-          );
-        }
-      );
-
-      socket.once(
-        "timeout",
-        () => {
-          finish(false);
-        }
-      );
-
-      socket.once(
-        "error",
-        () => {
-          finish(false);
-        }
-      );
-    }
-  );
+    socket.once(
+      "error",
+      () => finish(false)
+    );
+  });
 }
 
 function randomPort() {
   return (
     20000 +
     Math.floor(
-      Math.random() *
-      20000
+      Math.random() * 20000
     )
   );
 }
@@ -291,29 +244,22 @@ function buildConfig(
 ) {
   return {
     log: {
-      loglevel:
-        "warning"
+      loglevel: "warning"
     },
 
     inbounds: [
       {
-        tag:
-          "proxy-in",
+        tag: "proxy-in",
 
-        listen:
-          "127.0.0.1",
+        listen: "127.0.0.1",
 
         port,
 
-        protocol:
-          "socks",
+        protocol: "socks",
 
         settings: {
-          auth:
-            "noauth",
-
-          udp:
-            false
+          auth: "noauth",
+          udp: true
         }
       }
     ],
@@ -322,22 +268,17 @@ function buildConfig(
       outbound,
 
       {
-        tag:
-          "direct",
-
-        protocol:
-          "freedom"
+        tag: "direct",
+        protocol: "freedom"
       }
     ],
 
     routing: {
-      domainStrategy:
-        "AsIs",
+      domainStrategy: "AsIs",
 
       rules: [
         {
-          type:
-            "field",
+          type: "field",
 
           inboundTag: [
             "proxy-in"
@@ -356,136 +297,110 @@ function runCommand(
   args,
   timeout
 ) {
-  return new Promise(
-    resolve => {
-      const child =
-        spawn(
-          command,
-          args,
-          {
-            stdio: [
-              "ignore",
-              "pipe",
-              "pipe"
-            ]
-          }
-        );
+  return new Promise(resolve => {
+    const child = spawn(
+      command,
+      args,
+      {
+        stdio: [
+          "ignore",
+          "pipe",
+          "pipe"
+        ]
+      }
+    );
 
-      let stdout = "";
-      let stderr = "";
-      let finished = false;
+    let stdout = "";
+    let stderr = "";
+    let finished = false;
 
-      const timer =
-        setTimeout(
-          () => {
-            if (finished) {
-              return;
-            }
-
-            finished = true;
-
-            child.kill(
-              "SIGKILL"
-            );
-
-            resolve({
-              ok: false,
-              code: null,
-              stdout,
-              stderr:
-                "Command timeout"
-            });
-          },
-          timeout
-        );
-
-      child.stdout.on(
-        "data",
-        data => {
-          stdout +=
-            data.toString();
-
-          if (
-            stdout.length >
-            12000
-          ) {
-            stdout =
-              stdout.slice(
-                -12000
-              );
-          }
+    const timer = setTimeout(
+      () => {
+        if (finished) {
+          return;
         }
-      );
 
-      child.stderr.on(
-        "data",
-        data => {
-          stderr +=
-            data.toString();
+        finished = true;
 
-          if (
-            stderr.length >
-            12000
-          ) {
-            stderr =
-              stderr.slice(
-                -12000
-              );
-          }
+        child.kill("SIGKILL");
+
+        resolve({
+          ok: false,
+          code: null,
+          stdout,
+          stderr: "Command timeout"
+        });
+      },
+      timeout
+    );
+
+    child.stdout.on(
+      "data",
+      data => {
+        stdout += data.toString();
+
+        if (stdout.length > 12000) {
+          stdout =
+            stdout.slice(-12000);
         }
-      );
+      }
+    );
 
-      child.once(
-        "error",
-        error => {
-          if (finished) {
-            return;
-          }
+    child.stderr.on(
+      "data",
+      data => {
+        stderr += data.toString();
 
-          finished = true;
-
-          clearTimeout(timer);
-
-          resolve({
-            ok: false,
-            code: null,
-            stdout,
-            stderr:
-              error.message
-          });
+        if (stderr.length > 12000) {
+          stderr =
+            stderr.slice(-12000);
         }
-      );
+      }
+    );
 
-      child.once(
-        "close",
-        code => {
-          if (finished) {
-            return;
-          }
-
-          finished = true;
-
-          clearTimeout(timer);
-
-          resolve({
-            ok:
-              code === 0,
-
-            code,
-
-            stdout,
-
-            stderr
-          });
+    child.once(
+      "error",
+      error => {
+        if (finished) {
+          return;
         }
-      );
-    }
-  );
+
+        finished = true;
+
+        clearTimeout(timer);
+
+        resolve({
+          ok: false,
+          code: null,
+          stdout,
+          stderr: error.message
+        });
+      }
+    );
+
+    child.once(
+      "close",
+      code => {
+        if (finished) {
+          return;
+        }
+
+        finished = true;
+
+        clearTimeout(timer);
+
+        resolve({
+          ok: code === 0,
+          code,
+          stdout,
+          stderr
+        });
+      }
+    );
+  });
 }
 
-async function validateConfig(
-  file
-) {
+async function validateConfig(file) {
   const result =
     await runCommand(
       "xray",
@@ -499,16 +414,14 @@ async function validateConfig(
     );
 
   if (!result.ok) {
-    const message =
-      result.stderr.trim() ||
-      result.stdout.trim() ||
-      `exit ${result.code}`;
-
     return {
       ok: false,
 
-      error:
-        cleanError(message)
+      error: cleanError(
+        result.stderr.trim() ||
+        result.stdout.trim() ||
+        `exit ${result.code}`
+      )
     };
   }
 
@@ -517,25 +430,22 @@ async function validateConfig(
   };
 }
 
-function startXray(
-  configFile
-) {
-  const child =
-    spawn(
-      "xray",
-      [
-        "run",
-        "-config",
-        configFile
-      ],
-      {
-        stdio: [
-          "ignore",
-          "pipe",
-          "pipe"
-        ]
-      }
-    );
+function startXray(configFile) {
+  const child = spawn(
+    "xray",
+    [
+      "run",
+      "-config",
+      configFile
+    ],
+    {
+      stdio: [
+        "ignore",
+        "pipe",
+        "pipe"
+      ]
+    }
+  );
 
   let stdout = "";
   let stderr = "";
@@ -543,17 +453,11 @@ function startXray(
   child.stdout.on(
     "data",
     data => {
-      stdout +=
-        data.toString();
+      stdout += data.toString();
 
-      if (
-        stdout.length >
-        16000
-      ) {
+      if (stdout.length > 16000) {
         stdout =
-          stdout.slice(
-            -16000
-          );
+          stdout.slice(-16000);
       }
     }
   );
@@ -561,17 +465,11 @@ function startXray(
   child.stderr.on(
     "data",
     data => {
-      stderr +=
-        data.toString();
+      stderr += data.toString();
 
-      if (
-        stderr.length >
-        16000
-      ) {
+      if (stderr.length > 16000) {
         stderr =
-          stderr.slice(
-            -16000
-          );
+          stderr.slice(-16000);
       }
     }
   );
@@ -592,228 +490,218 @@ function waitForPort(
   port,
   timeout
 ) {
-  return new Promise(
-    resolve => {
-      const started =
-        Date.now();
+  return new Promise(resolve => {
+    const started = Date.now();
 
-      const attempt =
-        () => {
-          const socket =
-            net.createConnection({
-              host:
-                "127.0.0.1",
+    const attempt = () => {
+      const socket =
+        net.createConnection({
+          host: "127.0.0.1",
+          port
+        });
 
-              port
-            });
+      let finished = false;
 
-          let finished =
-            false;
+      const done = ok => {
+        if (finished) {
+          return;
+        }
 
-          const done =
-            ok => {
-              if (finished) {
-                return;
-              }
+        finished = true;
 
-              finished = true;
+        socket.destroy();
 
-              socket.destroy();
+        if (ok) {
+          resolve(true);
+          return;
+        }
 
-              if (ok) {
-                resolve(true);
-                return;
-              }
+        if (
+          Date.now() - started >=
+          timeout
+        ) {
+          resolve(false);
+          return;
+        }
 
-              if (
-                Date.now() -
-                  started >=
-                timeout
-              ) {
-                resolve(false);
-                return;
-              }
+        setTimeout(
+          attempt,
+          100
+        );
+      };
 
-              setTimeout(
-                attempt,
-                100
-              );
-            };
+      socket.once(
+        "connect",
+        () => done(true)
+      );
 
-          socket.once(
-            "connect",
-            () => done(true)
-          );
+      socket.once(
+        "error",
+        () => done(false)
+      );
 
-          socket.once(
-            "error",
-            () => done(false)
-          );
+      socket.setTimeout(
+        500,
+        () => done(false)
+      );
+    };
 
-          socket.setTimeout(
-            500,
-            () => done(false)
-          );
-        };
-
-      attempt();
-    }
-  );
+    attempt();
+  });
 }
 
-function curlThroughProxy(
-  port
+function curlProxy(
+  port,
+  url,
+  extra = []
 ) {
-  return new Promise(
-    resolve => {
-      const args = [
-        "--silent",
-        "--show-error",
-        "--location",
+  return new Promise(resolve => {
+    const args = [
+      "--silent",
+      "--show-error",
 
-        "--max-time",
-        String(
-          Math.ceil(
-            CURL_TIMEOUT /
-              1000
-          )
-        ),
+      "--proxy",
+      `socks5h://127.0.0.1:${port}`,
 
-        "--connect-timeout",
-        String(
-          Math.min(
-            8,
-            Math.ceil(
-              CURL_TIMEOUT /
-                1000
-            )
-          )
-        ),
+      "--noproxy",
+      "",
 
-        "--proxy",
-        `socks5h://127.0.0.1:${port}`,
+      "--connect-timeout",
+      String(
+        Math.ceil(
+          CURL_TIMEOUT / 1000
+        )
+      ),
 
-        "--output",
-        "/dev/null",
+      "--max-time",
+      String(
+        Math.ceil(
+          CURL_TIMEOUT / 1000
+        )
+      ),
 
-        "--write-out",
-        "%{http_code}",
+      ...extra,
 
-        TEST_URL
-      ];
+      url
+    ];
 
-      const started =
-        Date.now();
+    const started = Date.now();
 
-      execFile(
-        "curl",
-        args,
-        {
-          timeout:
-            CURL_TIMEOUT +
-            2000,
+    execFile(
+      "curl",
+      args,
+      {
+        timeout:
+          CURL_TIMEOUT + 2000,
 
-          maxBuffer:
-            1024 * 1024
-        },
+        maxBuffer:
+          1024 * 1024
+      },
 
-        (
-          error,
-          stdout,
-          stderr
-        ) => {
-          const latency =
-            Date.now() -
-            started;
+      (
+        error,
+        stdout,
+        stderr
+      ) => {
+        const latency =
+          Date.now() -
+          started;
 
-          if (error) {
-            resolve({
-              ok: false,
-
-              latency: null,
-
-              error:
-                cleanError(
-                  stderr.trim() ||
-                  error.message ||
-                  "curl failed"
-                )
-            });
-
-            return;
-          }
-
-          const status =
-            Number(
-              String(
-                stdout
-              ).trim()
-            );
-
-          if (
-            status >= 200 &&
-            status < 400
-          ) {
-            resolve({
-              ok: true,
-
-              latency,
-
-              status
-            });
-
-            return;
-          }
-
+        if (error) {
           resolve({
             ok: false,
 
             latency: null,
 
+            body: stdout || "",
+
             error:
-              `HTTP ${status || "unknown"}`
+              cleanError(
+                stderr ||
+                error.message
+              )
           });
+
+          return;
         }
-      );
-    }
-  );
+
+        resolve({
+          ok: true,
+
+          latency,
+
+          body:
+            String(
+              stdout || ""
+            ).trim(),
+
+          error: null
+        });
+      }
+    );
+  });
 }
 
-/*
- * Happ Default:
- * 2 отдельных proxy GET-запроса.
- * Берём лучший результат.
- *
- * Не keepalive.
- * Не double.
- */
 async function proxyPing(
   port
 ) {
   const first =
-    await curlThroughProxy(
-      port
+    await curlProxy(
+      port,
+      PING_URL,
+      [
+        "--output",
+        "/dev/null",
+
+        "--write-out",
+        "%{http_code}"
+      ]
     );
 
   const second =
-    await curlThroughProxy(
-      port
+    await curlProxy(
+      port,
+      PING_URL,
+      [
+        "--output",
+        "/dev/null",
+
+        "--write-out",
+        "%{http_code}"
+      ]
     );
 
-  const successful = [
-    first,
-    second
-  ].filter(
-    result =>
-      result.ok &&
-      Number.isFinite(
-        result.latency
-      )
-  );
+  const firstCode =
+    Number(first.body);
 
-  if (
-    successful.length === 0
-  ) {
+  const secondCode =
+    Number(second.body);
+
+  const firstOk =
+    first.ok &&
+    firstCode >= 200 &&
+    firstCode < 400;
+
+  const secondOk =
+    second.ok &&
+    secondCode >= 200 &&
+    secondCode < 400;
+
+  const values = [];
+
+  if (firstOk) {
+    values.push(
+      first.latency
+    );
+  }
+
+  if (secondOk) {
+    values.push(
+      second.latency
+    );
+  }
+
+  if (!values.length) {
     return {
       ok: false,
 
@@ -825,36 +713,77 @@ async function proxyPing(
       secondLatency:
         second.latency,
 
-      firstError:
-        first.error,
-
-      secondError:
-        second.error
+      error:
+        first.error ||
+        second.error ||
+        "generate_204 failed"
     };
   }
-
-  const best =
-    Math.min(
-      ...successful.map(
-        result =>
-          result.latency
-      )
-    );
 
   return {
     ok: true,
 
-    latency: best,
+    latency:
+      Math.min(...values),
 
     firstLatency:
-      first.ok
+      firstOk
         ? first.latency
         : null,
 
     secondLatency:
-      second.ok
+      secondOk
         ? second.latency
         : null
+  };
+}
+
+async function internetCheck(
+  port
+) {
+  /*
+   * Проверяем интернет именно
+   * через запущенный SOCKS.
+   */
+
+  const result =
+    await curlProxy(
+      port,
+      IP_URL
+    );
+
+  const ip =
+    String(
+      result.body || ""
+    ).trim();
+
+  /*
+   * ipify должен вернуть
+   * реальный внешний IP.
+   */
+  const validIp =
+    /^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip) ||
+    /^[0-9a-f:]+$/i.test(ip);
+
+  if (
+    !result.ok ||
+    !validIp
+  ) {
+    return {
+      ok: false,
+
+      ip: null,
+
+      error:
+        result.error ||
+        `Invalid external IP: ${ip}`
+    };
+  }
+
+  return {
+    ok: true,
+
+    ip
   };
 }
 
@@ -863,11 +792,12 @@ async function checkNode(
   tcpLatency,
   countryCode
 ) {
-  let outbound;
   let configFile;
   let xrayProcess;
 
   try {
+    let outbound;
+
     try {
       outbound =
         uriToOutbound(
@@ -876,7 +806,9 @@ async function checkNode(
         );
     } catch (error) {
       addError(
-        `PARSE ${error.message}`
+        `PARSE ${cleanError(
+          error.message
+        )}`
       );
 
       return null;
@@ -935,9 +867,9 @@ async function checkNode(
       addError(
         `XRAY START ${
           cleanError(
-            output.stderr.trim() ||
-            output.stdout.trim() ||
-            "SOCKS inbound did not start"
+            output.stderr ||
+            output.stdout ||
+            "SOCKS did not start"
           )
         }`
       );
@@ -945,32 +877,58 @@ async function checkNode(
       return null;
     }
 
-    const proxy =
-      await proxyPing(
+    /*
+     * Реальный интернет через proxy.
+     */
+    const internet =
+      await internetCheck(
         port
       );
 
-    if (!proxy.ok) {
+    if (!internet.ok) {
       addError(
-        `PROXY PING ${
-          proxy.firstError ||
-          proxy.secondError ||
-          "failed"
+        `NO INTERNET ${
+          internet.error
         }`
       );
 
       return null;
     }
 
+    /*
+     * Happ Default:
+     * два отдельных запроса,
+     * лучший результат.
+     */
+    const ping =
+      await proxyPing(
+        port
+      );
+
+    if (!ping.ok) {
+      addError(
+        `PROXY PING ${
+          ping.error
+        }`
+      );
+
+      return null;
+    }
+
+    /*
+     * Лимит применяется только
+     * после успешной проверки
+     * реального доступа в интернет.
+     */
     if (
-      proxy.latency >
+      ping.latency >
       MAX_PROXY_LATENCY
     ) {
       return null;
     }
 
     console.log(
-      `PASS TCP=${tcpLatency}ms PROXY=${proxy.latency}ms ${safeNodeInfo(uri)}`
+      `PASS TCP=${tcpLatency}ms PROXY=${ping.latency}ms IP=${internet.ip} ${safeNodeInfo(uri)}`
     );
 
     return {
@@ -983,18 +941,21 @@ async function checkNode(
         ).toUpperCase(),
 
       latency:
-        proxy.latency,
+        ping.latency,
 
       proxyLatency:
-        proxy.latency,
+        ping.latency,
 
       tcpLatency,
 
       proxyPing1:
-        proxy.firstLatency,
+        ping.firstLatency,
 
       proxyPing2:
-        proxy.secondLatency,
+        ping.secondLatency,
+
+      exitIp:
+        internet.ip,
 
       checkedAt:
         new Date().toISOString()
@@ -1082,9 +1043,7 @@ async function mapLimit(
   return results;
 }
 
-function uniqueNodes(
-  input
-) {
+function uniqueNodes(input) {
   const map =
     new Map();
 
@@ -1197,13 +1156,8 @@ async function main() {
       }`
     );
 
-    console.log(
-      `Candidates: ${batch.length}`
-    );
-
     /*
-     * STEP 1
-     * TCP check
+     * TCP.
      */
     const tcpResults =
       await mapLimit(
@@ -1248,11 +1202,7 @@ async function main() {
     );
 
     /*
-     * STEP 2
-     * GeoIP
-     *
-     * RU удаляем здесь,
-     * до запуска Xray.
+     * GeoIP.
      */
     const geoResults =
       await mapLimit(
@@ -1283,10 +1233,6 @@ async function main() {
             if (
               code === "RU"
             ) {
-              console.log(
-                `SKIP RU ${safeNodeInfo(node.uri)}`
-              );
-
               return null;
             }
 
@@ -1297,10 +1243,6 @@ async function main() {
                 code
             };
           } catch {
-            /*
-             * Если GeoIP не ответил,
-             * не удаляем сервер.
-             */
             return {
               ...node,
 
@@ -1317,12 +1259,12 @@ async function main() {
       );
 
     console.log(
-      `NON-RU candidates: ${nonRu.length}/${tcpAlive.length}`
+      `NON-RU: ${nonRu.length}/${tcpAlive.length}`
     );
 
     /*
-     * STEP 3
-     * Real Xray + Happ Default-like proxy ping
+     * Xray + actual internet
+     * + Default proxy ping.
      */
     const checked =
       await mapLimit(
@@ -1346,11 +1288,11 @@ async function main() {
     );
 
     console.log(
-      `PROXY <= ${MAX_PROXY_LATENCY}ms: ${passed.length}/${nonRu.length}`
+      `WORKING <= ${MAX_PROXY_LATENCY}ms: ${passed.length}/${nonRu.length}`
     );
 
     console.log(
-      `TOTAL WORKING NON-RU: ${successful.length}/${TARGET}`
+      `TOTAL: ${successful.length}/${TARGET}`
     );
   }
 
@@ -1360,13 +1302,20 @@ async function main() {
       TARGET
     );
 
-  console.log(
-    `\nFINAL: ${finalNodes.length}/${TARGET} working non-RU nodes`
+  fs.writeFileSync(
+    OUT_FILE,
+    JSON.stringify(
+      finalNodes,
+      null,
+      2
+    )
   );
 
-  if (
-    errorStats.size
-  ) {
+  console.log(
+    `FINAL: ${finalNodes.length}/${TARGET}`
+  );
+
+  if (errorStats.size) {
     console.log(
       "\nFailure summary:"
     );
@@ -1382,24 +1331,14 @@ async function main() {
       );
     }
   }
-
-  fs.writeFileSync(
-    OUT_FILE,
-    JSON.stringify(
-      finalNodes,
-      null,
-      2
-    )
-  );
-
-  console.log(
-    `Saved ${finalNodes.length} nodes`
-  );
 }
 
 main().catch(
   error => {
-    console.error(error);
+    console.error(
+      error
+    );
+
     process.exit(1);
   }
 );
