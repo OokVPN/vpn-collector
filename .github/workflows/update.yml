@@ -166,8 +166,8 @@ jobs:
           MAX_LATENCY: 150
           TCP_TIMEOUT: 5000
           HTTP_TIMEOUT: 7000
-          CONCURRENCY: 200
-          XRAY_CONCURRENCY: 20
+          CONCURRENCY: 100
+          XRAY_CONCURRENCY: 10
 
       - name: Generate subscription
         run: npm run generate
