@@ -1,42 +1,88 @@
+herefunction number(value, fallback) {
+  const n = Number(value);
+
+  return Number.isFinite(n)
+    ? n
+    : fallback;
+}
+
 export function parseSocks(
   uri,
   tag
 ) {
-  const normalized =
-    uri.replace(
-      /^socks5:\/\//i,
-      "socks://"
-    );
-
   const url =
-    new URL(normalized);
+    new URL(uri);
 
-  const settings = {
-    address:
-      url.hostname,
+  const protocol =
+    url.protocol
+      .replace(":", "")
+      .toLowerCase();
 
-    port:
-      Number(url.port) || 1080
-  };
-
-  if (url.username) {
-    settings.user =
-      decodeURIComponent(
-        url.username
-      );
+  if (
+    protocol !== "socks" &&
+    protocol !== "socks5"
+  ) {
+    throw new Error(
+      "Invalid SOCKS URI"
+    );
   }
 
-  if (url.password) {
-    settings.pass =
-      decodeURIComponent(
-        url.password
-      );
+  const host =
+    url.hostname;
+
+  const port =
+    number(
+      url.port,
+      1080
+    );
+
+  if (!host) {
+    throw new Error(
+      "SOCKS host missing"
+    );
+  }
+
+  const settings = {
+    servers: [
+      {
+        address:
+          host,
+
+        port,
+
+        users: []
+      }
+    ]
+  };
+
+  /*
+   * SOCKS URI:
+   *
+   * socks://username:password@host:port
+   */
+
+  if (
+    url.username ||
+    url.password
+  ) {
+    settings.servers[0].users.push({
+      user:
+        decodeURIComponent(
+          url.username || ""
+        ),
+
+      pass:
+        decodeURIComponent(
+          url.password || ""
+        )
+    });
   }
 
   return {
     tag,
 
-    protocol: "socks",
+    protocol:
+      "socks",
 
     settings
   };
