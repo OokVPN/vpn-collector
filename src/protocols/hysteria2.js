@@ -57,12 +57,10 @@ export function parseHysteria2(
       query
     );
 
-  const sni =
-    q.get("sni") ||
-    authority.host;
-
   const tls = {
-    serverName: sni
+    serverName:
+      q.get("sni") ||
+      authority.host
   };
 
   if (q.get("alpn")) {
@@ -75,11 +73,22 @@ export function parseHysteria2(
     tls.alpn = ["h3"];
   }
 
-  if (
-    q.get("insecure") === "1" ||
-    q.get("insecure") === "true"
-  ) {
-    tls.allowInsecure = true;
+  const pinned =
+    q.get("pinSHA256") ||
+    q.get("pinnedPeerCertSha256");
+
+  if (pinned) {
+    tls.pinnedPeerCertSha256 =
+      pinned;
+  }
+
+  const verifyName =
+    q.get("verifyPeerCertByName") ||
+    q.get("vcn");
+
+  if (verifyName) {
+    tls.verifyPeerCertByName =
+      verifyName;
   }
 
   const hysteriaSettings = {
@@ -102,7 +111,8 @@ export function parseHysteria2(
   return {
     tag,
 
-    protocol: "hysteria",
+    protocol:
+      "hysteria",
 
     settings: {
       version: 2,
@@ -115,11 +125,14 @@ export function parseHysteria2(
     },
 
     streamSettings: {
-      network: "hysteria",
+      network:
+        "hysteria",
 
-      security: "tls",
+      security:
+        "tls",
 
-      tlsSettings: tls,
+      tlsSettings:
+        tls,
 
       hysteriaSettings
     }
