@@ -167,14 +167,19 @@ function countryLabel(code) {
 
   return item
     ? item[1]
-    : String(code || "UNKNOWN");
+    : String(
+        code ||
+        "UNKNOWN"
+      );
 }
 
 function vmessHost(uri) {
   try {
     let value =
       uri
-        .slice("vmess://".length)
+        .slice(
+          "vmess://".length
+        )
         .replace(/-/g, "+")
         .replace(/_/g, "/");
 
@@ -202,12 +207,16 @@ function hostFromUri(uri) {
   const protocol =
     protocolOf(uri);
 
-  if (protocol === "vmess") {
+  if (
+    protocol === "vmess"
+  ) {
     return vmessHost(uri);
   }
 
   try {
-    return new URL(uri).hostname;
+    return new URL(
+      uri
+    ).hostname;
   } catch {
     return null;
   }
@@ -230,11 +239,21 @@ function sourceRemark(uri) {
   }
 }
 
-function normalizeRemark(value) {
-  return String(value || "")
+function normalizeRemark(
+  value
+) {
+  return String(
+    value || ""
+  )
     .toLowerCase()
-    .replace(/[-_/]+/g, " ")
-    .replace(/\s+/g, " ")
+    .replace(
+      /[-_/]+/g,
+      " "
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
     .trim();
 }
 
@@ -258,14 +277,17 @@ function hasWhiteFlag(uri) {
 
   return triggers.some(
     trigger =>
-      remark.includes(trigger)
+      remark.includes(
+        trigger
+      )
   );
 }
 
 function createAuto(nodes) {
   const tags =
     nodes.map(
-      node => node.tag
+      node =>
+        node.tag
     );
 
   return {
@@ -467,34 +489,39 @@ function createAuto(nodes) {
 }
 
 async function main() {
-  const alive =
-    checked.filter(
-      item =>
-        typeof item?.uri ===
-          "string" &&
-
-        Number.isFinite(
-          Number(item.latency)
-        ) &&
-
-        Number(item.latency) <=
-          150
-    );
+  const nodes = [];
 
   console.log(
     `CHECKED: ${checked.length}`
   );
 
-  console.log(
-    `ALIVE: ${alive.length}`
-  );
-
-  const nodes = [];
-
-  for (const item of alive) {
+  for (
+    const item of checked
+  ) {
     try {
       const uri =
-        item.uri;
+        item?.uri;
+
+      if (
+        typeof uri !==
+        "string"
+      ) {
+        continue;
+      }
+
+      const latency =
+        Number(
+          item.proxyLatency ??
+          item.latency
+        );
+
+      if (
+        !Number.isFinite(
+          latency
+        )
+      ) {
+        continue;
+      }
 
       const protocol =
         protocolOf(uri);
@@ -506,17 +533,35 @@ async function main() {
         continue;
       }
 
-      const geo =
-        await resolveGeo(host);
-
-      const code =
+      /*
+       * Checker уже отфильтровал RU.
+       *
+       * Для совместимости со старыми
+       * checked.json дополнительно
+       * проверяем GeoIP здесь.
+       */
+      let code =
         String(
-          geo?.countryCode ||
-          "UN"
+          item.countryCode ||
+          ""
         ).toUpperCase();
 
-      // Не добавляем российские серверы
-      if (code === "RU") {
+      if (!code) {
+        const geo =
+          await resolveGeo(
+            host
+          );
+
+        code =
+          String(
+            geo?.countryCode ||
+            "UN"
+          ).toUpperCase();
+      }
+
+      if (
+        code === "RU"
+      ) {
         continue;
       }
 
@@ -544,17 +589,33 @@ async function main() {
         countryCode:
           code,
 
-        latency:
+        latency,
+
+        proxyLatency:
+          latency,
+
+        tcpLatency:
           Number(
-            item.latency
+            item.tcpLatency ??
+            0
           ),
+
+        proxyPing1:
+          item.proxyPing1 ??
+          null,
+
+        proxyPing2:
+          item.proxyPing2 ??
+          null,
 
         protocol,
 
         whiteFlag:
           hasWhiteFlag(uri)
       });
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.log(
         `GENERATOR ERROR: ${error.message}`
       );
@@ -629,7 +690,9 @@ async function main() {
           "🌐";
 
         const name =
-          countryLabel(code);
+          countryLabel(
+            code
+          );
 
         const whiteFlag =
           node.whiteFlag
@@ -712,7 +775,10 @@ async function main() {
 
 main().catch(
   error => {
-    console.error(error);
+    console.error(
+      error
+    );
+
     process.exit(1);
   }
 );
