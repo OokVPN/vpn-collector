@@ -12,7 +12,22 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+
+    timeout-minutes: 60
+
+    env:
+      TARGET_NODES: 200
+      CHECK_BATCH_SIZE: 200
+
+      MAX_PROXY_LATENCY: 200
+
+      TCP_TIMEOUT: 5000
+      XRAY_TIMEOUT: 10000
+      CURL_TIMEOUT: 7000
+
+      CONCURRENCY: 100
+      GEO_CONCURRENCY: 10
+      XRAY_CONCURRENCY: 10
 
     steps:
       - name: Checkout
@@ -58,17 +73,6 @@ jobs:
 
       - name: Check servers
         run: npm run check
-        env:
-          TARGET_NODES: 200
-          CHECK_BATCH_SIZE: 200
-
-          MAX_LATENCY: 150
-          TCP_TIMEOUT: 5000
-          XRAY_TIMEOUT: 10000
-          CURL_TIMEOUT: 7000
-
-          CONCURRENCY: 100
-          XRAY_CONCURRENCY: 10
 
       - name: Generate subscription
         run: npm run generate
@@ -82,6 +86,12 @@ jobs:
 
           const file =
             "public/subscription.json";
+
+          if (!fs.existsSync(file)) {
+            throw new Error(
+              "subscription.json does not exist"
+            );
+          }
 
           const data =
             JSON.parse(
@@ -97,16 +107,23 @@ jobs:
             );
           }
 
+          if (!data.length) {
+            throw new Error(
+              "Subscription is empty"
+            );
+          }
+
           if (
-            !data.length ||
-            data[0]?.remarks !== "🇪🇺 АВТО ⚡"
+            data[0]?.remarks !==
+            "🇪🇺 АВТО ⚡"
           ) {
             throw new Error(
               "AUTO must be the first profile"
             );
           }
 
-          const auto = data[0];
+          const auto =
+            data[0];
 
           if (
             !Array.isArray(
