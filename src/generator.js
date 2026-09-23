@@ -18,43 +18,143 @@ const checked =
   );
 
 const countries = {
+AD: ["🇦🇩", "Андорра"],
+  AE: ["🇦🇪", "ОАЭ"],
+  AF: ["🇦🇫", "Афганистан"],
+  AL: ["🇦🇱", "Албания"],
+  AM: ["🇦🇲", "Армения"],
+  AR: ["🇦🇷", "Аргентина"],
   AT: ["🇦🇹", "Австрия"],
+  AU: ["🇦🇺", "Австралия"],
+  AZ: ["🇦🇿", "Азербайджан"],
+
+  BA: ["🇧🇦", "Босния и Герцеговина"],
+  BD: ["🇧🇩", "Бангладеш"],
   BE: ["🇧🇪", "Бельгия"],
   BG: ["🇧🇬", "Болгария"],
+  BH: ["🇧🇭", "Бахрейн"],
+  BN: ["🇧🇳", "Бруней"],
+  BO: ["🇧🇴", "Боливия"],
+  BR: ["🇧🇷", "Бразилия"],
+  BY: ["🇧🇾", "Беларусь"],
+
   CA: ["🇨🇦", "Канада"],
   CH: ["🇨🇭", "Швейцария"],
+  CL: ["🇨🇱", "Чили"],
+  CN: ["🇨🇳", "Китай"],
+  CO: ["🇨🇴", "Колумбия"],
+  CR: ["🇨🇷", "Коста-Рика"],
+  CY: ["🇨🇾", "Кипр"],
   CZ: ["🇨🇿", "Чехия"],
+
   DE: ["🇩🇪", "Германия"],
   DK: ["🇩🇰", "Дания"],
+  DO: ["🇩🇴", "Доминиканская Республика"],
+  DZ: ["🇩🇿", "Алжир"],
+
+  EC: ["🇪🇨", "Эквадор"],
   EE: ["🇪🇪", "Эстония"],
+  EG: ["🇪🇬", "Египет"],
   ES: ["🇪🇸", "Испания"],
+
   FI: ["🇫🇮", "Финляндия"],
+  FJ: ["🇫🇯", "Фиджи"],
   FR: ["🇫🇷", "Франция"],
+
   GB: ["🇬🇧", "Великобритания"],
+  GE: ["🇬🇪", "Грузия"],
   GR: ["🇬🇷", "Греция"],
+  GT: ["🇬🇹", "Гватемала"],
+
   HK: ["🇭🇰", "Гонконг"],
+  HR: ["🇭🇷", "Хорватия"],
   HU: ["🇭🇺", "Венгрия"],
+
+  ID: ["🇮🇩", "Индонезия"],
   IE: ["🇮🇪", "Ирландия"],
+  IL: ["🇮🇱", "Израиль"],
+  IN: ["🇮🇳", "Индия"],
+  IQ: ["🇮🇶", "Ирак"],
+  IS: ["🇮🇸", "Исландия"],
   IT: ["🇮🇹", "Италия"],
+
   JP: ["🇯🇵", "Япония"],
+  JO: ["🇯🇴", "Иордания"],
+
+  KE: ["🇰🇪", "Кения"],
+  KG: ["🇰🇬", "Кыргызстан"],
+  KH: ["🇰🇭", "Камбоджа"],
   KR: ["🇰🇷", "Южная Корея"],
+  KW: ["🇰🇼", "Кувейт"],
+  KZ: ["🇰🇿", "Казахстан"],
+
+  LA: ["🇱🇦", "Лаос"],
+  LB: ["🇱🇧", "Ливан"],
+  LI: ["🇱🇮", "Лихтенштейн"],
+  LK: ["🇱🇰", "Шри-Ланка"],
   LT: ["🇱🇹", "Литва"],
   LU: ["🇱🇺", "Люксембург"],
   LV: ["🇱🇻", "Латвия"],
+
+  MA: ["🇲🇦", "Марокко"],
+  MC: ["🇲🇨", "Монако"],
+  MD: ["🇲🇩", "Молдова"],
+  ME: ["🇲🇪", "Черногория"],
+  MK: ["🇲🇰", "Северная Македония"],
+  MN: ["🇲🇳", "Монголия"],
+  MO: ["🇲🇴", "Макао"],
+  MT: ["🇲🇹", "Мальта"],
+  MX: ["🇲🇽", "Мексика"],
+  MY: ["🇲🇾", "Малайзия"],
+
+  NG: ["🇳🇬", "Нигерия"],
+  NI: ["🇳🇮", "Никарагуа"],
   NL: ["🇳🇱", "Нидерланды"],
   NO: ["🇳🇴", "Норвегия"],
+  NP: ["🇳🇵", "Непал"],
+  NZ: ["🇳🇿", "Новая Зеландия"],
+
+  PA: ["🇵🇦", "Панама"],
+  PE: ["🇵🇪", "Перу"],
+  PH: ["🇵🇭", "Филиппины"],
+  PK: ["🇵🇰", "Пакистан"],
   PL: ["🇵🇱", "Польша"],
+  PR: ["🇵🇷", "Пуэрто-Рико"],
   PT: ["🇵🇹", "Португалия"],
+  PY: ["🇵🇾", "Парагвай"],
+
+  QA: ["🇶🇦", "Катар"],
+
   RO: ["🇷🇴", "Румыния"],
+  RS: ["🇷🇸", "Сербия"],
   RU: ["🇷🇺", "Россия"],
+
+  SA: ["🇸🇦", "Саудовская Аравия"],
   SE: ["🇸🇪", "Швеция"],
   SG: ["🇸🇬", "Сингапур"],
+  SI: ["🇸🇮", "Словения"],
   SK: ["🇸🇰", "Словакия"],
+  SM: ["🇸🇲", "Сан-Марино"],
+  SN: ["🇸🇳", "Сенегал"],
+  SV: ["🇸🇻", "Сальвадор"],
+
+  TH: ["🇹🇭", "Таиланд"],
+  TJ: ["🇹🇯", "Таджикистан"],
+  TM: ["🇹🇲", "Туркменистан"],
+  TN: ["🇹🇳", "Тунис"],
   TR: ["🇹🇷", "Турция"],
+  TW: ["🇹🇼", "Тайвань"],
+
   UA: ["🇺🇦", "Украина"],
-  US: ["🇺🇸", "США"],
+  UZ: ["🇺🇿", "Узбекистан"],
+
+  VA: ["🇻🇦", "Ватикан"],
+  VE: ["🇻🇪", "Венесуэла"],
   VN: ["🇻🇳", "Вьетнам"],
-  KZ: ["🇰🇿", "Казахстан"]
+
+  ZA: ["🇿🇦", "ЮАР"],
+  ZM: ["🇿🇲", "Замбия"],
+  ZW: ["🇿🇼", "Зимбабве"]
 };
 
 function countryName(code) {
@@ -115,9 +215,7 @@ function hostFromUri(uri) {
   const protocol =
     protocolOf(uri);
 
-  if (
-    protocol === "vmess"
-  ) {
+  if (protocol === "vmess") {
     return vmessHost(uri);
   }
 
@@ -126,6 +224,236 @@ function hostFromUri(uri) {
   } catch {
     return null;
   }
+}
+
+function sourceRemark(uri) {
+  try {
+    const index =
+      uri.indexOf("#");
+
+    if (index === -1) {
+      return "";
+    }
+
+    return decodeURIComponent(
+      uri.slice(index + 1)
+    );
+  } catch {
+    return "";
+  }
+}
+
+function hasWhiteFlag(uri) {
+  const remark =
+    sourceRemark(uri);
+
+  return (
+    remark.includes("🏳️") ||
+    remark.includes("🏳")
+  );
+}
+
+/*
+ * ТВОЙ AUTO КАК ОСНОВА.
+ *
+ * Здесь специально НЕТ proxy/proxy-2/...
+ * Все реальные серверы будут добавлены
+ * динамически из checked.json.
+ */
+function createAuto(nodes) {
+  const tags =
+    nodes.map(
+      node => node.tag
+    );
+
+  const auto = {
+    remarks:
+      "🇪🇺 АВТО ⚡",
+
+    inbounds: [
+      {
+        tag:
+          "socks",
+
+        port:
+          10808,
+
+        listen:
+          "127.0.0.1",
+
+        protocol:
+          "socks",
+
+        settings: {
+          udp:
+            true,
+
+          auth:
+            "noauth"
+        },
+
+        sniffing: {
+          enabled:
+            true,
+
+          routeOnly:
+            false,
+
+          destOverride: [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+
+      {
+        tag:
+          "http",
+
+        port:
+          10809,
+
+        listen:
+          "127.0.0.1",
+
+        protocol:
+          "http",
+
+        settings: {
+          allowTransparent:
+            false
+        },
+
+        sniffing: {
+          enabled:
+            true,
+
+          routeOnly:
+            false,
+
+          destOverride: [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+
+    outbounds: [
+      ...nodes.map(
+        node =>
+          node.outbound
+      ),
+
+      {
+        tag:
+          "direct",
+
+        protocol:
+          "freedom"
+      },
+
+      {
+        tag:
+          "block",
+
+        protocol:
+          "blackhole"
+      }
+    ],
+
+    burstObservatory: {
+      pingConfig: {
+        timeout:
+          "3s",
+
+        interval:
+          "1m",
+
+        sampling:
+          1,
+
+        destination:
+          "https://www.gstatic.com/generate_204",
+
+        connectivity:
+          ""
+      },
+
+      subjectSelector:
+        tags
+    },
+
+    routing: {
+      rules: [
+        {
+          type:
+            "field",
+
+          protocol: [
+            "bittorrent"
+          ],
+
+          outboundTag:
+            "direct"
+        },
+
+        {
+          type:
+            "field",
+
+          network:
+            "tcp,udp",
+
+          balancerTag:
+            "Super_Balancer"
+        }
+      ],
+
+      balancers: [
+        {
+          tag:
+            "Super_Balancer",
+
+          selector:
+            tags,
+
+          strategy: {
+            type:
+              "leastLoad",
+
+            settings: {
+              maxRTT:
+                "1s",
+
+              expected:
+                2,
+
+              baselines: [
+                "1s"
+              ],
+
+              tolerance:
+                0.01
+            }
+          },
+
+          fallbackTag:
+            "direct"
+        }
+      ],
+
+      domainMatcher:
+        "hybrid",
+
+      domainStrategy:
+        "IPIfNonMatch"
+    }
+  };
+
+  return auto;
 }
 
 async function main() {
@@ -153,9 +481,7 @@ async function main() {
 
   const nodes = [];
 
-  for (
-    const item of alive
-  ) {
+  for (const item of alive) {
     try {
       const uri =
         item.uri;
@@ -208,7 +534,10 @@ async function main() {
             item.latency
           ),
 
-        protocol
+        protocol,
+
+        whiteFlag:
+          hasWhiteFlag(uri)
       });
     } catch (error) {
       console.log(
@@ -216,11 +545,6 @@ async function main() {
       );
     }
   }
-
-  /*
-   * Сначала сортируем по стране,
-   * затем внутри страны по ping.
-   */
 
   nodes.sort(
     (a, b) => {
@@ -252,12 +576,6 @@ async function main() {
       );
     }
   );
-
-  /*
-   * После сортировки перенумеровываем
-   * node-теги, чтобы порядок был
-   * последовательным.
-   */
 
   nodes.forEach(
     (node, index) => {
@@ -291,9 +609,21 @@ async function main() {
             ? ""
             : ` #${number}`;
 
+        const flag =
+          countries[code]?.[0] ||
+          "🌐";
+
+        const name =
+          countryLabel(code);
+
+        const whiteFlag =
+          node.whiteFlag
+            ? " 🏳️"
+            : "";
+
         return {
           remarks:
-            `${countryName(code)}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
+            `${flag}${whiteFlag} ${name}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
 
           inbounds: [],
 
@@ -304,101 +634,16 @@ async function main() {
       }
     );
 
-  const tags =
-    nodes.map(
-      node =>
-        node.tag
-    );
-
   /*
-   * AUTO создаётся отдельно
-   * и ставится самым первым.
+   * Создаём AUTO именно на основе
+   * структуры, которую ты скинул.
    */
-
-  const auto = {
-    remarks:
-      "🇪🇺 АВТО ⚡",
-
-    inbounds: [
-      {
-        tag:
-          "auto-socks",
-
-        listen:
-          "127.0.0.1",
-
-        port:
-          10808,
-
-        protocol:
-          "socks",
-
-        settings: {
-          auth:
-            "noauth",
-
-          udp:
-            true
-        }
-      }
-    ],
-
-    outbounds:
-      nodes.map(
-        node =>
-          node.outbound
-      ),
-
-    burstObservatory: {
-      subjectSelector:
-        tags,
-
-      pingConfig: {
-        destination:
-          "https://www.gstatic.com/generate_204",
-
-        connectivity:
-          "https://www.gstatic.com/generate_204"
-      }
-    },
-
-    routing: {
-      balancers: [
-        {
-          tag:
-            "AUTO",
-
-          selector:
-            tags,
-
-          strategy: {
-            type:
-              "leastPing"
-          }
-        }
-      ],
-
-      rules: [
-        {
-          type:
-            "field",
-
-          inboundTag: [
-            "auto-socks"
-          ],
-
-          balancerTag:
-            "AUTO"
-        }
-      ]
-    }
-  };
+  const auto =
+    createAuto(nodes);
 
   /*
-   * ВАЖНО:
    * AUTO всегда первый.
    */
-
   const result = [
     auto,
     ...profiles
@@ -448,19 +693,17 @@ async function main() {
   );
 
   console.log(
-    `AUTO NODES: ${tags.length}`
+    `AUTO NODES: ${nodes.length}`
   );
 
   console.log(
-    "ORDER: AUTO -> COUNTRY -> PING"
+    "AUTO: custom template + checked nodes"
   );
 }
 
 main().catch(
   error => {
-    console.error(
-      error
-    );
+    console.error(error);
 
     process.exit(1);
   }
