@@ -13,8 +13,8 @@ const BATCH_SIZE = Number(
   process.env.CHECK_BATCH_SIZE || 200
 );
 
-const MAX_LATENCY = Number(
-  process.env.MAX_LATENCY || 150
+const MAX_PROXY_LATENCY = Number(
+  process.env.MAX_PROXY_LATENCY || 200
 );
 
 const TCP_TIMEOUT = Number(
@@ -33,6 +33,10 @@ const CONCURRENCY = Number(
   process.env.CONCURRENCY || 100
 );
 
+const GEO_CONCURRENCY = Number(
+  process.env.GEO_CONCURRENCY || 10
+);
+
 const XRAY_CONCURRENCY = Number(
   process.env.XRAY_CONCURRENCY || 10
 );
@@ -42,8 +46,10 @@ const TEST_URL =
 
 let uriToOutbound;
 let protocolOf;
+let resolveGeo;
 
 const errorStats = new Map();
+
 let printedErrors = 0;
 
 const MAX_ERROR_PRINTS = 20;
@@ -54,8 +60,14 @@ function addError(reason) {
     (errorStats.get(reason) || 0) + 1
   );
 
-  if (printedErrors < MAX_ERROR_PRINTS) {
-    console.log(`FAIL ${reason}`);
+  if (
+    printedErrors <
+    MAX_ERROR_PRINTS
+  ) {
+    console.log(
+      `FAIL ${reason}`
+    );
+
     printedErrors++;
   }
 }
@@ -77,26 +89,35 @@ function cleanError(error) {
 
 function safeNodeInfo(uri) {
   try {
-    if (protocol(uri) === "vmess") {
-      let value = uri
-        .slice(8)
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
+    if (
+      protocol(uri) ===
+      "vmess"
+    ) {
+      let value =
+        uri
+          .slice(8)
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
 
       value += "=".repeat(
         (4 - value.length % 4) % 4
       );
 
-      const data = JSON.parse(
-        Buffer
-          .from(value, "base64")
-          .toString("utf8")
-      );
+      const data =
+        JSON.parse(
+          Buffer
+            .from(
+              value,
+              "base64"
+            )
+            .toString("utf8")
+        );
 
       return `${protocol(uri)}://${data.add}:${data.port}`;
     }
 
-    const u = new URL(uri);
+    const u =
+      new URL(uri);
 
     return `${protocol(uri)}://${u.hostname}:${u.port || 443}`;
   } catch {
@@ -106,27 +127,36 @@ function safeNodeInfo(uri) {
 
 function parseHostPort(uri) {
   try {
-    if (protocol(uri) === "vmess") {
-      let value = uri
-        .slice(8)
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
+    if (
+      protocol(uri) ===
+      "vmess"
+    ) {
+      let value =
+        uri
+          .slice(8)
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
 
       value += "=".repeat(
         (4 - value.length % 4) % 4
       );
 
-      const data = JSON.parse(
-        Buffer
-          .from(value, "base64")
-          .toString("utf8")
-      );
+      const data =
+        JSON.parse(
+          Buffer
+            .from(
+              value,
+              "base64"
+            )
+            .toString("utf8")
+        );
 
       if (!data.add) {
         return null;
       }
 
-      const port = Number(data.port);
+      const port =
+        Number(data.port);
 
       if (
         !Number.isInteger(port) ||
@@ -142,12 +172,15 @@ function parseHostPort(uri) {
       };
     }
 
-    const u = new URL(uri);
+    const u =
+      new URL(uri);
 
-    let port = Number(u.port);
+    let port =
+      Number(u.port);
 
     if (!port) {
-      const p = protocol(uri);
+      const p =
+        protocol(uri);
 
       port =
         p === "ss" ||
@@ -175,199 +208,295 @@ function parseHostPort(uri) {
   }
 }
 
-function tcpCheck(host, port) {
-  return new Promise(resolve => {
-    const started = Date.now();
+function tcpCheck(
+  host,
+  port
+) {
+  return new Promise(
+    resolve => {
+      const started =
+        Date.now();
 
-    const socket = net.createConnection({
-      host,
-      port
-    });
+      const socket =
+        net.createConnection({
+          host,
+          port
+        });
 
-    let done = false;
+      let done = false;
 
-    const finish = (ok, latency = null) => {
-      if (done) {
-        return;
-      }
-
-      done = true;
-
-      socket.destroy();
-
-      resolve({
+      const finish = (
         ok,
-        latency
-      });
-    };
+        latency = null
+      ) => {
+        if (done) {
+          return;
+        }
 
-    socket.setTimeout(TCP_TIMEOUT);
+        done = true;
 
-    socket.once("connect", () => {
-      finish(
-        true,
-        Date.now() - started
+        socket.destroy();
+
+        resolve({
+          ok,
+          latency
+        });
+      };
+
+      socket.setTimeout(
+        TCP_TIMEOUT
       );
-    });
 
-    socket.once("timeout", () => {
-      finish(false);
-    });
+      socket.once(
+        "connect",
+        () => {
+          finish(
+            true,
+            Date.now() -
+              started
+          );
+        }
+      );
 
-    socket.once("error", () => {
-      finish(false);
-    });
-  });
+      socket.once(
+        "timeout",
+        () => {
+          finish(false);
+        }
+      );
+
+      socket.once(
+        "error",
+        () => {
+          finish(false);
+        }
+      );
+    }
+  );
 }
 
 function randomPort() {
   return (
     20000 +
-    Math.floor(Math.random() * 20000)
+    Math.floor(
+      Math.random() *
+      20000
+    )
   );
 }
 
-function buildConfig(outbound, port) {
+function buildConfig(
+  outbound,
+  port
+) {
   return {
     log: {
-      loglevel: "warning"
+      loglevel:
+        "warning"
     },
 
     inbounds: [
       {
-        tag: "proxy-in",
-        listen: "127.0.0.1",
+        tag:
+          "proxy-in",
+
+        listen:
+          "127.0.0.1",
+
         port,
-        protocol: "socks",
+
+        protocol:
+          "socks",
+
         settings: {
-          auth: "noauth",
-          udp: false
+          auth:
+            "noauth",
+
+          udp:
+            false
         }
       }
     ],
 
     outbounds: [
       outbound,
+
       {
-        tag: "direct",
-        protocol: "freedom"
+        tag:
+          "direct",
+
+        protocol:
+          "freedom"
       }
     ],
 
     routing: {
-      domainStrategy: "AsIs",
+      domainStrategy:
+        "AsIs",
 
       rules: [
         {
-          type: "field",
+          type:
+            "field",
+
           inboundTag: [
             "proxy-in"
           ],
-          outboundTag: outbound.tag
+
+          outboundTag:
+            outbound.tag
         }
       ]
     }
   };
 }
 
-function runCommand(command, args, timeout) {
-  return new Promise(resolve => {
-    const child = spawn(
-      command,
-      args,
-      {
-        stdio: [
-          "ignore",
-          "pipe",
-          "pipe"
-        ]
-      }
-    );
+function runCommand(
+  command,
+  args,
+  timeout
+) {
+  return new Promise(
+    resolve => {
+      const child =
+        spawn(
+          command,
+          args,
+          {
+            stdio: [
+              "ignore",
+              "pipe",
+              "pipe"
+            ]
+          }
+        );
 
-    let stdout = "";
-    let stderr = "";
-    let finished = false;
+      let stdout = "";
+      let stderr = "";
+      let finished = false;
 
-    const timer = setTimeout(() => {
-      if (finished) {
-        return;
-      }
+      const timer =
+        setTimeout(
+          () => {
+            if (finished) {
+              return;
+            }
 
-      finished = true;
+            finished = true;
 
-      child.kill("SIGKILL");
+            child.kill(
+              "SIGKILL"
+            );
 
-      resolve({
-        ok: false,
-        code: null,
-        stdout,
-        stderr: "Command timeout"
-      });
-    }, timeout);
+            resolve({
+              ok: false,
+              code: null,
+              stdout,
+              stderr:
+                "Command timeout"
+            });
+          },
+          timeout
+        );
 
-    child.stdout.on("data", data => {
-      stdout += data.toString();
+      child.stdout.on(
+        "data",
+        data => {
+          stdout +=
+            data.toString();
 
-      if (stdout.length > 12000) {
-        stdout = stdout.slice(-12000);
-      }
-    });
+          if (
+            stdout.length >
+            12000
+          ) {
+            stdout =
+              stdout.slice(
+                -12000
+              );
+          }
+        }
+      );
 
-    child.stderr.on("data", data => {
-      stderr += data.toString();
+      child.stderr.on(
+        "data",
+        data => {
+          stderr +=
+            data.toString();
 
-      if (stderr.length > 12000) {
-        stderr = stderr.slice(-12000);
-      }
-    });
+          if (
+            stderr.length >
+            12000
+          ) {
+            stderr =
+              stderr.slice(
+                -12000
+              );
+          }
+        }
+      );
 
-    child.once("error", error => {
-      if (finished) {
-        return;
-      }
+      child.once(
+        "error",
+        error => {
+          if (finished) {
+            return;
+          }
 
-      finished = true;
+          finished = true;
 
-      clearTimeout(timer);
+          clearTimeout(timer);
 
-      resolve({
-        ok: false,
-        code: null,
-        stdout,
-        stderr: error.message
-      });
-    });
+          resolve({
+            ok: false,
+            code: null,
+            stdout,
+            stderr:
+              error.message
+          });
+        }
+      );
 
-    child.once("close", code => {
-      if (finished) {
-        return;
-      }
+      child.once(
+        "close",
+        code => {
+          if (finished) {
+            return;
+          }
 
-      finished = true;
+          finished = true;
 
-      clearTimeout(timer);
+          clearTimeout(timer);
 
-      resolve({
-        ok: code === 0,
-        code,
-        stdout,
-        stderr
-      });
-    });
-  });
+          resolve({
+            ok:
+              code === 0,
+
+            code,
+
+            stdout,
+
+            stderr
+          });
+        }
+      );
+    }
+  );
 }
 
-async function validateConfig(file) {
-  const result = await runCommand(
-    "xray",
-    [
-      "run",
-      "-test",
-      "-config",
-      file
-    ],
-    XRAY_TIMEOUT
-  );
+async function validateConfig(
+  file
+) {
+  const result =
+    await runCommand(
+      "xray",
+      [
+        "run",
+        "-test",
+        "-config",
+        file
+      ],
+      XRAY_TIMEOUT
+    );
 
   if (!result.ok) {
     const message =
@@ -377,7 +506,9 @@ async function validateConfig(file) {
 
     return {
       ok: false,
-      error: cleanError(message)
+
+      error:
+        cleanError(message)
     };
   }
 
@@ -386,41 +517,64 @@ async function validateConfig(file) {
   };
 }
 
-function startXray(configFile) {
-  const child = spawn(
-    "xray",
-    [
-      "run",
-      "-config",
-      configFile
-    ],
-    {
-      stdio: [
-        "ignore",
-        "pipe",
-        "pipe"
-      ]
-    }
-  );
+function startXray(
+  configFile
+) {
+  const child =
+    spawn(
+      "xray",
+      [
+        "run",
+        "-config",
+        configFile
+      ],
+      {
+        stdio: [
+          "ignore",
+          "pipe",
+          "pipe"
+        ]
+      }
+    );
 
   let stdout = "";
   let stderr = "";
 
-  child.stdout.on("data", data => {
-    stdout += data.toString();
+  child.stdout.on(
+    "data",
+    data => {
+      stdout +=
+        data.toString();
 
-    if (stdout.length > 16000) {
-      stdout = stdout.slice(-16000);
+      if (
+        stdout.length >
+        16000
+      ) {
+        stdout =
+          stdout.slice(
+            -16000
+          );
+      }
     }
-  });
+  );
 
-  child.stderr.on("data", data => {
-    stderr += data.toString();
+  child.stderr.on(
+    "data",
+    data => {
+      stderr +=
+        data.toString();
 
-    if (stderr.length > 16000) {
-      stderr = stderr.slice(-16000);
+      if (
+        stderr.length >
+        16000
+      ) {
+        stderr =
+          stderr.slice(
+            -16000
+          );
+      }
     }
-  });
+  );
 
   return {
     child,
@@ -434,155 +588,281 @@ function startXray(configFile) {
   };
 }
 
-function waitForPort(port, timeout) {
-  return new Promise(resolve => {
-    const started = Date.now();
+function waitForPort(
+  port,
+  timeout
+) {
+  return new Promise(
+    resolve => {
+      const started =
+        Date.now();
 
-    const attempt = () => {
-      const socket = net.createConnection({
-        host: "127.0.0.1",
-        port
-      });
+      const attempt =
+        () => {
+          const socket =
+            net.createConnection({
+              host:
+                "127.0.0.1",
 
-      let finished = false;
+              port
+            });
 
-      const done = ok => {
-        if (finished) {
-          return;
-        }
+          let finished =
+            false;
 
-        finished = true;
+          const done =
+            ok => {
+              if (finished) {
+                return;
+              }
 
-        socket.destroy();
+              finished = true;
 
-        if (ok) {
-          resolve(true);
-          return;
-        }
+              socket.destroy();
 
-        if (
-          Date.now() - started >=
-          timeout
-        ) {
-          resolve(false);
-          return;
-        }
+              if (ok) {
+                resolve(true);
+                return;
+              }
 
-        setTimeout(
-          attempt,
-          100
-        );
-      };
+              if (
+                Date.now() -
+                  started >=
+                timeout
+              ) {
+                resolve(false);
+                return;
+              }
 
-      socket.once(
-        "connect",
-        () => done(true)
-      );
+              setTimeout(
+                attempt,
+                100
+              );
+            };
 
-      socket.once(
-        "error",
-        () => done(false)
-      );
-
-      socket.setTimeout(
-        500,
-        () => done(false)
-      );
-    };
-
-    attempt();
-  });
-}
-
-function curlThroughProxy(port) {
-  return new Promise(resolve => {
-    const args = [
-      "--silent",
-      "--show-error",
-      "--location",
-
-      "--max-time",
-      String(
-        Math.ceil(
-          CURL_TIMEOUT / 1000
-        )
-      ),
-
-      "--connect-timeout",
-      String(
-        Math.min(
-          8,
-          Math.ceil(
-            CURL_TIMEOUT / 1000
-          )
-        )
-      ),
-
-      "--proxy",
-      `socks5h://127.0.0.1:${port}`,
-
-      "--output",
-      "/dev/null",
-
-      "--write-out",
-      "%{http_code}",
-
-      TEST_URL
-    ];
-
-    execFile(
-      "curl",
-      args,
-      {
-        timeout:
-          CURL_TIMEOUT + 2000,
-
-        maxBuffer:
-          1024 * 1024
-      },
-
-      (error, stdout, stderr) => {
-        if (error) {
-          resolve({
-            ok: false,
-            error: cleanError(
-              stderr.trim() ||
-              error.message ||
-              "curl failed"
-            )
-          });
-
-          return;
-        }
-
-        const status =
-          Number(
-            String(stdout).trim()
+          socket.once(
+            "connect",
+            () => done(true)
           );
 
-        if (
-          status >= 200 &&
-          status < 400
-        ) {
-          resolve({
-            ok: true,
-            status
-          });
+          socket.once(
+            "error",
+            () => done(false)
+          );
 
-          return;
-        }
+          socket.setTimeout(
+            500,
+            () => done(false)
+          );
+        };
 
-        resolve({
-          ok: false,
-          error:
-            `HTTP ${status || "unknown"}`
-        });
-      }
-    );
-  });
+      attempt();
+    }
+  );
 }
 
-async function checkNode(uri, tcpLatency) {
+function curlThroughProxy(
+  port
+) {
+  return new Promise(
+    resolve => {
+      const args = [
+        "--silent",
+        "--show-error",
+        "--location",
+
+        "--max-time",
+        String(
+          Math.ceil(
+            CURL_TIMEOUT /
+              1000
+          )
+        ),
+
+        "--connect-timeout",
+        String(
+          Math.min(
+            8,
+            Math.ceil(
+              CURL_TIMEOUT /
+                1000
+            )
+          )
+        ),
+
+        "--proxy",
+        `socks5h://127.0.0.1:${port}`,
+
+        "--output",
+        "/dev/null",
+
+        "--write-out",
+        "%{http_code}",
+
+        TEST_URL
+      ];
+
+      const started =
+        Date.now();
+
+      execFile(
+        "curl",
+        args,
+        {
+          timeout:
+            CURL_TIMEOUT +
+            2000,
+
+          maxBuffer:
+            1024 * 1024
+        },
+
+        (
+          error,
+          stdout,
+          stderr
+        ) => {
+          const latency =
+            Date.now() -
+            started;
+
+          if (error) {
+            resolve({
+              ok: false,
+
+              latency: null,
+
+              error:
+                cleanError(
+                  stderr.trim() ||
+                  error.message ||
+                  "curl failed"
+                )
+            });
+
+            return;
+          }
+
+          const status =
+            Number(
+              String(
+                stdout
+              ).trim()
+            );
+
+          if (
+            status >= 200 &&
+            status < 400
+          ) {
+            resolve({
+              ok: true,
+
+              latency,
+
+              status
+            });
+
+            return;
+          }
+
+          resolve({
+            ok: false,
+
+            latency: null,
+
+            error:
+              `HTTP ${status || "unknown"}`
+          });
+        }
+      );
+    }
+  );
+}
+
+/*
+ * Happ Default:
+ * 2 отдельных proxy GET-запроса.
+ * Берём лучший результат.
+ *
+ * Не keepalive.
+ * Не double.
+ */
+async function proxyPing(
+  port
+) {
+  const first =
+    await curlThroughProxy(
+      port
+    );
+
+  const second =
+    await curlThroughProxy(
+      port
+    );
+
+  const successful = [
+    first,
+    second
+  ].filter(
+    result =>
+      result.ok &&
+      Number.isFinite(
+        result.latency
+      )
+  );
+
+  if (
+    successful.length === 0
+  ) {
+    return {
+      ok: false,
+
+      latency: null,
+
+      firstLatency:
+        first.latency,
+
+      secondLatency:
+        second.latency,
+
+      firstError:
+        first.error,
+
+      secondError:
+        second.error
+    };
+  }
+
+  const best =
+    Math.min(
+      ...successful.map(
+        result =>
+          result.latency
+      )
+    );
+
+  return {
+    ok: true,
+
+    latency: best,
+
+    firstLatency:
+      first.ok
+        ? first.latency
+        : null,
+
+    secondLatency:
+      second.ok
+        ? second.latency
+        : null
+  };
+}
+
+async function checkNode(
+  uri,
+  tcpLatency,
+  countryCode
+) {
   let outbound;
   let configFile;
   let xrayProcess;
@@ -602,7 +882,8 @@ async function checkNode(uri, tcpLatency) {
       return null;
     }
 
-    const port = randomPort();
+    const port =
+      randomPort();
 
     const config =
       buildConfig(
@@ -615,7 +896,9 @@ async function checkNode(uri, tcpLatency) {
 
     fs.writeFileSync(
       configFile,
-      JSON.stringify(config)
+      JSON.stringify(
+        config
+      )
     );
 
     const valid =
@@ -662,27 +945,57 @@ async function checkNode(uri, tcpLatency) {
       return null;
     }
 
-    const result =
-      await curlThroughProxy(
+    const proxy =
+      await proxyPing(
         port
       );
 
-    if (!result.ok) {
+    if (!proxy.ok) {
       addError(
-        `TRAFFIC ${result.error}`
+        `PROXY PING ${
+          proxy.firstError ||
+          proxy.secondError ||
+          "failed"
+        }`
       );
 
       return null;
     }
 
+    if (
+      proxy.latency >
+      MAX_PROXY_LATENCY
+    ) {
+      return null;
+    }
+
     console.log(
-      `PASS ${tcpLatency}ms ${safeNodeInfo(uri)} HTTP ${result.status}`
+      `PASS TCP=${tcpLatency}ms PROXY=${proxy.latency}ms ${safeNodeInfo(uri)}`
     );
 
     return {
       uri,
-      latency: tcpLatency,
+
+      countryCode:
+        String(
+          countryCode ||
+          "UN"
+        ).toUpperCase(),
+
+      latency:
+        proxy.latency,
+
+      proxyLatency:
+        proxy.latency,
+
       tcpLatency,
+
+      proxyPing1:
+        proxy.firstLatency,
+
+      proxyPing2:
+        proxy.secondLatency,
+
       checkedAt:
         new Date().toISOString()
     };
@@ -711,16 +1024,20 @@ async function mapLimit(
   fn
 ) {
   const results =
-    new Array(items.length);
+    new Array(
+      items.length
+    );
 
   let index = 0;
 
   async function worker() {
     while (true) {
-      const i = index++;
+      const i =
+        index++;
 
       if (
-        i >= items.length
+        i >=
+        items.length
       ) {
         return;
       }
@@ -740,7 +1057,8 @@ async function mapLimit(
           }`
         );
 
-        results[i] = null;
+        results[i] =
+          null;
       }
     }
   }
@@ -754,7 +1072,8 @@ async function mapLimit(
   await Promise.all(
     Array.from(
       {
-        length: workers
+        length:
+          workers
       },
       worker
     )
@@ -763,13 +1082,18 @@ async function mapLimit(
   return results;
 }
 
-function uniqueNodes(input) {
+function uniqueNodes(
+  input
+) {
   const map =
     new Map();
 
-  for (const uri of input) {
+  for (
+    const uri of input
+  ) {
     if (
-      typeof uri !== "string"
+      typeof uri !==
+      "string"
     ) {
       continue;
     }
@@ -782,7 +1106,9 @@ function uniqueNodes(input) {
     }
 
     const hp =
-      parseHostPort(value);
+      parseHostPort(
+        value
+      );
 
     if (!hp) {
       continue;
@@ -812,11 +1138,19 @@ async function main() {
       "./xray.js"
     );
 
+  const geo =
+    await import(
+      "./geoip.js"
+    );
+
   uriToOutbound =
     xray.uriToOutbound;
 
   protocolOf =
     xray.protocolOf;
+
+  resolveGeo =
+    geo.resolveGeo;
 
   const raw =
     JSON.parse(
@@ -841,7 +1175,8 @@ async function main() {
     start += BATCH_SIZE
   ) {
     if (
-      successful.length >= TARGET
+      successful.length >=
+      TARGET
     ) {
       break;
     }
@@ -849,13 +1184,15 @@ async function main() {
     const batch =
       nodes.slice(
         start,
-        start + BATCH_SIZE
+        start +
+          BATCH_SIZE
       );
 
     console.log(
       `\nCHECK BATCH ${
         Math.floor(
-          start / BATCH_SIZE
+          start /
+            BATCH_SIZE
         ) + 1
       }`
     );
@@ -864,13 +1201,19 @@ async function main() {
       `Candidates: ${batch.length}`
     );
 
+    /*
+     * STEP 1
+     * TCP check
+     */
     const tcpResults =
       await mapLimit(
         batch,
         CONCURRENCY,
         async uri => {
           const hp =
-            parseHostPort(uri);
+            parseHostPort(
+              uri
+            );
 
           if (!hp) {
             return null;
@@ -886,38 +1229,110 @@ async function main() {
             return null;
           }
 
-          if (
-            result.latency >
-            MAX_LATENCY
-          ) {
-            return null;
-          }
-
           return {
             uri,
-            latency:
+
+            tcpLatency:
               result.latency
           };
         }
       );
 
-    const alive =
+    const tcpAlive =
       tcpResults.filter(
         Boolean
       );
 
     console.log(
-      `TCP alive: ${alive.length}/${batch.length}`
+      `TCP alive: ${tcpAlive.length}/${batch.length}`
     );
 
+    /*
+     * STEP 2
+     * GeoIP
+     *
+     * RU удаляем здесь,
+     * до запуска Xray.
+     */
+    const geoResults =
+      await mapLimit(
+        tcpAlive,
+        GEO_CONCURRENCY,
+        async node => {
+          const hp =
+            parseHostPort(
+              node.uri
+            );
+
+          if (!hp) {
+            return null;
+          }
+
+          try {
+            const geo =
+              await resolveGeo(
+                hp.host
+              );
+
+            const code =
+              String(
+                geo?.countryCode ||
+                "UN"
+              ).toUpperCase();
+
+            if (
+              code === "RU"
+            ) {
+              console.log(
+                `SKIP RU ${safeNodeInfo(node.uri)}`
+              );
+
+              return null;
+            }
+
+            return {
+              ...node,
+
+              countryCode:
+                code
+            };
+          } catch {
+            /*
+             * Если GeoIP не ответил,
+             * не удаляем сервер.
+             */
+            return {
+              ...node,
+
+              countryCode:
+                "UN"
+            };
+          }
+        }
+      );
+
+    const nonRu =
+      geoResults.filter(
+        Boolean
+      );
+
+    console.log(
+      `NON-RU candidates: ${nonRu.length}/${tcpAlive.length}`
+    );
+
+    /*
+     * STEP 3
+     * Real Xray + Happ Default-like proxy ping
+     */
     const checked =
       await mapLimit(
-        alive,
+        nonRu,
         XRAY_CONCURRENCY,
         async node =>
           checkNode(
             node.uri,
-            node.latency
+            node.tcpLatency,
+            node.countryCode
           )
       );
 
@@ -931,11 +1346,11 @@ async function main() {
     );
 
     console.log(
-      `REAL VPN alive: ${passed.length}/${alive.length}`
+      `PROXY <= ${MAX_PROXY_LATENCY}ms: ${passed.length}/${nonRu.length}`
     );
 
     console.log(
-      `TOTAL WORKING: ${successful.length}/${TARGET}`
+      `TOTAL WORKING NON-RU: ${successful.length}/${TARGET}`
     );
   }
 
@@ -946,7 +1361,7 @@ async function main() {
     );
 
   console.log(
-    `\nFINAL: ${finalNodes.length}/${TARGET} working nodes`
+    `\nFINAL: ${finalNodes.length}/${TARGET} working non-RU nodes`
   );
 
   if (
@@ -982,7 +1397,9 @@ async function main() {
   );
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+main().catch(
+  error => {
+    console.error(error);
+    process.exit(1);
+  }
+);
