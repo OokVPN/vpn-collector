@@ -250,7 +250,10 @@ function hasWhiteFlag(uri) {
     "обход белых списков",
     "lte",
     "5g",
-    "⚪"
+    "⚪",
+    "обход",
+    "белые",
+    "бс"
   ];
 
   return triggers.some(
