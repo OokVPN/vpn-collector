@@ -158,20 +158,6 @@ const countries = {
   ZW: ["🇿🇼", "Зимбабве"]
 };
 
-function countryName(code) {
-  const item =
-    countries[
-      String(code || "")
-        .toUpperCase()
-    ];
-
-  if (!item) {
-    return `🌐 ${code || "UNKNOWN"}`;
-  }
-
-  return `${item[0]} ${item[1]}`;
-}
-
 function countryLabel(code) {
   const item =
     countries[
@@ -244,32 +230,117 @@ function sourceRemark(uri) {
   }
 }
 
+function normalizeRemark(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[-_/]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function hasWhiteFlag(uri) {
   const remark =
-    sourceRemark(uri);
+    normalizeRemark(
+      sourceRemark(uri)
+    );
 
-  return (
-    remark.includes("🏳️") ||
-    remark.includes("🏳")
+  const triggers = [
+    "обход глушилок",
+    "белые списки",
+    "обход белых списков",
+    "lte",
+    "5g",
+    "⚪"
+  ];
+
+  return triggers.some(
+    trigger =>
+      remark.includes(trigger)
   );
 }
 
-/*
- * ТВОЙ AUTO КАК ОСНОВА.
- *
- * Здесь специально НЕТ proxy/proxy-2/...
- * Все реальные серверы будут добавлены
- * динамически из checked.json.
- */
 function createAuto(nodes) {
   const tags =
     nodes.map(
       node => node.tag
     );
 
-  const auto = {
-    remarks:
-      "🇪🇺 АВТО ⚡",
+  return {
+    dns: {
+      servers: [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+
+      queryStrategy:
+        "UseIP"
+    },
+
+    routing: {
+      rules: [
+        {
+          type:
+            "field",
+
+          protocol: [
+            "bittorrent"
+          ],
+
+          outboundTag:
+            "direct"
+        },
+
+        {
+          type:
+            "field",
+
+          network:
+            "tcp,udp",
+
+          balancerTag:
+            "Super_Balancer"
+        }
+      ],
+
+      balancers: [
+        {
+          tag:
+            "Super_Balancer",
+
+          selector:
+            tags,
+
+          strategy: {
+            type:
+              "leastLoad",
+
+            settings: {
+              maxRTT:
+                "1s",
+
+              expected:
+                2,
+
+              baselines: [
+                "1s"
+              ],
+
+              tolerance:
+                0.01
+            }
+          },
+
+          fallbackTag:
+            "direct"
+        }
+      ],
+
+      domainMatcher:
+        "hybrid",
+
+      domainStrategy:
+        "IPIfNonMatch"
+    },
 
     inbounds: [
       {
@@ -387,74 +458,9 @@ function createAuto(nodes) {
         tags
     },
 
-    routing: {
-      rules: [
-        {
-          type:
-            "field",
-
-          protocol: [
-            "bittorrent"
-          ],
-
-          outboundTag:
-            "direct"
-        },
-
-        {
-          type:
-            "field",
-
-          network:
-            "tcp,udp",
-
-          balancerTag:
-            "Super_Balancer"
-        }
-      ],
-
-      balancers: [
-        {
-          tag:
-            "Super_Balancer",
-
-          selector:
-            tags,
-
-          strategy: {
-            type:
-              "leastLoad",
-
-            settings: {
-              maxRTT:
-                "1s",
-
-              expected:
-                2,
-
-              baselines: [
-                "1s"
-              ],
-
-              tolerance:
-                0.01
-            }
-          },
-
-          fallbackTag:
-            "direct"
-        }
-      ],
-
-      domainMatcher:
-        "hybrid",
-
-      domainStrategy:
-        "IPIfNonMatch"
-    }
+    remarks:
+      "🇪🇺 АВТО ⚡"
   };
-
-  return auto;
 }
 
 async function main() {
@@ -505,6 +511,11 @@ async function main() {
           geo?.countryCode ||
           "UN"
         ).toUpperCase();
+
+      // Не добавляем российские серверы
+      if (code === "RU") {
+        continue;
+      }
 
       const tag =
         `node-${nodes.length + 1}`;
@@ -626,7 +637,8 @@ async function main() {
           remarks:
             `${flag}${whiteFlag} ${name}${suffix} • ${node.latency} ms • ${node.protocol.toUpperCase()}`,
 
-          inbounds: [],
+          inbounds:
+            [],
 
           outbounds: [
             node.outbound
@@ -635,16 +647,9 @@ async function main() {
       }
     );
 
-  /*
-   * Создаём AUTO именно на основе
-   * структуры, которую ты скинул.
-   */
   const auto =
     createAuto(nodes);
 
-  /*
-   * AUTO всегда первый.
-   */
   const result = [
     auto,
     ...profiles
@@ -698,14 +703,13 @@ async function main() {
   );
 
   console.log(
-    "AUTO: custom template + checked nodes"
+    "AUTO: custom template + checked non-RU nodes"
   );
 }
 
 main().catch(
   error => {
     console.error(error);
-
     process.exit(1);
   }
 );
