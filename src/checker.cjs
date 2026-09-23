@@ -1,17 +1,10 @@
 const fs = require("fs");
-const os = require("os");
 const net = require("net");
 const tls = require("tls");
-const crypto = require("crypto");
 const { spawn } = require("child_process");
 
-const {
-  uriToOutbound,
-  protocolOf
-} = require("./xray.js");
-
-const INPUT = "./data/raw.json";
-const OUTPUT = "./data/checked.json";
+const RAW_FILE = "data/raw.json";
+const OUT_FILE = "data/checked.json";
 
 const BATCH_SIZE =
   Number(process.env.BATCH_SIZE || 200);
@@ -34,27 +27,21 @@ const CONCURRENCY =
 const XRAY_CONCURRENCY =
   Number(process.env.XRAY_CONCURRENCY || 20);
 
-const TARGET_HOST =
+const TEST_HOST =
   "www.gstatic.com";
 
-const TARGET_PORT =
+const TEST_PORT =
   443;
 
-const TARGET_PATH =
+const TEST_PATH =
   "/generate_204";
 
-function sleep(ms) {
-  return new Promise(
-    resolve => setTimeout(resolve, ms)
-  );
-}
+let uriToOutbound;
+let protocolOf;
 
-function randomPort() {
-  return (
-    20000 +
-    Math.floor(
-      Math.random() * 30000
-    )
+function sleep(ms) {
+  return new Promise(resolve =>
+    setTimeout(resolve, ms)
   );
 }
 
@@ -62,181 +49,289 @@ function protocol(uri) {
   return protocolOf(uri);
 }
 
-function decodeVmess(uri) {
+function parseHostPort(uri) {
   try {
-    let value =
-      uri.slice("vmess://".length)
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
+    if (protocol(uri) === "vmess") {
+      let value =
+        uri
+          .slice(8)
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
 
-    value += "=".repeat(
-      (4 - value.length % 4) % 4
-    );
+      value += "=".repeat(
+        (4 - value.length % 4) % 4
+      );
 
-    return JSON.parse(
-      Buffer
-        .from(value, "base64")
-        .toString("utf8")
-    );
+      const data =
+        JSON.parse(
+          Buffer
+            .from(value, "base64")
+            .toString("utf8")
+        );
+
+      if (!data.add) {
+        return null;
+      }
+
+      const port =
+        Number(data.port);
+
+      if (
+        !Number.isFinite(port) ||
+        port <= 0 ||
+        port > 65535
+      ) {
+        return null;
+      }
+
+      return {
+        host: data.add,
+        port
+      };
+    }
+
+    const u =
+      new URL(uri);
+
+    let port =
+      Number(u.port);
+
+    if (!port) {
+      port =
+        protocol(uri) === "ss" ||
+        protocol(uri) === "socks" ||
+        protocol(uri) === "socks5"
+          ? 1080
+          : 443;
+    }
+
+    if (
+      !u.hostname ||
+      !Number.isFinite(port) ||
+      port <= 0 ||
+      port > 65535
+    ) {
+      return null;
+    }
+
+    return {
+      host: u.hostname,
+      port
+    };
   } catch {
     return null;
   }
 }
 
-function parseHostPort(uri) {
-  const p =
-    protocol(uri);
+function tcpCheck(host, port) {
+  return new Promise(resolve => {
+    const started =
+      Date.now();
 
-  if (p === "vmess") {
-    const data =
-      decodeVmess(uri);
+    const socket =
+      net.createConnection({
+        host,
+        port
+      });
 
-    if (!data?.add) {
-      throw new Error(
-        "VMess host missing"
-      );
-    }
+    let finished = false;
 
-    return {
-      host:
-        data.add,
+    const finish =
+      (ok, latency = null) => {
+        if (finished) {
+          return;
+        }
 
-      port:
-        Number(data.port || 443)
-    };
-  }
-
-  const u =
-    new URL(uri);
-
-  if (!u.hostname) {
-    throw new Error(
-      "Host missing"
-    );
-  }
-
-  return {
-    host:
-      u.hostname,
-
-    port:
-      Number(
-        u.port ||
-        (
-          p === "ss" ||
-          p === "socks" ||
-          p === "socks5"
-            ? 1080
-            : 443
-        )
-      )
-  };
-}
-
-function tcpCheck(
-  host,
-  port
-) {
-  return new Promise(
-    resolve => {
-      const started =
-        Date.now();
-
-      const socket =
-        net.connect({
-          host,
-          port
-        });
-
-      let done = false;
-
-      const finish = value => {
-        if (done) return;
-
-        done = true;
+        finished = true;
 
         socket.destroy();
 
-        resolve(value);
+        resolve({
+          ok,
+          latency
+        });
       };
 
-      socket.setTimeout(
-        TCP_TIMEOUT
-      );
+    socket.setTimeout(
+      TCP_TIMEOUT
+    );
 
-      socket.once(
-        "connect",
-        () => {
-          finish(
-            Date.now() -
-            started
-          );
-        }
-      );
+    socket.once(
+      "connect",
+      () => {
+        finish(
+          true,
+          Date.now() - started
+        );
+      }
+    );
 
-      socket.once(
-        "timeout",
-        () => finish(null)
-      );
+    socket.once(
+      "timeout",
+      () => {
+        finish(false);
+      }
+    );
 
-      socket.once(
-        "error",
-        () => finish(null)
-      );
-    }
+    socket.once(
+      "error",
+      () => {
+        finish(false);
+      }
+    );
+  });
+}
+
+function randomPort() {
+  return (
+    20000 +
+    Math.floor(
+      Math.random() * 20000
+    )
   );
+}
+
+function startXray(
+  outbound,
+  port
+) {
+  const config = {
+    log: {
+      loglevel: "warning"
+    },
+
+    inbounds: [
+      {
+        tag: "check",
+        listen: "127.0.0.1",
+        port,
+        protocol: "socks",
+        settings: {
+          auth: "noauth",
+          udp: true
+        }
+      }
+    ],
+
+    outbounds: [
+      outbound,
+      {
+        tag: "direct",
+        protocol: "freedom"
+      }
+    ],
+
+    routing: {
+      rules: [
+        {
+          type: "field",
+          inboundTag: ["check"],
+          outboundTag: outbound.tag
+        }
+      ]
+    }
+  };
+
+  const file =
+    `/tmp/xray-${process.pid}-${port}.json`;
+
+  fs.writeFileSync(
+    file,
+    JSON.stringify(config)
+  );
+
+  const child =
+    spawn(
+      "xray",
+      [
+        "run",
+        "-config",
+        file
+      ],
+      {
+        stdio: [
+          "ignore",
+          "ignore",
+          "pipe"
+        ]
+      }
+    );
+
+  child.stderr.on(
+    "data",
+    () => {}
+  );
+
+  return {
+    child,
+    file
+  };
 }
 
 function waitForPort(
   port,
   timeout = 5000
 ) {
-  return new Promise(
-    resolve => {
-      const started =
-        Date.now();
+  return new Promise(resolve => {
+    const started =
+      Date.now();
 
-      const loop = () => {
-        const socket =
-          net.connect({
-            host:
-              "127.0.0.1",
+    const loop = () => {
+      const socket =
+        net.createConnection({
+          host: "127.0.0.1",
+          port
+        });
 
-            port
-          });
+      let done = false;
 
-        socket.once(
-          "connect",
-          () => {
-            socket.destroy();
+      const finish =
+        ok => {
+          if (done) {
+            return;
+          }
+
+          done = true;
+
+          socket.destroy();
+
+          if (ok) {
             resolve(true);
+            return;
           }
-        );
 
-        socket.once(
-          "error",
-          () => {
-            socket.destroy();
-
-            if (
-              Date.now() -
-                started >=
-              timeout
-            ) {
-              resolve(false);
-            } else {
-              setTimeout(
-                loop,
-                50
-              );
-            }
+          if (
+            Date.now() - started >=
+            timeout
+          ) {
+            resolve(false);
+            return;
           }
-        );
-      };
 
-      loop();
-    }
-  );
+          setTimeout(
+            loop,
+            100
+          );
+        };
+
+      socket.once(
+        "connect",
+        () => finish(true)
+      );
+
+      socket.once(
+        "error",
+        () => finish(false)
+      );
+
+      socket.setTimeout(
+        500,
+        () => finish(false)
+      );
+    };
+
+    loop();
+  });
 }
 
 function socks5Connect(
@@ -247,45 +342,35 @@ function socks5Connect(
   return new Promise(
     (resolve, reject) => {
       const socket =
-        net.connect({
-          host:
-            "127.0.0.1",
-
+        net.createConnection({
+          host: "127.0.0.1",
           port
         });
 
+      let stage = 0;
       let buffer =
         Buffer.alloc(0);
 
-      let stage =
-        "greeting";
-
-      let timer;
-
-      const fail = error => {
-        clearTimeout(timer);
-        socket.destroy();
-        reject(error);
-      };
-
-      const succeed = () => {
-        clearTimeout(timer);
-        resolve(socket);
-      };
-
-      timer =
-        setTimeout(
-          () => fail(
+      const timeout =
+        setTimeout(() => {
+          socket.destroy();
+          reject(
             new Error(
               "SOCKS timeout"
             )
-          ),
-          HTTP_TIMEOUT
-        );
+          );
+        }, HTTP_TIMEOUT);
+
+      const cleanup = () => {
+        clearTimeout(timeout);
+      };
 
       socket.on(
         "error",
-        fail
+        err => {
+          cleanup();
+          reject(err);
+        }
       );
 
       socket.on(
@@ -297,157 +382,127 @@ function socks5Connect(
               chunk
             ]);
 
-          while (true) {
+          if (stage === 0) {
             if (
-              stage ===
-              "greeting"
+              buffer.length < 2
             ) {
-              if (
-                buffer.length <
-                2
-              ) {
-                return;
-              }
-
-              if (
-                buffer[0] !==
-                  0x05 ||
-                buffer[1] !==
-                  0x00
-              ) {
-                return fail(
-                  new Error(
-                    "SOCKS auth failed"
-                  )
-                );
-              }
-
-              buffer =
-                buffer.slice(2);
-
-              const hostBuffer =
-                Buffer.from(
-                  host
-                );
-
-              const request =
-                Buffer.concat([
-                  Buffer.from([
-                    0x05,
-                    0x01,
-                    0x00,
-                    0x03,
-                    hostBuffer.length
-                  ]),
-
-                  hostBuffer,
-
-                  Buffer.from([
-                    (targetPort >> 8) &
-                      0xff,
-
-                    targetPort &
-                      0xff
-                  ])
-                ]);
-
-              socket.write(
-                request
-              );
-
-              stage =
-                "connect";
-
-              continue;
-            }
-
-            if (
-              stage ===
-              "connect"
-            ) {
-              if (
-                buffer.length <
-                5
-              ) {
-                return;
-              }
-
-              if (
-                buffer[0] !==
-                  0x05 ||
-                buffer[1] !==
-                  0x00
-              ) {
-                return fail(
-                  new Error(
-                    `SOCKS REP ${buffer[1]}`
-                  )
-                );
-              }
-
-              const atyp =
-                buffer[3];
-
-              let required;
-
-              if (
-                atyp ===
-                0x01
-              ) {
-                required =
-                  10;
-              } else if (
-                atyp ===
-                0x04
-              ) {
-                required =
-                  22;
-              } else if (
-                atyp ===
-                0x03
-              ) {
-                if (
-                  buffer.length <
-                  5
-                ) {
-                  return;
-                }
-
-                required =
-                  7 +
-                  buffer[4];
-              } else {
-                return fail(
-                  new Error(
-                    "Invalid SOCKS ATYP"
-                  )
-                );
-              }
-
-              if (
-                buffer.length <
-                required
-              ) {
-                return;
-              }
-
-              succeed();
               return;
             }
-          }
-        }
-      );
 
-      socket.once(
-        "connect",
-        () => {
-          socket.write(
-            Buffer.from([
-              0x05,
-              0x01,
-              0x00
-            ])
-          );
+            if (
+              buffer[0] !== 0x05 ||
+              buffer[1] !== 0x00
+            ) {
+              cleanup();
+              socket.destroy();
+
+              reject(
+                new Error(
+                  "SOCKS auth failed"
+                )
+              );
+
+              return;
+            }
+
+            stage = 1;
+            buffer =
+              Buffer.alloc(0);
+
+            socket.write(
+              Buffer.from([
+                0x05,
+                0x01,
+                0x00,
+                0x03,
+                Buffer.byteLength(host),
+                ...Buffer.from(host),
+                (targetPort >> 8) & 0xff,
+                targetPort & 0xff
+              ])
+            );
+
+            return;
+          }
+
+          if (stage === 1) {
+            if (
+              buffer.length < 5
+            ) {
+              return;
+            }
+
+            const atyp =
+              buffer[3];
+
+            let needed = 0;
+
+            if (atyp === 0x01) {
+              needed = 10;
+            } else if (
+              atyp === 0x03
+            ) {
+              if (
+                buffer.length < 5
+              ) {
+                return;
+              }
+
+              needed =
+                7 + buffer[4];
+            } else if (
+              atyp === 0x04
+            ) {
+              needed = 22;
+            } else {
+              cleanup();
+              socket.destroy();
+
+              reject(
+                new Error(
+                  "Invalid SOCKS reply"
+                )
+              );
+
+              return;
+            }
+
+            if (
+              buffer.length < needed
+            ) {
+              return;
+            }
+
+            if (
+              buffer[1] !== 0x00
+            ) {
+              cleanup();
+              socket.destroy();
+
+              reject(
+                new Error(
+                  `SOCKS connect failed: ${buffer[1]}`
+                )
+              );
+
+              return;
+            }
+
+            stage = 2;
+
+            const rest =
+              buffer.slice(needed);
+
+            buffer =
+              Buffer.alloc(0);
+
+            cleanup();
+
+            resolve({
+              socket,
+              initial: rest
+            });
+          }
         }
       );
     }
@@ -455,70 +510,81 @@ function socks5Connect(
 }
 
 function httpsCheck(
-  socket
+  socksPort
 ) {
   return new Promise(
-    (resolve, reject) => {
-      const started =
-        Date.now();
+    async resolve => {
+      let connection;
+
+      try {
+        connection =
+          await socks5Connect(
+            socksPort,
+            TEST_HOST,
+            TEST_PORT
+          );
+      } catch {
+        resolve(false);
+        return;
+      }
+
+      const {
+        socket,
+        initial
+      } = connection;
 
       const tlsSocket =
         tls.connect({
           socket,
-
-          servername:
-            TARGET_HOST,
-
-          ALPNProtocols:
-            ["http/1.1"],
-
-          rejectUnauthorized:
-            true
+          servername: TEST_HOST,
+          rejectUnauthorized: true,
+          ALPNProtocols: [
+            "http/1.1"
+          ]
         });
 
-      let data = "";
+      let settled =
+        false;
 
-      let timer =
-        setTimeout(
-          () => {
-            tlsSocket.destroy();
+      const finish =
+        ok => {
+          if (settled) {
+            return;
+          }
 
-            reject(
-              new Error(
-                "HTTPS timeout"
-              )
-            );
-          },
-          HTTP_TIMEOUT
-        );
-
-      tlsSocket.once(
-        "error",
-        error => {
-          clearTimeout(timer);
+          settled = true;
 
           tlsSocket.destroy();
 
-          reject(error);
-        }
-      );
+          resolve(ok);
+        };
 
-      tlsSocket.once(
+      const timer =
+        setTimeout(
+          () => finish(false),
+          HTTP_TIMEOUT
+        );
+
+      let response =
+        initial.length
+          ? initial.toString(
+              "utf8"
+            )
+          : "";
+
+      tlsSocket.on(
         "secureConnect",
         () => {
-          const request =
+          tlsSocket.write(
             [
-              `GET ${TARGET_PATH} HTTP/1.1`,
-              `Host: ${TARGET_HOST}`,
+              `GET ${TEST_PATH} HTTP/1.1`,
+              `Host: ${TEST_HOST}`,
               "Connection: close",
               "User-Agent: vpn-collector/1.0",
               "Accept: */*",
               "",
               ""
-            ].join("\r\n");
-
-          tlsSocket.write(
-            request
+            ].join("\r\n")
           );
         }
       );
@@ -526,236 +592,67 @@ function httpsCheck(
       tlsSocket.on(
         "data",
         chunk => {
-          data +=
+          response +=
             chunk.toString(
-              "latin1"
+              "utf8"
             );
 
-          if (
-            data.length >
-            8192
-          ) {
-            tlsSocket.destroy();
-          }
-
           const match =
-            data.match(
-              /^HTTP\/1\.[01]\s+(\d{3})/
+            response.match(
+              /^HTTP\/\d(?:\.\d)?\s+(\d{3})/
             );
 
           if (!match) {
             return;
           }
 
+          clearTimeout(timer);
+
           const status =
             Number(match[1]);
 
-          clearTimeout(timer);
-
-          tlsSocket.destroy();
-
-          if (
+          finish(
             status >= 200 &&
             status < 400
-          ) {
-            resolve(
-              Date.now() -
-              started
-            );
-          } else {
-            reject(
-              new Error(
-                `HTTP ${status}`
-              )
-            );
-          }
+          );
+        }
+      );
+
+      tlsSocket.on(
+        "error",
+        () => {
+          clearTimeout(timer);
+          finish(false);
+        }
+      );
+
+      tlsSocket.on(
+        "close",
+        () => {
+          clearTimeout(timer);
         }
       );
     }
   );
 }
 
-function startXray(
+async function checkNode(
   uri,
-  localPort
+  tcpLatency
 ) {
-  const tag =
-    "check-" +
-    crypto
-      .randomBytes(6)
-      .toString("hex");
-
-  const outbound =
-    uriToOutbound(
-      uri,
-      tag
-    );
-
-  const config = {
-    log: {
-      loglevel:
-        "error"
-    },
-
-    inbounds: [
-      {
-        tag:
-          "check",
-
-        listen:
-          "127.0.0.1",
-
-        port:
-          localPort,
-
-        protocol:
-          "socks",
-
-        settings: {
-          auth:
-            "noauth",
-
-          udp:
-            false
-        }
-      }
-    ],
-
-    outbounds: [
-      outbound
-    ],
-
-    routing: {
-      rules: [
-        {
-          type:
-            "field",
-
-          inboundTag: [
-            "check"
-          ],
-
-          outboundTag:
-            tag
-        }
-      ]
-    }
-  };
-
-  const dir =
-    fs.mkdtempSync(
-      `${os.tmpdir()}/vpn-check-`
-    );
-
-  const configPath =
-    `${dir}/config.json`;
-
-  fs.writeFileSync(
-    configPath,
-    JSON.stringify(
-      config
-    )
-  );
-
-  const child =
-    spawn(
-      "xray",
-      [
-        "run",
-        "-config",
-        configPath
-      ],
-      {
-        stdio: [
-          "ignore",
-          "ignore",
-          "pipe"
-        ]
-      }
-    );
-
-  let stderr = "";
-
-  child.stderr.on(
-    "data",
-    chunk => {
-      stderr +=
-        chunk.toString();
-
-      if (
-        stderr.length >
-        4000
-      ) {
-        stderr =
-          stderr.slice(-4000);
-      }
-    }
-  );
-
-  const cleanup =
-    () => {
-      try {
-        child.kill(
-          "SIGKILL"
-        );
-      } catch {}
-
-      try {
-        fs.rmSync(
-          dir,
-          {
-            recursive:
-              true,
-
-            force:
-              true
-          }
-        );
-      } catch {}
-    };
-
-  return {
-    child,
-    cleanup,
-
-    getError() {
-      return stderr.trim();
-    }
-  };
-}
-
-async function fullCheck(uri) {
-  let endpoint;
+  let outbound;
 
   try {
-    endpoint =
-      parseHostPort(
-        uri
+    outbound =
+      uriToOutbound(
+        uri,
+        "node"
       );
   } catch {
     return null;
   }
 
-  const tcpLatency =
-    await tcpCheck(
-      endpoint.host,
-      endpoint.port
-    );
-
-  if (
-    tcpLatency === null
-  ) {
-    return null;
-  }
-
-  if (
-    tcpLatency >
-    MAX_LATENCY
-  ) {
-    return null;
-  }
-
-  const localPort =
+  const port =
     randomPort();
 
   let xray;
@@ -763,13 +660,13 @@ async function fullCheck(uri) {
   try {
     xray =
       startXray(
-        uri,
-        localPort
+        outbound,
+        port
       );
 
     const ready =
       await waitForPort(
-        localPort,
+        port,
         5000
       );
 
@@ -777,52 +674,96 @@ async function fullCheck(uri) {
       return null;
     }
 
-    const socket =
-      await socks5Connect(
-        localPort,
-        TARGET_HOST,
-        TARGET_PORT
-      );
-
-    const httpsLatency =
+    const ok =
       await httpsCheck(
-        socket
+        port
       );
 
-    const totalLatency =
-      Date.now();
+    if (!ok) {
+      return null;
+    }
 
     return {
       uri,
-
-      latency:
-        httpsLatency,
-
+      latency: tcpLatency,
       tcpLatency,
-
       checkedAt:
-        new Date(
-          totalLatency
-        ).toISOString()
+        new Date().toISOString()
     };
   } catch {
     return null;
   } finally {
     if (xray) {
-      xray.cleanup();
+      xray.child.kill(
+        "SIGTERM"
+      );
+
+      try {
+        fs.unlinkSync(
+          xray.file
+        );
+      } catch {}
     }
   }
 }
 
+async function mapLimit(
+  items,
+  limit,
+  fn
+) {
+  const results =
+    new Array(items.length);
+
+  let index = 0;
+
+  async function worker() {
+    while (true) {
+      const i =
+        index++;
+
+      if (
+        i >= items.length
+      ) {
+        return;
+      }
+
+      try {
+        results[i] =
+          await fn(
+            items[i],
+            i
+          );
+      } catch {
+        results[i] =
+          null;
+      }
+    }
+  }
+
+  const workers =
+    Math.min(
+      limit,
+      items.length
+    );
+
+  await Promise.all(
+    Array.from(
+      { length: workers },
+      worker
+    )
+  );
+
+  return results;
+}
+
 function uniqueNodes(
-  list
+  input
 ) {
   const map =
     new Map();
 
-  for (
-    const uri of list
-  ) {
+  for (const uri of input) {
     if (
       typeof uri !==
       "string"
@@ -830,32 +771,31 @@ function uniqueNodes(
       continue;
     }
 
-    try {
-      const p =
-        protocol(uri);
+    const key =
+      uri.trim();
 
-      const ep =
-        parseHostPort(
-          uri
-        );
+    if (!key) {
+      continue;
+    }
 
-      const key =
-        [
-          p,
-          ep.host
-            .toLowerCase(),
-          ep.port
-        ].join(":");
+    const hp =
+      parseHostPort(key);
 
-      if (
-        !map.has(key)
-      ) {
-        map.set(
-          key,
-          uri
-        );
-      }
-    } catch {}
+    if (!hp) {
+      continue;
+    }
+
+    const identity =
+      `${protocol(key)}:${hp.host}:${hp.port}`;
+
+    if (
+      !map.has(identity)
+    ) {
+      map.set(
+        identity,
+        key
+      );
+    }
   }
 
   return [
@@ -863,256 +803,137 @@ function uniqueNodes(
   ];
 }
 
-async function mapLimit(
-  items,
-  limit,
-  worker
-) {
-  const result =
-    new Array(
-      items.length
-    );
-
-  let index = 0;
-
-  async function runner() {
-    while (true) {
-      const i =
-        index++;
-
-      if (
-        i >=
-        items.length
-      ) {
-        return;
-      }
-
-      try {
-        result[i] =
-          await worker(
-            items[i],
-            i
-          );
-      } catch {
-        result[i] =
-          null;
-      }
-    }
-  }
-
-  const workers =
-    Array.from(
-      {
-        length:
-          Math.min(
-            limit,
-            items.length
-          )
-      },
-      () =>
-        runner()
-    );
-
-  await Promise.all(
-    workers
-  );
-
-  return result;
-}
-
 async function main() {
+  const xray =
+    await import(
+      "./xray.js"
+    );
+
+  uriToOutbound =
+    xray.uriToOutbound;
+
+  protocolOf =
+    xray.protocolOf;
+
   const raw =
     JSON.parse(
       fs.readFileSync(
-        INPUT,
+        RAW_FILE,
         "utf8"
       )
     );
 
-  const unique =
-    uniqueNodes(
-      raw
-    );
+  const nodes =
+    uniqueNodes(raw);
 
   const start =
     BATCH_INDEX *
     BATCH_SIZE;
 
   const batch =
-    unique.slice(
+    nodes.slice(
       start,
-      start +
-        BATCH_SIZE
+      start + BATCH_SIZE
     );
 
   console.log(
-    `RAW: ${raw.length}`
+    `Unique nodes: ${nodes.length}`
   );
 
   console.log(
-    `UNIQUE: ${unique.length}`
+    `Batch: ${BATCH_INDEX + 1}`
   );
 
   console.log(
-    `BATCH: ${BATCH_INDEX + 1}`
+    `Batch size: ${batch.length}`
   );
 
-  console.log(
-    `BATCH SIZE: ${batch.length}`
-  );
-
-  console.log(
-    `TCP CONCURRENCY: ${CONCURRENCY}`
-  );
-
-  console.log(
-    `XRAY CONCURRENCY: ${XRAY_CONCURRENCY}`
-  );
-
-  /*
-   * Stage 1:
-   * TCP pre-filter.
-   */
-
-  const tcpAlive =
+  const tcpResults =
     await mapLimit(
       batch,
       CONCURRENCY,
       async uri => {
-        try {
-          const ep =
-            parseHostPort(
-              uri
-            );
+        const hp =
+          parseHostPort(uri);
 
-          const latency =
-            await tcpCheck(
-              ep.host,
-              ep.port
-            );
-
-          if (
-            latency === null ||
-            latency >
-              MAX_LATENCY
-          ) {
-            return null;
-          }
-
-          return {
-            uri,
-            tcpLatency:
-              latency
-          };
-        } catch {
+        if (!hp) {
           return null;
         }
+
+        const result =
+          await tcpCheck(
+            hp.host,
+            hp.port
+          );
+
+        if (
+          !result.ok ||
+          result.latency >
+            MAX_LATENCY
+        ) {
+          return null;
+        }
+
+        return {
+          uri,
+          latency:
+            result.latency
+        };
       }
     );
 
-  const candidates =
-    tcpAlive.filter(
-      Boolean
-    );
+  const alive =
+    tcpResults.filter(Boolean);
 
   console.log(
-    `TCP ALIVE: ${candidates.length}`
+    `TCP alive: ${alive.length}/${batch.length}`
   );
 
-  /*
-   * Stage 2:
-   * Real Xray + SOCKS5 + TLS + HTTPS.
-   */
-
-  let checked =
-    0;
-
-  const alive =
+  const checked =
     await mapLimit(
-      candidates,
+      alive,
       XRAY_CONCURRENCY,
-      async item => {
+      async node => {
         const result =
-          await fullCheck(
-            item.uri
+          await checkNode(
+            node.uri,
+            node.latency
           );
 
-        checked++;
-
-        if (
-          checked % 10 ===
-          0
-        ) {
-          console.log(
-            `REAL CHECK: ${checked}/${candidates.length}`
-          );
+        if (!result) {
+          return null;
         }
+
+        console.log(
+          `PASS ${node.latency}ms ${protocol(node.uri)}`
+        );
 
         return result;
       }
     );
 
-  const working =
-    alive
-      .filter(Boolean)
-      .filter(
-        item =>
-          Number.isFinite(
-            Number(
-              item.latency
-            )
-          ) &&
-          Number(
-            item.latency
-          ) <=
-            MAX_LATENCY
-      );
+  const success =
+    checked.filter(Boolean);
 
-  working.sort(
-    (a, b) =>
-      Number(a.latency) -
-      Number(b.latency)
+  console.log(
+    `REAL VPN alive: ${success.length}/${alive.length}`
   );
 
   fs.writeFileSync(
-    OUTPUT,
+    OUT_FILE,
     JSON.stringify(
-      working,
+      success,
       null,
       2
     )
   );
 
   console.log(
-    "--------------------------------"
-  );
-
-  console.log(
-    `TCP ALIVE: ${candidates.length}`
-  );
-
-  console.log(
-    `REAL HTTPS ALIVE: ${working.length}`
-  );
-
-  console.log(
-    `REMOVED: ${
-      candidates.length -
-      working.length
-    }`
-  );
-
-  console.log(
-    "--------------------------------"
+    `Saved ${success.length} nodes`
   );
 }
 
-main().catch(
-  error => {
-    console.error(
-      error
-    );
-
-    process.exit(1);
-  }
-);
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
