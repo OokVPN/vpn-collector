@@ -1,4 +1,4 @@
-herefunction number(value, fallback) {
+function number(value, fallback) {
   const n = Number(value);
 
   return Number.isFinite(n)
