@@ -1,135 +1,104 @@
-import {
-  parseVless
-} from "./protocols/vless.js";
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import net from 'node:net';
+import crypto from 'node:crypto';
+import { spawn } from 'node:child_process';
 
-import {
-  parseVmess
-} from "./protocols/vmess.js";
-
-import {
-  parseTrojan
-} from "./protocols/trojan.js";
-
-import {
-  parseShadowsocks
-} from "./protocols/shadowsocks.js";
-
-import {
-  parseSocks
-} from "./protocols/socks.js";
-
-import {
-  parseHysteria2
-} from "./protocols/hysteria2.js";
-
-export function protocolOf(uri) {
-  return uri
-    .split("://", 1)[0]
-    .toLowerCase();
-}
-
-export function uriToOutbound(
-  uri,
-  tag
-) {
-  switch (
-    protocolOf(uri)
-  ) {
-    case "vless":
-      return parseVless(
-        uri,
-        tag
-      );
-
-    case "vmess":
-      return parseVmess(
-        uri,
-        tag
-      );
-
-    case "trojan":
-      return parseTrojan(
-        uri,
-        tag
-      );
-
-    case "ss":
-      return parseShadowsocks(
-        uri,
-        tag
-      );
-
-    case "socks":
-    case "socks5":
-      return parseSocks(
-        uri,
-        tag
-      );
-
-    case "hysteria2":
-    case "hy2":
-      return parseHysteria2(
-        uri,
-        tag
-      );
-
-    default:
-      throw new Error(
-        "Unsupported protocol"
-      );
-  }
-}
-
-export function buildCheckConfig(
-  outbound,
-  port
-) {
+/**
+ * Build a minimal Xray config for checking a single outbound through a local SOCKS inbound.
+ * No "direct" fallback is present — traffic on the "check" inbound is routed only to "vpn".
+ */
+export function buildCheckConfig(outbound, localPort) {
   return {
-    log: {
-      loglevel: "warning"
-    },
-
+    log: { loglevel: 'warning' },
     inbounds: [
       {
-        tag: "check",
-
-        listen:
-          "127.0.0.1",
-
-        port,
-
-        protocol: "socks",
-
-        settings: {
-          auth: "noauth",
-          udp: true
-        }
+        tag: 'check',
+        listen: '127.0.0.1',
+        port: localPort,
+        protocol: 'socks',
+        settings: { auth: 'noauth', udp: true }
       }
     ],
-
-    outbounds: [
-      outbound,
-
-      {
-        tag: "direct",
-
-        protocol: "freedom"
-      }
-    ],
-
+    outbounds: [{ ...outbound, tag: 'vpn' }],
     routing: {
-      rules: [
-        {
-          type: "field",
-
-          inboundTag: [
-            "check"
-          ],
-
-          outboundTag:
-            outbound.tag
-        }
-      ]
+      rules: [{ type: 'field', inboundTag: ['check'], outboundTag: 'vpn' }]
     }
   };
+}
+
+export function writeTempConfig(config) {
+  const file = path.join(os.tmpdir(), `xray-check-${crypto.randomBytes(6).toString('hex')}.json`);
+  fs.writeFileSync(file, JSON.stringify(config));
+  return file;
+}
+
+export function waitForPort(port, timeoutMs) {
+  return new Promise((resolve) => {
+    const deadline = Date.now() + timeoutMs;
+    (function attempt() {
+      const socket = net.createConnection({ host: '127.0.0.1', port });
+      socket.once('connect', () => {
+        socket.destroy();
+        resolve(true);
+      });
+      socket.once('error', () => {
+        socket.destroy();
+        if (Date.now() > deadline) resolve(false);
+        else setTimeout(attempt, 150);
+      });
+    })();
+  });
+}
+
+export function startXray(configPath) {
+  const bin = process.env.XRAY_BIN || 'xray';
+  const proc = spawn(bin, ['run', '-c', configPath], { stdio: ['ignore', 'ignore', 'pipe'] });
+  let exited = false;
+  proc.on('exit', () => {
+    exited = true;
+  });
+  proc.on('error', () => {
+    exited = true;
+  });
+  return {
+    proc,
+    isAlive: () => !exited && proc.exitCode === null && !proc.killed
+  };
+}
+
+export function stopXray(proc) {
+  return new Promise((resolve) => {
+    if (!proc || proc.exitCode !== null) {
+      resolve();
+      return;
+    }
+    const timer = setTimeout(() => {
+      try {
+        proc.kill('SIGKILL');
+      } catch {
+        // already gone
+      }
+      resolve();
+    }, 3000);
+    proc.once('exit', () => {
+      clearTimeout(timer);
+      resolve();
+    });
+    try {
+      proc.kill('SIGTERM');
+    } catch {
+      clearTimeout(timer);
+      resolve();
+    }
+  });
+}
+
+export function cleanupConfig(file) {
+  try {
+    fs.unlinkSync(file);
+  } catch {
+    // already removed
+  }
 }
