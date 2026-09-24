@@ -3,7 +3,7 @@ name: Update VPN Subscription
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/14 * * * *'
 
 concurrency:
   group: update-subscription
@@ -31,8 +31,20 @@ jobs:
       - name: Install Xray
         run: |
           set -e
-          LATEST_URL=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest \
-            | grep browser_download_url | grep 'linux-64.zip' | cut -d '"' -f 4)
+          # NOTE: /releases/latest only returns non-prerelease releases, and XTLS/Xray-core
+          # currently ships every release as a "Pre-release", so that endpoint returns nothing
+          # useful. Take the newest entry from the full release list instead.
+          RELEASES_JSON=$(curl -sL https://api.github.com/repos/XTLS/Xray-core/releases)
+          LATEST_URL=$(echo "$RELEASES_JSON" \
+            | jq -r '[.[] | select(.assets != null and (.assets | length) > 0)][0].assets[] | select(.name == "Xray-linux-64.zip") | .browser_download_url')
+
+          if [ -z "$LATEST_URL" ] || [ "$LATEST_URL" = "null" ]; then
+            echo "::error::Failed to resolve Xray-linux-64.zip download URL from GitHub API"
+            echo "$RELEASES_JSON" | head -c 500
+            exit 1
+          fi
+
+          echo "Downloading: $LATEST_URL"
           curl -L "$LATEST_URL" -o xray.zip
           mkdir -p xray-bin
           unzip -o xray.zip -d xray-bin
