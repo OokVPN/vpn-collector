@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
-const tls = require('node:tls');
+const { execFile } = require('node:child_process');
 
 const RAW_PATH = path.resolve('data/raw.json');
 const CHECKED_PATH = path.resolve('data/checked.json');
@@ -12,11 +12,12 @@ const MAX_LATENCY = parseInt(process.env.MAX_LATENCY || '150', 10);
 const TCP_TIMEOUT = parseInt(process.env.TCP_TIMEOUT || '5000', 10);
 const HTTP_TIMEOUT = parseInt(process.env.HTTP_TIMEOUT || '7000', 10);
 const CONCURRENCY = parseInt(process.env.CONCURRENCY || '100', 10);
-const XRAY_CONCURRENCY = parseInt(process.env.XRAY_CONCURRENCY || '10', 10);
+// Each xray process is a real OS process; keep this modest on shared 2-core CI runners
+// or "XRAY START FAIL" starts showing up under contention even for good servers.
+const XRAY_CONCURRENCY = parseInt(process.env.XRAY_CONCURRENCY || '5', 10);
+const XRAY_START_TIMEOUT = parseInt(process.env.XRAY_START_TIMEOUT || '6000', 10);
 
-const CHECK_TARGET_HOST = 'www.gstatic.com';
-const CHECK_TARGET_PORT = 443;
-const CHECK_TARGET_PATH = '/generate_204';
+const CHECK_TARGET_URL = 'https://www.gstatic.com/generate_204';
 
 function tcpCheck(host, port, timeout) {
   return new Promise((resolve) => {
@@ -40,102 +41,42 @@ function tcpCheck(host, port, timeout) {
   });
 }
 
-// Minimal no-auth SOCKS5 CONNECT handshake, implemented directly on top of net.Socket.
-// This is the tunnel the HTTPS check is sent through — there is no "direct" fallback.
-function socks5Connect(socksPort, targetHost, targetPort, timeout) {
-  return new Promise((resolve, reject) => {
-    const socket = net.createConnection({ host: '127.0.0.1', port: socksPort });
-    let stage = 0;
-    const timer = setTimeout(() => {
-      socket.destroy();
-      reject(new Error('SOCKS_TIMEOUT'));
-    }, timeout);
+/**
+ * The real "does this VPN actually work" check: a genuine HTTPS request routed through the
+ * local SOCKS5 port that Xray is listening on. Uses curl (mature, well-tested SOCKS5+TLS
+ * implementation) instead of a hand-rolled client — this is deliberately the simplest thing
+ * that can prove traffic goes runner -> local SOCKS5 -> Xray -> VPN server -> internet.
+ *
+ * --socks5-hostname (not --socks5) is used on purpose: it makes curl send the hostname to the
+ * proxy for it to resolve, so DNS resolution also happens through the VPN, not locally. There
+ * is no "direct" fallback here — if the SOCKS5 tunnel or the outbound doesn't work, curl fails.
+ */
+function curlThroughSocks(localPort, timeoutMs) {
+  return new Promise((resolve) => {
+    const timeoutSec = Math.max(1, Math.ceil(timeoutMs / 1000));
+    const args = [
+      '-s',
+      '-o', '/dev/null',
+      '-w', '%{http_code} %{time_total}',
+      '--max-time', String(timeoutSec),
+      '--socks5-hostname', `127.0.0.1:${localPort}`,
+      CHECK_TARGET_URL
+    ];
 
-    socket.on('error', (err) => {
-      clearTimeout(timer);
-      reject(err);
-    });
-
-    socket.on('connect', () => {
-      socket.write(Buffer.from([0x05, 0x01, 0x00])); // ver 5, 1 method, no-auth
-    });
-
-    socket.on('data', (data) => {
-      if (stage === 0) {
-        if (data[0] !== 0x05 || data[1] !== 0x00) {
-          clearTimeout(timer);
-          socket.destroy();
-          reject(new Error('SOCKS_AUTH_FAIL'));
-          return;
-        }
-        const hostBuf = Buffer.from(targetHost, 'utf8');
-        const req = Buffer.concat([
-          Buffer.from([0x05, 0x01, 0x00, 0x03, hostBuf.length]),
-          hostBuf,
-          Buffer.from([(targetPort >> 8) & 0xff, targetPort & 0xff])
-        ]);
-        stage = 1;
-        socket.write(req);
-      } else if (stage === 1) {
-        if (data[0] !== 0x05 || data[1] !== 0x00) {
-          clearTimeout(timer);
-          socket.destroy();
-          reject(new Error('SOCKS_CONNECT_FAIL_' + data[1]));
-          return;
-        }
-        clearTimeout(timer);
-        socket.removeAllListeners('data');
-        resolve(socket);
+    execFile('curl', args, { timeout: timeoutMs + 2000 }, (err, stdout) => {
+      if (err) {
+        resolve({ ok: false, error: err.message });
+        return;
       }
+      const parts = stdout.trim().split(/\s+/);
+      const status = parseInt(parts[0], 10);
+      const timeTotal = parseFloat(parts[1]);
+      if (!Number.isFinite(status) || !Number.isFinite(timeTotal) || status === 0) {
+        resolve({ ok: false, error: `unparsable curl output: "${stdout.trim()}"` });
+        return;
+      }
+      resolve({ ok: true, status, latency: Math.round(timeTotal * 1000) });
     });
-  });
-}
-
-function httpsThroughSocks(socksPort, targetHost, targetPort, timeout) {
-  return new Promise((resolve, reject) => {
-    socks5Connect(socksPort, targetHost, targetPort, timeout)
-      .then((rawSocket) => {
-        const timer = setTimeout(() => {
-          rawSocket.destroy();
-          reject(new Error('PROXY_REQUEST_TIMEOUT'));
-        }, timeout);
-
-        let settled = false;
-        const tlsSocket = tls.connect({ socket: rawSocket, servername: targetHost, timeout }, () => {
-          const req =
-            `GET ${CHECK_TARGET_PATH} HTTP/1.1\r\n` +
-            `Host: ${targetHost}\r\n` +
-            `User-Agent: vpn-collector\r\n` +
-            `Connection: close\r\n\r\n`;
-          tlsSocket.write(req);
-        });
-
-        let buffer = '';
-        tlsSocket.on('data', (chunk) => {
-          buffer += chunk.toString('utf8');
-          const match = buffer.match(/^HTTP\/\d\.\d (\d{3})/);
-          if (match && !settled) {
-            settled = true;
-            clearTimeout(timer);
-            const status = parseInt(match[1], 10);
-            tlsSocket.destroy();
-            resolve(status);
-          }
-        });
-        tlsSocket.on('error', (err) => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          reject(err);
-        });
-        tlsSocket.on('close', () => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          reject(new Error('PROXY_REQUEST_CLOSED'));
-        });
-      })
-      .catch(reject);
   });
 }
 
@@ -149,7 +90,7 @@ async function checkOne(entry, localPort, xrayModule) {
 
   try {
     xray = xrayModule.startXray(configPath);
-    const ready = await xrayModule.waitForPort(localPort, 4000);
+    const ready = await xrayModule.waitForPort(localPort, XRAY_START_TIMEOUT);
     if (!ready || !xray.isAlive()) {
       console.log(`${label} XRAY START FAIL`);
       return { status: 'XRAY_START_FAIL' };
@@ -157,29 +98,24 @@ async function checkOne(entry, localPort, xrayModule) {
     console.log(`${label} XRAY PASS`);
     console.log(`${label} SOCKS PASS`);
 
-    const start = Date.now();
-    let httpStatus;
-    try {
-      httpStatus = await httpsThroughSocks(localPort, CHECK_TARGET_HOST, CHECK_TARGET_PORT, HTTP_TIMEOUT);
-    } catch (err) {
-      console.log(`${label} PROXY HTTPS FAIL (${err.message})`);
+    const result = await curlThroughSocks(localPort, HTTP_TIMEOUT);
+    if (!result.ok) {
+      console.log(`${label} PROXY HTTPS FAIL (${result.error})`);
       return { status: 'PROXY_REQUEST_FAIL' };
     }
-    const latency = Date.now() - start;
-
-    if (httpStatus < 200 || httpStatus >= 300) {
-      console.log(`${label} PROXY HTTPS FAIL (HTTP ${httpStatus})`);
+    if (result.status < 200 || result.status >= 300) {
+      console.log(`${label} PROXY HTTPS FAIL (HTTP ${result.status})`);
       return { status: 'HTTP_FAIL' };
     }
     console.log(`${label} PROXY HTTPS PASS`);
 
-    if (latency > MAX_LATENCY) {
-      console.log(`${label} LATENCY ${latency} ms FAIL (> ${MAX_LATENCY})`);
+    if (result.latency > MAX_LATENCY) {
+      console.log(`${label} LATENCY ${result.latency} ms FAIL (> ${MAX_LATENCY})`);
       return { status: 'LATENCY_FAIL' };
     }
-    console.log(`${label} LATENCY ${latency} ms`);
+    console.log(`${label} LATENCY ${result.latency} ms`);
     console.log(`${label} PASS`);
-    return { status: 'PASS', latency };
+    return { status: 'PASS', latency: result.latency };
   } finally {
     if (xray) await xrayModule.stopXray(xray.proc);
     xrayModule.cleanupConfig(configPath);
@@ -252,13 +188,16 @@ async function main() {
   console.log(`TCP alive: ${tcpAlive}`);
 
   // Stage 2: full Xray + local SOCKS5 + real HTTPS-through-proxy check, limited concurrency.
+  // Every item in the batch gets its own local port (batch is capped at BATCH_SIZE, so a plain
+  // running counter is enough — no modulo, no risk of two concurrent xray processes fighting
+  // over the same port).
   const passed = [];
   let liveCount = 0;
   const basePort = 20000;
   let portCounter = 0;
 
   await pool(tcpPassed, XRAY_CONCURRENCY, async (entry) => {
-    const localPort = basePort + (portCounter++ % (XRAY_CONCURRENCY * 4));
+    const localPort = basePort + portCounter++;
     try {
       const result = await checkOne(entry, localPort, xrayModule);
       if (result.status === 'PASS') {
