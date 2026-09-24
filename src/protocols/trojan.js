@@ -1,139 +1,59 @@
-function number(value, fallback) {
-  const n = Number(value);
+export function parseTrojan(uri) {
+  try {
+    const u = new URL(uri);
+    if (u.protocol !== 'trojan:') return null;
 
-  return Number.isFinite(n)
-    ? n
-    : fallback;
-}
+    const password = decodeURIComponent(u.username || '');
+    const host = u.hostname;
+    const port = parseInt(u.port, 10);
+    if (!password || !host || !port) return null;
 
-export function parseTrojan(uri, tag) {
-  const url =
-    new URL(uri);
+    const p = u.searchParams;
+    const security = p.get('security') || 'tls';
+    const network = p.get('type') || 'tcp';
 
-  const q =
-    url.searchParams;
+    const streamSettings = { network, security };
 
-  const password =
-    decodeURIComponent(
-      url.username
-    );
-
-  if (!password) {
-    throw new Error(
-      "Trojan password missing"
-    );
-  }
-
-  let network =
-    q.get("type") ||
-    "tcp";
-
-  if (network === "tcp") {
-    network = "raw";
-  }
-
-  const security =
-    q.get("security") ||
-    "tls";
-
-  const stream = {
-    network,
-    security
-  };
-
-  if (network === "ws") {
-    stream.wsSettings = {
-      path:
-        q.get("path") || "/",
-
-      headers: {}
-    };
-
-    if (q.get("host")) {
-      stream.wsSettings.headers.Host =
-        q.get("host");
-    }
-  }
-
-  if (network === "grpc") {
-    stream.grpcSettings = {
-      serviceName:
-        q.get("serviceName") ||
-        q.get("service") ||
-        ""
-    };
-  }
-
-  if (network === "xhttp") {
-    stream.xhttpSettings = {
-      path:
-        q.get("path") || "/",
-
-      host:
-        q.get("host") || ""
-    };
-  }
-
-  if (network === "httpupgrade") {
-    stream.httpupgradeSettings = {
-      path:
-        q.get("path") || "/",
-
-      host:
-        q.get("host") || ""
-    };
-  }
-
-  if (security === "tls") {
-    stream.tlsSettings = {
-      serverName:
-        q.get("sni") ||
-        url.hostname,
-
-      fingerprint:
-        q.get("fp") ||
-        "chrome"
-    };
-
-    const pinned =
-      q.get("pinSHA256") ||
-      q.get("pinnedPeerCertSha256");
-
-    if (pinned) {
-      stream.tlsSettings.pinnedPeerCertSha256 =
-        pinned;
+    if (network === 'ws') {
+      streamSettings.wsSettings = {
+        path: p.get('path') || '/',
+        headers: p.get('host') ? { Host: p.get('host') } : undefined
+      };
+    } else if (network === 'grpc') {
+      streamSettings.grpcSettings = {
+        serviceName: p.get('serviceName') || '',
+        multiMode: (p.get('mode') || 'gun') === 'multi'
+      };
+    } else if (network === 'xhttp') {
+      streamSettings.xhttpSettings = {
+        path: p.get('path') || '/',
+        host: p.get('host') || host,
+        mode: p.get('mode') || 'auto'
+      };
+    } else if (network === 'httpupgrade') {
+      streamSettings.httpupgradeSettings = {
+        path: p.get('path') || '/',
+        host: p.get('host') || host
+      };
     }
 
-    const verifyName =
-      q.get("verifyPeerCertByName") ||
-      q.get("vcn");
-
-    if (verifyName) {
-      stream.tlsSettings.verifyPeerCertByName =
-        verifyName;
+    if (security === 'tls') {
+      streamSettings.tlsSettings = {
+        serverName: p.get('sni') || host,
+        fingerprint: p.get('fp') || undefined
+      };
     }
+
+    const outbound = {
+      protocol: 'trojan',
+      settings: {
+        servers: [{ address: host, port, password }]
+      },
+      streamSettings
+    };
+
+    return { host, port, outbound };
+  } catch {
+    return null;
   }
-
-  return {
-    tag,
-
-    protocol:
-      "trojan",
-
-    settings: {
-      address:
-        url.hostname,
-
-      port:
-        number(
-          url.port,
-          443
-        ),
-
-      password
-    },
-
-    streamSettings:
-      stream
-  };
 }
