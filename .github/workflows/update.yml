@@ -73,7 +73,8 @@ jobs:
           TCP_TIMEOUT: 5000
           HTTP_TIMEOUT: 7000
           CONCURRENCY: 100
-          XRAY_CONCURRENCY: 10
+          XRAY_CONCURRENCY: 5
+          XRAY_START_TIMEOUT: 6000
         run: npm run check
 
       - name: Generate subscription
