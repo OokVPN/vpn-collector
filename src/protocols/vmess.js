@@ -1,202 +1,77 @@
-function decode(value) {
-  let input =
-    value
-      .replace(/-/g, "+")
-      .replace(/_/g, "/")
-      .replace(/\s+/g, "");
-
-  input += "=".repeat(
-    (4 - input.length % 4) % 4
-  );
-
-  return Buffer
-    .from(input, "base64")
-    .toString("utf8");
+function b64decode(str) {
+  let s = str.trim().replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  return Buffer.from(s, 'base64').toString('utf8');
 }
 
-function number(value, fallback) {
-  const n = Number(value);
+export function parseVmess(uri) {
+  try {
+    if (!uri.startsWith('vmess://')) return null;
+    const b64 = uri.slice(8).split('#')[0];
+    const json = JSON.parse(b64decode(b64));
 
-  return Number.isFinite(n)
-    ? n
-    : fallback;
-}
+    const host = json.add;
+    const port = parseInt(json.port, 10);
+    const id = json.id;
+    if (!host || !port || !id) return null;
 
-export function parseVmess(uri, tag) {
-  const encoded =
-    uri.slice(
-      "vmess://".length
-    );
+    const aid = parseInt(json.aid || '0', 10);
+    const scy = json.scy || 'auto';
+    let network = json.net || 'tcp';
+    const tlsOn = json.tls === 'tls' || json.tls === true;
 
-  const data =
-    JSON.parse(
-      decode(encoded)
-    );
+    const streamSettings = { network, security: tlsOn ? 'tls' : 'none' };
 
-  if (!data.add || !data.id) {
-    throw new Error(
-      "Invalid VMess"
-    );
-  }
-
-  let network =
-    String(
-      data.net || "tcp"
-    ).toLowerCase();
-
-  if (network === "tcp") {
-    network = "raw";
-  }
-
-  if (network === "kcp") {
-    network = "mkcp";
-  }
-
-  const stream = {
-    network,
-
-    security:
-      data.tls === "tls"
-        ? "tls"
-        : "none"
-  };
-
-  if (network === "ws") {
-    stream.wsSettings = {
-      path:
-        data.path || "/",
-
-      headers:
-        data.host
-          ? {
-              Host: data.host
-            }
-          : {}
-    };
-  }
-
-  if (network === "grpc") {
-    stream.grpcSettings = {
-      serviceName:
-        data.path ||
-        data.serviceName ||
-        ""
-    };
-  }
-
-  if (network === "xhttp") {
-    stream.xhttpSettings = {
-      path:
-        data.path || "/",
-
-      host:
-        data.host || ""
-    };
-  }
-
-  if (network === "httpupgrade") {
-    stream.httpupgradeSettings = {
-      path:
-        data.path || "/",
-
-      host:
-        data.host || ""
-    };
-  }
-
-  if (network === "mkcp") {
-    stream.kcpSettings = {
-      mtu:
-        number(data.mtu, 1350),
-
-      tti:
-        number(data.tti, 50),
-
-      uplinkCapacity:
-        number(data.up, 5),
-
-      downlinkCapacity:
-        number(data.down, 20),
-
-      congestion:
-        Boolean(data.congestion),
-
-      header: {
-        type:
-          data.type || "none"
-      }
-    };
-  }
-
-  if (stream.security === "tls") {
-    stream.tlsSettings = {
-      serverName:
-        data.sni ||
-        data.host ||
-        data.add,
-
-      fingerprint:
-        data.fp ||
-        "chrome"
-    };
-
-    const pinned =
-      data.pinSHA256 ||
-      data.pinnedPeerCertSha256;
-
-    if (pinned) {
-      stream.tlsSettings.pinnedPeerCertSha256 =
-        pinned;
+    if (network === 'ws') {
+      streamSettings.wsSettings = {
+        path: json.path || '/',
+        headers: json.host ? { Host: json.host } : undefined
+      };
+    } else if (network === 'grpc') {
+      streamSettings.grpcSettings = {
+        serviceName: json.path || '',
+        multiMode: json.type === 'multi'
+      };
+    } else if (network === 'h2' || network === 'xhttp') {
+      streamSettings.network = 'xhttp';
+      streamSettings.xhttpSettings = {
+        path: json.path || '/',
+        host: json.host || host,
+        mode: 'auto'
+      };
+    } else if (network === 'httpupgrade') {
+      streamSettings.httpupgradeSettings = {
+        path: json.path || '/',
+        host: json.host || host
+      };
+    } else if (network === 'kcp') {
+      streamSettings.kcpSettings = { header: { type: json.type || 'none' } };
     }
 
-    const verifyName =
-      data.verifyPeerCertByName ||
-      data.vcn;
-
-    if (verifyName) {
-      stream.tlsSettings.verifyPeerCertByName =
-        verifyName;
+    if (tlsOn) {
+      streamSettings.tlsSettings = {
+        serverName: json.sni || json.host || host,
+        fingerprint: json.fp || undefined,
+        alpn: json.alpn ? String(json.alpn).split(',') : undefined
+      };
     }
+
+    const outbound = {
+      protocol: 'vmess',
+      settings: {
+        vnext: [
+          {
+            address: host,
+            port,
+            users: [{ id, alterId: aid, security: scy }]
+          }
+        ]
+      },
+      streamSettings
+    };
+
+    return { host, port, outbound };
+  } catch {
+    return null;
   }
-
-  return {
-    tag,
-
-    protocol: "vmess",
-
-    settings: {
-      vnext: [
-        {
-          address:
-            data.add,
-
-          port:
-            number(
-              data.port,
-              443
-            ),
-
-          users: [
-            {
-              id:
-                data.id,
-
-              alterId:
-                number(
-                  data.aid,
-                  0
-                ),
-
-              security:
-                data.scy ||
-                "auto"
-            }
-          ]
-        }
-      ]
-    },
-
-    streamSettings:
-      stream
-  };
 }
