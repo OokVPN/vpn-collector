@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "collect": "node src/collector.js",
-"check": "node src/checker.cjs",
+    "check": "node src/checker.cjs",
     "generate": "node src/generator.js"
   }
 }
