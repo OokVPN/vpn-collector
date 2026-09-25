@@ -74,7 +74,7 @@ jobs:
         env:
           BATCH_SIZE: 200
           BATCH_INDEX: ${{ steps.batch.outputs.batch_index }}
-          MAX_LATENCY: 150
+          MAX_LATENCY: 1000
           TCP_TIMEOUT: 5000
           XRAY_TIMEOUT: 10000
           CURL_TIMEOUT: 12000
@@ -84,7 +84,7 @@ jobs:
 
       - name: Generate subscription
         env:
-          MAX_LATENCY: 150
+          MAX_LATENCY: 1000
         run: npm run generate
 
       - name: Validate output
