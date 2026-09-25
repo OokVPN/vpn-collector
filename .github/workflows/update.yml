@@ -51,6 +51,11 @@ jobs:
           chmod +x xray-bin/xray
           echo "$(pwd)/xray-bin" >> "$GITHUB_PATH"
 
+      - name: Verify Xray installation
+        run: |
+          xray-bin/xray version
+          echo "XRAY_BIN=$(pwd)/xray-bin/xray" >> "$GITHUB_ENV"
+
       - name: Collect sources
         run: npm run collect
 
@@ -71,10 +76,10 @@ jobs:
           BATCH_INDEX: ${{ steps.batch.outputs.batch_index }}
           MAX_LATENCY: 150
           TCP_TIMEOUT: 5000
-          HTTP_TIMEOUT: 7000
+          XRAY_TIMEOUT: 10000
+          CURL_TIMEOUT: 12000
           CONCURRENCY: 100
           XRAY_CONCURRENCY: 5
-          XRAY_START_TIMEOUT: 6000
         run: npm run check
 
       - name: Generate subscription
