@@ -80,7 +80,8 @@
             "node-52",
             "node-53",
             "node-54",
-            "node-55"
+            "node-55",
+            "node-56"
           ],
           "strategy": {
             "type": "leastLoad",
@@ -260,6 +261,20 @@
         "tag": "node-4"
       },
       {
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "158.173.221.214",
+              "port": 11001,
+              "method": "chacha20-ietf-poly1305",
+              "password": "c58d16e593d44f42"
+            }
+          ]
+        },
+        "tag": "node-5"
+      },
+      {
         "protocol": "vless",
         "settings": {
           "vnext": [
@@ -287,7 +302,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-5"
+        "tag": "node-6"
       },
       {
         "protocol": "vless",
@@ -317,7 +332,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-6"
+        "tag": "node-7"
       },
       {
         "protocol": "vless",
@@ -347,7 +362,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-7"
+        "tag": "node-8"
       },
       {
         "protocol": "vless",
@@ -377,7 +392,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-8"
+        "tag": "node-9"
       },
       {
         "protocol": "vless",
@@ -407,7 +422,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-9"
+        "tag": "node-10"
       },
       {
         "protocol": "vless",
@@ -437,7 +452,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-10"
+        "tag": "node-11"
       },
       {
         "protocol": "vless",
@@ -470,7 +485,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-11"
+        "tag": "node-12"
       },
       {
         "protocol": "vless",
@@ -504,7 +519,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-12"
+        "tag": "node-13"
       },
       {
         "protocol": "vmess",
@@ -533,7 +548,7 @@
             "serverName": "aidrivercat.org"
           }
         },
-        "tag": "node-13"
+        "tag": "node-14"
       },
       {
         "protocol": "vmess",
@@ -565,7 +580,7 @@
             "serverName": "aksai.org"
           }
         },
-        "tag": "node-14"
+        "tag": "node-15"
       },
       {
         "protocol": "vless",
@@ -595,7 +610,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-15"
+        "tag": "node-16"
       },
       {
         "protocol": "vmess",
@@ -627,7 +642,7 @@
             "serverName": "mygptagent.org"
           }
         },
-        "tag": "node-16"
+        "tag": "node-17"
       },
       {
         "protocol": "trojan",
@@ -647,7 +662,7 @@
             "serverName": "nlt1.pubconverter.com"
           }
         },
-        "tag": "node-17"
+        "tag": "node-18"
       },
       {
         "protocol": "vless",
@@ -677,7 +692,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-18"
+        "tag": "node-19"
       },
       {
         "protocol": "trojan",
@@ -697,7 +712,7 @@
             "serverName": "nlt1.pubconverter.com"
           }
         },
-        "tag": "node-19"
+        "tag": "node-20"
       },
       {
         "protocol": "trojan",
@@ -717,7 +732,7 @@
             "serverName": "nlt1.pubconverter.com"
           }
         },
-        "tag": "node-20"
+        "tag": "node-21"
       },
       {
         "protocol": "trojan",
@@ -737,7 +752,7 @@
             "serverName": "nlt1.pubconverter.com"
           }
         },
-        "tag": "node-21"
+        "tag": "node-22"
       },
       {
         "protocol": "vless",
@@ -763,7 +778,7 @@
             "serverName": "hub-mori-new.failspace.top"
           }
         },
-        "tag": "node-22"
+        "tag": "node-23"
       },
       {
         "protocol": "vless",
@@ -790,7 +805,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-23"
+        "tag": "node-24"
       },
       {
         "protocol": "vless",
@@ -820,7 +835,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-24"
+        "tag": "node-25"
       },
       {
         "protocol": "vless",
@@ -850,7 +865,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-25"
+        "tag": "node-26"
       },
       {
         "protocol": "vless",
@@ -884,7 +899,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-26"
+        "tag": "node-27"
       },
       {
         "protocol": "vless",
@@ -914,7 +929,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-27"
+        "tag": "node-28"
       },
       {
         "protocol": "vless",
@@ -945,7 +960,7 @@
             "serverName": "fr.pubconverter.com"
           }
         },
-        "tag": "node-28"
+        "tag": "node-29"
       },
       {
         "protocol": "vless",
@@ -977,7 +992,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-29"
+        "tag": "node-30"
       },
       {
         "protocol": "vless",
@@ -1011,7 +1026,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-30"
+        "tag": "node-31"
       },
       {
         "protocol": "vless",
@@ -1043,7 +1058,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-31"
+        "tag": "node-32"
       },
       {
         "protocol": "vless",
@@ -1077,7 +1092,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-32"
+        "tag": "node-33"
       },
       {
         "protocol": "vless",
@@ -1107,7 +1122,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-33"
+        "tag": "node-34"
       },
       {
         "protocol": "vless",
@@ -1133,7 +1148,7 @@
             "serverName": "at-at-at.failspace.top"
           }
         },
-        "tag": "node-34"
+        "tag": "node-35"
       },
       {
         "protocol": "vless",
@@ -1166,7 +1181,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-35"
+        "tag": "node-36"
       },
       {
         "protocol": "vless",
@@ -1200,7 +1215,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-36"
+        "tag": "node-37"
       },
       {
         "protocol": "vless",
@@ -1233,7 +1248,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-37"
+        "tag": "node-38"
       },
       {
         "protocol": "vless",
@@ -1267,7 +1282,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-38"
+        "tag": "node-39"
       },
       {
         "protocol": "vless",
@@ -1298,7 +1313,7 @@
             "serverName": "latvia.koalaexpress.ru"
           }
         },
-        "tag": "node-39"
+        "tag": "node-40"
       },
       {
         "protocol": "trojan",
@@ -1318,7 +1333,7 @@
             "serverName": "mdt2.pubconverter.com"
           }
         },
-        "tag": "node-40"
+        "tag": "node-41"
       },
       {
         "protocol": "vless",
@@ -1351,7 +1366,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-41"
+        "tag": "node-42"
       },
       {
         "protocol": "vless",
@@ -1384,7 +1399,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-42"
+        "tag": "node-43"
       },
       {
         "protocol": "vless",
@@ -1414,7 +1429,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-43"
+        "tag": "node-44"
       },
       {
         "protocol": "vless",
@@ -1444,7 +1459,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-44"
+        "tag": "node-45"
       },
       {
         "protocol": "vless",
@@ -1474,7 +1489,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-45"
+        "tag": "node-46"
       },
       {
         "protocol": "vless",
@@ -1504,7 +1519,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-46"
+        "tag": "node-47"
       },
       {
         "protocol": "vless",
@@ -1534,7 +1549,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-47"
+        "tag": "node-48"
       },
       {
         "protocol": "vless",
@@ -1564,7 +1579,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-48"
+        "tag": "node-49"
       },
       {
         "protocol": "vless",
@@ -1594,7 +1609,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-49"
+        "tag": "node-50"
       },
       {
         "protocol": "vless",
@@ -1624,7 +1639,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-50"
+        "tag": "node-51"
       },
       {
         "protocol": "vless",
@@ -1654,7 +1669,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-51"
+        "tag": "node-52"
       },
       {
         "protocol": "vless",
@@ -1684,7 +1699,7 @@
             "spiderX": "/42618003b1db127"
           }
         },
-        "tag": "node-52"
+        "tag": "node-53"
       },
       {
         "protocol": "vless",
@@ -1714,7 +1729,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-53"
+        "tag": "node-54"
       },
       {
         "protocol": "vless",
@@ -1744,7 +1759,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-54"
+        "tag": "node-55"
       },
       {
         "protocol": "vless",
@@ -1774,7 +1789,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-55"
+        "tag": "node-56"
       },
       {
         "protocol": "freedom",
@@ -1848,7 +1863,8 @@
         "node-52",
         "node-53",
         "node-54",
-        "node-55"
+        "node-55",
+        "node-56"
       ]
     },
     "remarks": "🇪🇺 АВТО ⚡"
@@ -2248,6 +2264,89 @@
       ]
     },
     "remarks": "🇬🇧 Великобритания #4"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "158.173.221.214",
+              "port": 11001,
+              "method": "chacha20-ietf-poly1305",
+              "password": "c58d16e593d44f42"
+            }
+          ]
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇬🇧 Великобритания #5"
   },
   {
     "dns": {
