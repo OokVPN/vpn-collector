@@ -9,7 +9,11 @@ const CHECKED_PATH = path.resolve('data/checked.json');
 const BATCH_SIZE = Number(process.env.BATCH_SIZE || 200);
 const BATCH_INDEX = Number(process.env.BATCH_INDEX || 0);
 
-const MAX_LATENCY = Number(process.env.MAX_LATENCY || 150);
+const MAX_LATENCY = Math.min(
+ Number(process.env.MAX_LATENCY || 1000),
+  1000
+  );
+
 const TCP_TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
 const XRAY_TIMEOUT = Number(process.env.XRAY_TIMEOUT || process.env.XRAY_START_TIMEOUT || 10000);
 const CURL_TIMEOUT = Number(process.env.CURL_TIMEOUT || process.env.HTTP_TIMEOUT || 12000);
