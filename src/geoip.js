@@ -1,43 +1,98 @@
 import https from 'node:https';
 
-const TIMEOUT = 4000;
-const FALLBACK = { countryCode: 'UN', countryName: 'Неизвестно' };
+const TIMEOUT = 8000;
+const FALLBACK = {
+  countryCode: 'UN',
+  countryName: 'Неизвестно'
+};
 
-export function geoipLookup(host) {
+function requestJson(url) {
   return new Promise((resolve) => {
     let req;
+
     try {
       req = https.get(
-        `https://ip-api.com/json/${encodeURIComponent(host)}?fields=status,countryCode,country`,
-        { timeout: TIMEOUT },
+        url,
+        {
+          timeout: TIMEOUT,
+          headers: {
+            'User-Agent': 'OokVPN/1.0'
+          }
+        },
         (res) => {
           let data = '';
+
           res.setEncoding('utf8');
-          res.on('data', (c) => (data += c));
+
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+
           res.on('end', () => {
             try {
-              const json = JSON.parse(data);
-              if (json.status === 'success' && json.countryCode) {
-                resolve({ countryCode: json.countryCode, countryName: json.country || json.countryCode });
+              if (res.statusCode && res.statusCode >= 400) {
+                resolve(null);
                 return;
               }
+
+              resolve(JSON.parse(data));
             } catch {
-              // fall through to fallback
+              resolve(null);
             }
-            resolve(FALLBACK);
           });
-          res.on('error', () => resolve(FALLBACK));
+
+          res.on('error', () => resolve(null));
         }
       );
     } catch {
-      resolve(FALLBACK);
+      resolve(null);
       return;
     }
 
     req.on('timeout', () => {
       req.destroy();
-      resolve(FALLBACK);
+      resolve(null);
     });
-    req.on('error', () => resolve(FALLBACK));
+
+    req.on('error', () => resolve(null));
   });
+}
+
+export async function geoipLookup(host) {
+  const encodedHost = encodeURIComponent(host);
+
+  // Основной GeoIP-провайдер
+  const ipwho = await requestJson(
+    `https://ipwho.is/${encodedHost}`
+  );
+
+  if (
+    ipwho?.success === true &&
+    typeof ipwho.country_code === 'string' &&
+    ipwho.country_code.length === 2
+  ) {
+    return {
+      countryCode: ipwho.country_code.toUpperCase(),
+      countryName: ipwho.country || ipwho.country_code
+    };
+  }
+
+  // Резервный GeoIP-провайдер
+  const ipApi = await requestJson(
+    `https://ip-api.com/json/${encodedHost}?fields=status,countryCode,country`
+  );
+
+  if (
+    ipApi?.status === 'success' &&
+    typeof ipApi.countryCode === 'string' &&
+    ipApi.countryCode.length === 2
+  ) {
+    return {
+      countryCode: ipApi.countryCode.toUpperCase(),
+      countryName: ipApi.country || ipApi.countryCode
+    };
+  }
+
+  // Только если оба сервиса не смогли определить страну
+  return FALLBACK;
 }
