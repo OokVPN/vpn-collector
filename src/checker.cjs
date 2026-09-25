@@ -6,134 +6,186 @@ const { execFile } = require('node:child_process');
 const RAW_PATH = path.resolve('data/raw.json');
 const CHECKED_PATH = path.resolve('data/checked.json');
 
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || '200', 10);
-const BATCH_INDEX = parseInt(process.env.BATCH_INDEX || '0', 10);
-const MAX_LATENCY = parseInt(process.env.MAX_LATENCY || '150', 10);
-const TCP_TIMEOUT = parseInt(process.env.TCP_TIMEOUT || '5000', 10);
-const HTTP_TIMEOUT = parseInt(process.env.HTTP_TIMEOUT || '7000', 10);
-const CONCURRENCY = parseInt(process.env.CONCURRENCY || '100', 10);
-// Each xray process is a real OS process; keep this modest on shared 2-core CI runners
-// or "XRAY START FAIL" starts showing up under contention even for good servers.
-const XRAY_CONCURRENCY = parseInt(process.env.XRAY_CONCURRENCY || '5', 10);
-const XRAY_START_TIMEOUT = parseInt(process.env.XRAY_START_TIMEOUT || '6000', 10);
+const BATCH_SIZE = Number(process.env.BATCH_SIZE || 200);
+const BATCH_INDEX = Number(process.env.BATCH_INDEX || 0);
 
-const CHECK_TARGET_URL = 'https://www.gstatic.com/generate_204';
+const MAX_LATENCY = Number(process.env.MAX_LATENCY || 150);
+const TCP_TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
+const XRAY_TIMEOUT = Number(process.env.XRAY_TIMEOUT || process.env.XRAY_START_TIMEOUT || 10000);
+const CURL_TIMEOUT = Number(process.env.CURL_TIMEOUT || process.env.HTTP_TIMEOUT || 12000);
 
-function tcpCheck(host, port, timeout) {
-  return new Promise((resolve) => {
-    const socket = new net.Socket();
-    let done = false;
-    const finish = (ok) => {
-      if (done) return;
-      done = true;
-      socket.destroy();
-      resolve(ok);
-    };
-    socket.setTimeout(timeout);
-    socket.once('connect', () => finish(true));
-    socket.once('timeout', () => finish(false));
-    socket.once('error', () => finish(false));
-    try {
-      socket.connect(port, host);
-    } catch {
-      finish(false);
-    }
-  });
+const CONCURRENCY = Number(process.env.CONCURRENCY || 100);
+const XRAY_CONCURRENCY = Number(process.env.XRAY_CONCURRENCY || 10);
+
+const TEST_URL = 'https://www.gstatic.com/generate_204';
+
+const errorStats = new Map();
+let printedErrors = 0;
+const MAX_ERROR_PRINTS = 20;
+
+function addError(reason) {
+  errorStats.set(reason, (errorStats.get(reason) || 0) + 1);
+  if (printedErrors < MAX_ERROR_PRINTS) {
+    console.log(`FAIL ${reason}`);
+    printedErrors++;
+  }
+}
+
+function cleanError(error) {
+  return String(error)
+    .replace(/\r/g, ' ')
+    .replace(/\n+/g, ' ')
+    .replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, '<uuid>')
+    .slice(0, 500);
 }
 
 /**
- * The real "does this VPN actually work" check: a genuine HTTPS request routed through the
- * local SOCKS5 port that Xray is listening on. Uses curl (mature, well-tested SOCKS5+TLS
- * implementation) instead of a hand-rolled client — this is deliberately the simplest thing
- * that can prove traffic goes runner -> local SOCKS5 -> Xray -> VPN server -> internet.
- *
- * --socks5-hostname (not --socks5) is used on purpose: it makes curl send the hostname to the
- * proxy for it to resolve, so DNS resolution also happens through the VPN, not locally. There
- * is no "direct" fallback here — if the SOCKS5 tunnel or the outbound doesn't work, curl fails.
+ * TCP reachability + raw handshake latency. This is a cheap prefilter only — it decides
+ * whether a server is even worth spending a whole Xray process on, and whether it's cheaply
+ * disqualified for being slow at the network level. The number saved to checked.json is the
+ * REAL proxied latency measured later through curl, not this one — see checkNode().
  */
-function curlThroughSocks(localPort, timeoutMs) {
+function tcpCheck(host, port) {
   return new Promise((resolve) => {
-    const timeoutSec = Math.max(1, Math.ceil(timeoutMs / 1000));
+    const started = Date.now();
+    const socket = net.createConnection({ host, port });
+    let done = false;
+    const finish = (ok, latency = null) => {
+      if (done) return;
+      done = true;
+      socket.destroy();
+      resolve({ ok, latency });
+    };
+    socket.setTimeout(TCP_TIMEOUT);
+    socket.once('connect', () => finish(true, Date.now() - started));
+    socket.once('timeout', () => finish(false));
+    socket.once('error', () => finish(false));
+  });
+}
+
+function randomPort() {
+  return 20000 + Math.floor(Math.random() * 20000);
+}
+
+/**
+ * Real HTTPS request routed through the local SOCKS5 port Xray is listening on, via curl's
+ * own SOCKS5+TLS implementation (mature and well-tested, rather than a hand-rolled client).
+ * socks5h:// makes curl hand the hostname to the proxy to resolve, so DNS also goes through
+ * the tunnel. No "direct" fallback exists anywhere in this path — if the tunnel doesn't work,
+ * curl fails.
+ */
+function curlThroughProxy(port) {
+  return new Promise((resolve) => {
     const args = [
-      '-s',
-      '-o', '/dev/null',
-      '-w', '%{http_code} %{time_total}',
-      '--max-time', String(timeoutSec),
-      '--socks5-hostname', `127.0.0.1:${localPort}`,
-      CHECK_TARGET_URL
+      '--silent',
+      '--show-error',
+      '--location',
+      '--max-time', String(Math.ceil(CURL_TIMEOUT / 1000)),
+      '--connect-timeout', String(Math.min(8, Math.ceil(CURL_TIMEOUT / 1000))),
+      '--proxy', `socks5h://127.0.0.1:${port}`,
+      '--output', '/dev/null',
+      '--write-out', '%{http_code} %{time_total}',
+      TEST_URL
     ];
 
-    execFile('curl', args, { timeout: timeoutMs + 2000 }, (err, stdout) => {
-      if (err) {
-        resolve({ ok: false, error: err.message });
+    execFile('curl', args, { timeout: CURL_TIMEOUT + 2000, maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+      if (error) {
+        const message = (stderr || '').trim() || error.message || 'curl failed';
+        resolve({ ok: false, error: cleanError(message) });
         return;
       }
-      const parts = stdout.trim().split(/\s+/);
-      const status = parseInt(parts[0], 10);
-      const timeTotal = parseFloat(parts[1]);
-      if (!Number.isFinite(status) || !Number.isFinite(timeTotal) || status === 0) {
-        resolve({ ok: false, error: `unparsable curl output: "${stdout.trim()}"` });
+
+      const parts = String(stdout).trim().split(/\s+/);
+      const status = Number(parts[0]);
+      const timeTotal = Number(parts[1]);
+
+      if (status >= 200 && status < 400) {
+        resolve({
+          ok: true,
+          status,
+          latency: Number.isFinite(timeTotal) ? Math.round(timeTotal * 1000) : null
+        });
         return;
       }
-      resolve({ ok: true, status, latency: Math.round(timeTotal * 1000) });
+
+      resolve({ ok: false, error: `HTTP ${status || 'unknown'}` });
     });
   });
 }
 
-async function checkOne(entry, localPort, xrayModule) {
-  const { host, port, outbound, type } = entry;
+async function checkNode(entry, xrayModule) {
+  const { uri, type, host, port, outbound } = entry;
   const label = `${type} ${host}:${port}`;
+  const localPort = randomPort();
 
   const config = xrayModule.buildCheckConfig(outbound, localPort);
   const configPath = xrayModule.writeTempConfig(config);
   let xray;
 
   try {
+    const valid = await xrayModule.testConfig(configPath, XRAY_TIMEOUT);
+    if (!valid.ok) {
+      addError(`${label} XRAY CONFIG ${cleanError(valid.output)}`);
+      return null;
+    }
+
     xray = xrayModule.startXray(configPath);
-    const ready = await xrayModule.waitForPort(localPort, XRAY_START_TIMEOUT);
+    const ready = await xrayModule.waitForPort(localPort, XRAY_TIMEOUT);
     if (!ready || !xray.isAlive()) {
-      console.log(`${label} XRAY START FAIL`);
-      return { status: 'XRAY_START_FAIL' };
+      const out = xray.getOutput();
+      const message = out.stderr || out.stdout || 'SOCKS inbound did not start';
+      addError(`${label} XRAY START ${cleanError(message)}`);
+      return null;
     }
-    console.log(`${label} XRAY PASS`);
-    console.log(`${label} SOCKS PASS`);
 
-    const result = await curlThroughSocks(localPort, HTTP_TIMEOUT);
+    const result = await curlThroughProxy(localPort);
     if (!result.ok) {
-      console.log(`${label} PROXY HTTPS FAIL (${result.error})`);
-      return { status: 'PROXY_REQUEST_FAIL' };
+      addError(`${label} TRAFFIC ${result.error}`);
+      return null;
     }
-    if (result.status < 200 || result.status >= 300) {
-      console.log(`${label} PROXY HTTPS FAIL (HTTP ${result.status})`);
-      return { status: 'HTTP_FAIL' };
-    }
-    console.log(`${label} PROXY HTTPS PASS`);
 
-    if (result.latency > MAX_LATENCY) {
-      console.log(`${label} LATENCY ${result.latency} ms FAIL (> ${MAX_LATENCY})`);
-      return { status: 'LATENCY_FAIL' };
+    const latency = result.latency ?? entry.tcpLatency;
+    if (latency > MAX_LATENCY) {
+      addError(`${label} LATENCY ${latency}ms (> ${MAX_LATENCY})`);
+      return null;
     }
-    console.log(`${label} LATENCY ${result.latency} ms`);
-    console.log(`${label} PASS`);
-    return { status: 'PASS', latency: result.latency };
+
+    console.log(`PASS ${latency}ms ${label} HTTP ${result.status}`);
+    return { uri, latency };
   } finally {
     if (xray) await xrayModule.stopXray(xray.proc);
     xrayModule.cleanupConfig(configPath);
   }
 }
 
-async function pool(items, limit, worker) {
+async function mapLimit(items, limit, fn) {
   const results = new Array(items.length);
-  let idx = 0;
-  async function run() {
-    while (idx < items.length) {
-      const current = idx++;
-      results[current] = await worker(items[current], current);
+  let index = 0;
+  async function worker() {
+    while (true) {
+      const i = index++;
+      if (i >= items.length) return;
+      try {
+        results[i] = await fn(items[i], i);
+      } catch (error) {
+        addError(`WORKER ${cleanError(error.message)}`);
+        results[i] = null;
+      }
     }
   }
-  const runners = Array.from({ length: Math.max(1, Math.min(limit, items.length)) }, () => run());
-  await Promise.all(runners);
+  const workers = Math.max(1, Math.min(limit, items.length));
+  await Promise.all(Array.from({ length: workers }, worker));
   return results;
+}
+
+/** Dedupe by protocol:host:port identity, on top of the collector's exact-URI dedupe. */
+function uniqueNodes(entries) {
+  const map = new Map();
+  for (const entry of entries) {
+    const identity = `${entry.type}:${entry.host}:${entry.port}`;
+    if (!map.has(identity)) map.set(identity, entry);
+  }
+  return [...map.values()];
 }
 
 async function main() {
@@ -146,74 +198,52 @@ async function main() {
   }
 
   const rawUris = JSON.parse(fs.readFileSync(RAW_PATH, 'utf8'));
-  console.log(`Unique nodes: ${rawUris.length}`);
 
-  if (rawUris.length === 0) {
-    console.log('No sources collected yet — nothing to check.');
+  const parsedAll = [];
+  for (const uri of rawUris) {
+    const parsed = parseUri(uri);
+    if (!parsed || !parsed.outbound || !parsed.host || !parsed.port) continue;
+    parsedAll.push({ uri, ...parsed });
+  }
+  const nodes = uniqueNodes(parsedAll);
+  console.log(`Unique nodes: ${nodes.length}`);
+
+  if (nodes.length === 0) {
+    console.log('No parsable sources yet — nothing to check.');
     fs.mkdirSync(path.dirname(CHECKED_PATH), { recursive: true });
     if (!fs.existsSync(CHECKED_PATH)) fs.writeFileSync(CHECKED_PATH, '[]');
     return;
   }
 
-  const batchCount = Math.max(1, Math.ceil(rawUris.length / BATCH_SIZE));
+  const batchCount = Math.max(1, Math.ceil(nodes.length / BATCH_SIZE));
   const safeIndex = ((BATCH_INDEX % batchCount) + batchCount) % batchCount;
-  const batch = rawUris.slice(safeIndex * BATCH_SIZE, safeIndex * BATCH_SIZE + BATCH_SIZE);
+  const start = safeIndex * BATCH_SIZE;
+  const batch = nodes.slice(start, start + BATCH_SIZE);
   console.log(`Batch: ${safeIndex + 1}/${batchCount}`);
   console.log(`Batch size: ${batch.length}`);
 
-  const entries = [];
-  for (const uri of batch) {
-    const parsed = parseUri(uri);
-    if (!parsed || !parsed.outbound || !parsed.host || !parsed.port) {
-      console.log(`SKIP (unparsable): ${uri.slice(0, 60)}`);
-      continue;
+  const tcpResults = await mapLimit(batch, CONCURRENCY, async (entry) => {
+    const result = await tcpCheck(entry.host, entry.port);
+    if (!result.ok) return null;
+    return { ...entry, tcpLatency: result.latency };
+  });
+  const alive = tcpResults.filter(Boolean);
+  console.log(`TCP alive: ${alive.length}/${batch.length}`);
+
+  const checked = await mapLimit(alive, XRAY_CONCURRENCY, (entry) => checkNode(entry, xrayModule));
+  const success = checked.filter(Boolean);
+  console.log(`REAL VPN alive: ${success.length}/${alive.length}`);
+
+  if (errorStats.size) {
+    console.log('\nFailure summary:');
+    for (const [reason, count] of errorStats) {
+      console.log(`${count}x ${reason}`);
     }
-    entries.push({ uri, ...parsed });
   }
 
-  // Stage 1: TCP reachability, high concurrency.
-  const tcpPassed = [];
-  let tcpAlive = 0;
-  await pool(entries, CONCURRENCY, async (entry) => {
-    const label = `${entry.type} ${entry.host}:${entry.port}`;
-    const ok = await tcpCheck(entry.host, entry.port, TCP_TIMEOUT);
-    if (ok) {
-      console.log(`${label} TCP PASS`);
-      tcpAlive++;
-      tcpPassed.push(entry);
-    } else {
-      console.log(`${label} TCP FAIL`);
-    }
-  });
-  console.log(`TCP alive: ${tcpAlive}`);
-
-  // Stage 2: full Xray + local SOCKS5 + real HTTPS-through-proxy check, limited concurrency.
-  // Every item in the batch gets its own local port (batch is capped at BATCH_SIZE, so a plain
-  // running counter is enough — no modulo, no risk of two concurrent xray processes fighting
-  // over the same port).
-  const passed = [];
-  let liveCount = 0;
-  const basePort = 20000;
-  let portCounter = 0;
-
-  await pool(tcpPassed, XRAY_CONCURRENCY, async (entry) => {
-    const localPort = basePort + portCounter++;
-    try {
-      const result = await checkOne(entry, localPort, xrayModule);
-      if (result.status === 'PASS') {
-        liveCount++;
-        passed.push({ uri: entry.uri, latency: result.latency });
-      }
-    } catch (err) {
-      console.log(`${entry.type} ${entry.host}:${entry.port} ERROR (${err.message})`);
-    }
-  });
-
-  console.log(`REAL VPN alive: ${liveCount}`);
-  console.log(`CHECKED: ${entries.length}`);
-  console.log(`ALIVE: ${liveCount}`);
-
-  // Merge with previously known-good nodes from earlier batches/runs.
+  // Merge with previously known-good nodes from earlier batches/runs — with BATCH_SIZE much
+  // smaller than the total node count, each run only ever re-checks a slice, so without this
+  // merge the subscription would lose everything found in previous runs.
   let existing = [];
   if (fs.existsSync(CHECKED_PATH)) {
     try {
@@ -224,7 +254,7 @@ async function main() {
   }
   const merged = new Map();
   for (const e of existing) merged.set(e.uri, e);
-  for (const p of passed) merged.set(p.uri, p);
+  for (const s of success) merged.set(s.uri, s);
 
   fs.mkdirSync(path.dirname(CHECKED_PATH), { recursive: true });
   fs.writeFileSync(CHECKED_PATH, JSON.stringify(Array.from(merged.values()), null, 2));
