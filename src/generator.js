@@ -199,7 +199,7 @@ async function main() {
     const flag = flagFromCode(item.countryCode);
     const suffix = n > 1 ? ` #${n}` : '';
     const flagMark = item.whiteFlag ? ' 🏳️' : '';
-    const remarks = `${flag}${flagMark} ${countryName}${suffix} • ${item.latency} ms • ${item.type}`;
+    const remarks = `${flag}${flagMark} ${countryName}${suffix}`;
     const tag = `node-${i + 1}`;
     return { tag, remarks, outbound: item.outbound, countryCode: item.countryCode, latency: item.latency, type: item.type };
   });
