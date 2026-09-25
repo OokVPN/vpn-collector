@@ -108,7 +108,11 @@
             "node-80",
             "node-81",
             "node-82",
-            "node-83"
+            "node-83",
+            "node-84",
+            "node-85",
+            "node-86",
+            "node-87"
           ],
           "strategy": {
             "type": "leastLoad",
@@ -1088,6 +1092,81 @@
         "tag": "node-32"
       },
       {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musicd.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musicd.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "node-33"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musica.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musica.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "node-34"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musici.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musici.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "node-35"
+      },
+      {
         "protocol": "vless",
         "settings": {
           "vnext": [
@@ -1116,7 +1195,7 @@
             "serverName": "fr.pubconverter.com"
           }
         },
-        "tag": "node-33"
+        "tag": "node-36"
       },
       {
         "protocol": "vless",
@@ -1150,7 +1229,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-34"
+        "tag": "node-37"
       },
       {
         "protocol": "vless",
@@ -1182,7 +1261,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-35"
+        "tag": "node-38"
       },
       {
         "protocol": "vless",
@@ -1209,7 +1288,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-36"
+        "tag": "node-39"
       },
       {
         "protocol": "vless",
@@ -1235,7 +1314,7 @@
             "serverName": "at-at-at.failspace.top"
           }
         },
-        "tag": "node-37"
+        "tag": "node-40"
       },
       {
         "protocol": "vless",
@@ -1267,7 +1346,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-38"
+        "tag": "node-41"
       },
       {
         "protocol": "vless",
@@ -1300,7 +1379,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-39"
+        "tag": "node-42"
       },
       {
         "protocol": "vless",
@@ -1326,7 +1405,7 @@
             "serverName": "hub-mori-new.failspace.top"
           }
         },
-        "tag": "node-40"
+        "tag": "node-43"
       },
       {
         "protocol": "vless",
@@ -1356,7 +1435,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-41"
+        "tag": "node-44"
       },
       {
         "protocol": "vmess",
@@ -1388,7 +1467,7 @@
             "serverName": "pahobac.org"
           }
         },
-        "tag": "node-42"
+        "tag": "node-45"
       },
       {
         "protocol": "vless",
@@ -1421,7 +1500,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-43"
+        "tag": "node-46"
       },
       {
         "protocol": "vless",
@@ -1451,7 +1530,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-44"
+        "tag": "node-47"
       },
       {
         "protocol": "vless",
@@ -1481,7 +1560,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-45"
+        "tag": "node-48"
       },
       {
         "protocol": "trojan",
@@ -1501,7 +1580,7 @@
             "serverName": "mdt2.pubconverter.com"
           }
         },
-        "tag": "node-46"
+        "tag": "node-49"
       },
       {
         "protocol": "vless",
@@ -1535,7 +1614,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-47"
+        "tag": "node-50"
       },
       {
         "protocol": "vless",
@@ -1566,7 +1645,7 @@
             "serverName": "latvia.koalaexpress.ru"
           }
         },
-        "tag": "node-48"
+        "tag": "node-51"
       },
       {
         "protocol": "vless",
@@ -1596,7 +1675,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-49"
+        "tag": "node-52"
       },
       {
         "protocol": "vless",
@@ -1626,7 +1705,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-50"
+        "tag": "node-53"
       },
       {
         "protocol": "vless",
@@ -1656,7 +1735,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-51"
+        "tag": "node-54"
       },
       {
         "protocol": "vmess",
@@ -1688,7 +1767,7 @@
             "serverName": "mygptagent.org"
           }
         },
-        "tag": "node-52"
+        "tag": "node-55"
       },
       {
         "protocol": "vless",
@@ -1718,7 +1797,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-53"
+        "tag": "node-56"
       },
       {
         "protocol": "vless",
@@ -1744,7 +1823,7 @@
             "serverName": "at-at-at.failspace.top"
           }
         },
-        "tag": "node-54"
+        "tag": "node-57"
       },
       {
         "protocol": "vless",
@@ -1778,7 +1857,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-55"
+        "tag": "node-58"
       },
       {
         "protocol": "vless",
@@ -1811,7 +1890,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-56"
+        "tag": "node-59"
       },
       {
         "protocol": "vless",
@@ -1841,7 +1920,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-57"
+        "tag": "node-60"
       },
       {
         "protocol": "vless",
@@ -1871,7 +1950,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-58"
+        "tag": "node-61"
       },
       {
         "protocol": "vless",
@@ -1901,7 +1980,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-59"
+        "tag": "node-62"
       },
       {
         "protocol": "vless",
@@ -1929,7 +2008,7 @@
             "serverName": "nl1.vpnjantit.com"
           }
         },
-        "tag": "node-60"
+        "tag": "node-63"
       },
       {
         "protocol": "vless",
@@ -1962,7 +2041,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-61"
+        "tag": "node-64"
       },
       {
         "protocol": "vless",
@@ -1992,7 +2071,7 @@
             "spiderX": "/ahmadV2ray"
           }
         },
-        "tag": "node-62"
+        "tag": "node-65"
       },
       {
         "protocol": "vless",
@@ -2022,7 +2101,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-63"
+        "tag": "node-66"
       },
       {
         "protocol": "vless",
@@ -2052,7 +2131,32 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-64"
+        "tag": "node-67"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musicc.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musicc.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "node-68"
       },
       {
         "protocol": "vless",
@@ -2082,7 +2186,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-65"
+        "tag": "node-69"
       },
       {
         "protocol": "vless",
@@ -2112,7 +2216,7 @@
             "spiderX": "/"
           }
         },
-        "tag": "node-66"
+        "tag": "node-70"
       },
       {
         "protocol": "vless",
@@ -2139,7 +2243,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-67"
+        "tag": "node-71"
       },
       {
         "protocol": "vmess",
@@ -2171,7 +2275,7 @@
             "serverName": "pahobac.org"
           }
         },
-        "tag": "node-68"
+        "tag": "node-72"
       },
       {
         "protocol": "vless",
@@ -2201,7 +2305,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-69"
+        "tag": "node-73"
       },
       {
         "protocol": "vless",
@@ -2231,7 +2335,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-70"
+        "tag": "node-74"
       },
       {
         "protocol": "vless",
@@ -2261,7 +2365,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-71"
+        "tag": "node-75"
       },
       {
         "protocol": "vless",
@@ -2291,7 +2395,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-72"
+        "tag": "node-76"
       },
       {
         "protocol": "vless",
@@ -2321,7 +2425,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-73"
+        "tag": "node-77"
       },
       {
         "protocol": "vless",
@@ -2346,7 +2450,7 @@
             "serverName": "00iwuafi1019.dopgangster.com"
           }
         },
-        "tag": "node-74"
+        "tag": "node-78"
       },
       {
         "protocol": "vless",
@@ -2380,7 +2484,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-75"
+        "tag": "node-79"
       },
       {
         "protocol": "vless",
@@ -2410,7 +2514,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-76"
+        "tag": "node-80"
       },
       {
         "protocol": "vless",
@@ -2440,7 +2544,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-77"
+        "tag": "node-81"
       },
       {
         "protocol": "vless",
@@ -2470,7 +2574,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-78"
+        "tag": "node-82"
       },
       {
         "protocol": "vless",
@@ -2500,7 +2604,7 @@
             "spiderX": "/42618003b1db127"
           }
         },
-        "tag": "node-79"
+        "tag": "node-83"
       },
       {
         "protocol": "vless",
@@ -2530,7 +2634,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-80"
+        "tag": "node-84"
       },
       {
         "protocol": "vless",
@@ -2560,7 +2664,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-81"
+        "tag": "node-85"
       },
       {
         "protocol": "vless",
@@ -2590,7 +2694,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-82"
+        "tag": "node-86"
       },
       {
         "protocol": "vless",
@@ -2620,7 +2724,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-83"
+        "tag": "node-87"
       },
       {
         "protocol": "freedom",
@@ -2722,7 +2826,11 @@
         "node-80",
         "node-81",
         "node-82",
-        "node-83"
+        "node-83",
+        "node-84",
+        "node-85",
+        "node-86",
+        "node-87"
       ]
     },
     "remarks": "🇪🇺 АВТО ⚡"
@@ -5904,6 +6012,288 @@
     ],
     "outbounds": [
       {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musicd.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musicd.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "Неизвестно #17"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musica.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musica.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "Неизвестно #18"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musici.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musici.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "Неизвестно #19"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
         "protocol": "vless",
         "settings": {
           "vnext": [
@@ -5953,7 +6343,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #17"
+    "remarks": "Неизвестно #20"
   },
   {
     "dns": {
@@ -6056,7 +6446,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #18"
+    "remarks": "Неизвестно #21"
   },
   {
     "dns": {
@@ -6157,7 +6547,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #19"
+    "remarks": "Неизвестно #22"
   },
   {
     "dns": {
@@ -6253,7 +6643,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #20"
+    "remarks": "Неизвестно #23"
   },
   {
     "dns": {
@@ -6348,7 +6738,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #21"
+    "remarks": "Неизвестно #24"
   },
   {
     "dns": {
@@ -6449,7 +6839,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #22"
+    "remarks": "Неизвестно #25"
   },
   {
     "dns": {
@@ -6551,7 +6941,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #23"
+    "remarks": "Неизвестно #26"
   },
   {
     "dns": {
@@ -6646,7 +7036,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #24"
+    "remarks": "Неизвестно #27"
   },
   {
     "dns": {
@@ -6745,7 +7135,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #25"
+    "remarks": "Неизвестно #28"
   },
   {
     "dns": {
@@ -6846,7 +7236,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #26"
+    "remarks": "Неизвестно #29"
   },
   {
     "dns": {
@@ -6948,7 +7338,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #27"
+    "remarks": "Неизвестно #30"
   },
   {
     "dns": {
@@ -7047,7 +7437,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #28"
+    "remarks": "Неизвестно #31"
   },
   {
     "dns": {
@@ -7146,7 +7536,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #29"
+    "remarks": "Неизвестно #32"
   },
   {
     "dns": {
@@ -7235,7 +7625,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #30"
+    "remarks": "Неизвестно #33"
   },
   {
     "dns": {
@@ -7338,7 +7728,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #31"
+    "remarks": "Неизвестно #34"
   },
   {
     "dns": {
@@ -7438,7 +7828,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #32"
+    "remarks": "Неизвестно #35"
   },
   {
     "dns": {
@@ -7537,7 +7927,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #33"
+    "remarks": "Неизвестно #36"
   },
   {
     "dns": {
@@ -7636,7 +8026,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #34"
+    "remarks": "Неизвестно #37"
   },
   {
     "dns": {
@@ -7735,7 +8125,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #35"
+    "remarks": "Неизвестно #38"
   },
   {
     "dns": {
@@ -7836,7 +8226,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #36"
+    "remarks": "Неизвестно #39"
   },
   {
     "dns": {
@@ -7935,7 +8325,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #37"
+    "remarks": "Неизвестно #40"
   },
   {
     "dns": {
@@ -8030,7 +8420,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #38"
+    "remarks": "Неизвестно #41"
   },
   {
     "dns": {
@@ -8133,7 +8523,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #39"
+    "remarks": "Неизвестно #42"
   },
   {
     "dns": {
@@ -8235,7 +8625,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #40"
+    "remarks": "Неизвестно #43"
   },
   {
     "dns": {
@@ -8334,7 +8724,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #41"
+    "remarks": "Неизвестно #44"
   },
   {
     "dns": {
@@ -8433,7 +8823,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #42"
+    "remarks": "Неизвестно #45"
   },
   {
     "dns": {
@@ -8532,7 +8922,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #43"
+    "remarks": "Неизвестно #46"
   },
   {
     "dns": {
@@ -8629,7 +9019,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #44"
+    "remarks": "Неизвестно #47"
   },
   {
     "dns": {
@@ -8731,7 +9121,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #45"
+    "remarks": "Неизвестно #48"
   },
   {
     "dns": {
@@ -8830,7 +9220,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #46"
+    "remarks": "Неизвестно #49"
   },
   {
     "dns": {
@@ -8929,7 +9319,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #47"
+    "remarks": "Неизвестно #50"
   },
   {
     "dns": {
@@ -9028,7 +9418,101 @@
         }
       ]
     },
-    "remarks": "Неизвестно #48"
+    "remarks": "Неизвестно #51"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "cz-musicc.moritech.net",
+              "port": 443,
+              "password": "f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "tls",
+          "grpcSettings": {
+            "serviceName": "grpcbeast",
+            "multiMode": false
+          },
+          "tlsSettings": {
+            "serverName": "cz-musicc.moritech.net",
+            "fingerprint": "firefox"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "Неизвестно #52"
   },
   {
     "dns": {
@@ -9127,7 +9611,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #49"
+    "remarks": "Неизвестно #53"
   },
   {
     "dns": {
@@ -9226,7 +9710,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #50"
+    "remarks": "Неизвестно #54"
   },
   {
     "dns": {
@@ -9322,7 +9806,7 @@
         }
       ]
     },
-    "remarks": "Неизвестно #51"
+    "remarks": "Неизвестно #55"
   },
   {
     "dns": {
