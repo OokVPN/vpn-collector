@@ -8,7 +8,13 @@ const NODES_PATH = path.resolve('data/nodes.json');
 const SUBSCRIPTION_PATH = path.resolve('data/subscription.json');
 const PUBLIC_PATH = path.resolve('public/subscription.json');
 
-const MAX_LATENCY = parseInt(process.env.MAX_LATENCY || '150', 10);
+const REQUESTED_MAX_LATENCY = parseInt(process.env.MAX_LATENCY || '1000', 10);
+
+// Жёсткий предел: сервера с пингом > 1000 мс никогда не попадут в подписку.
+const MAX_LATENCY = Math.min(
+  Number.isFinite(REQUESTED_MAX_LATENCY) ? REQUESTED_MAX_LATENCY : 1000,
+  1000
+);
 
 const COUNTRY_NAMES = {
   DE: 'Германия', NL: 'Нидерланды', US: 'США', GB: 'Великобритания', FR: 'Франция',
