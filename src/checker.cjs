@@ -1,13 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
-const { execFile } = require('node:child_process');
+const { execFile, execFileSync } = require('node:child_process');
 
 const RAW_PATH = path.resolve('data/raw.json');
 const CHECKED_PATH = path.resolve('data/checked.json');
-
-const BATCH_SIZE = Number(process.env.BATCH_SIZE || 200);
-const BATCH_INDEX = Number(process.env.BATCH_INDEX || 0);
 
 const MAX_LATENCY = Math.min(
   Number(process.env.MAX_LATENCY || 1000),
@@ -15,6 +12,7 @@ const MAX_LATENCY = Math.min(
 );
 
 const TCP_TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
+
 const XRAY_TIMEOUT = Number(
   process.env.XRAY_TIMEOUT ||
   process.env.XRAY_START_TIMEOUT ||
@@ -29,6 +27,14 @@ const CURL_TIMEOUT = Number(
 
 const CONCURRENCY = Number(process.env.CONCURRENCY || 100);
 const XRAY_CONCURRENCY = Number(process.env.XRAY_CONCURRENCY || 8);
+
+const NEW_SERVER_BATCH = Number(
+  process.env.NEW_SERVER_BATCH || 200
+);
+
+const MAX_REPLACEMENT_ROUNDS = Number(
+  process.env.MAX_REPLACEMENT_ROUNDS || 5
+);
 
 const INTERNET_TEST_URLS = [
   'https://www.gstatic.com/generate_204',
@@ -113,10 +119,7 @@ function randomPort() {
   );
 }
 
-function curlThroughProxy(
-  port,
-  url
-) {
+function curlThroughProxy(port, url) {
   return new Promise((resolve) => {
     const args = [
       '--silent',
@@ -212,9 +215,7 @@ function curlThroughProxy(
   });
 }
 
-async function internetThroughProxy(
-  port
-) {
+async function internetThroughProxy(port) {
   let lastError =
     'all internet tests failed';
 
@@ -464,11 +465,9 @@ function uniqueByUri(entries) {
   ];
 }
 
-function readExisting() {
+function readJsonArray(file) {
   if (
-    !fs.existsSync(
-      CHECKED_PATH
-    )
+    !fs.existsSync(file)
   ) {
     return [];
   }
@@ -477,7 +476,7 @@ function readExisting() {
     const data =
       JSON.parse(
         fs.readFileSync(
-          CHECKED_PATH,
+          file,
           'utf8'
         )
       );
@@ -490,253 +489,11 @@ function readExisting() {
   }
 }
 
-async function main() {
-  const {
-    parseUri
-  } = await import(
-    './parser.js'
-  );
-
-  const xrayModule =
-    await import(
-      './xray.js'
-    );
-
-  if (
-    !fs.existsSync(
-      RAW_PATH
-    )
-  ) {
-    console.error(
-      'data/raw.json not found, run "npm run collect" first'
-    );
-
-    process.exit(1);
-  }
-
-  const rawUris =
-    JSON.parse(
-      fs.readFileSync(
-        RAW_PATH,
-        'utf8'
-      )
-    );
-
-  const existing =
-    readExisting();
-
-  const parsedAll = [];
-
-  for (
-    const uri of rawUris
-  ) {
-    const parsed =
-      parseUri(uri);
-
-    if (
-      !parsed ||
-      !parsed.outbound ||
-      !parsed.host ||
-      !parsed.port
-    ) {
-      continue;
-    }
-
-    parsedAll.push({
-      uri,
-      ...parsed
-    });
-  }
-
-  const nodes =
-    uniqueByUri(
-      parsedAll
-    );
-
-  console.log(
-    `Unique raw nodes: ${nodes.length}`
-  );
-
-  const batchCount =
-    Math.max(
-      1,
-      Math.ceil(
-        nodes.length /
-        BATCH_SIZE
-      )
-    );
-
-  const safeIndex =
-    (
-      BATCH_INDEX %
-      batchCount +
-      batchCount
-    ) %
-    batchCount;
-
-  const start =
-    safeIndex *
-    BATCH_SIZE;
-
-  const batch =
-    nodes.slice(
-      start,
-      start + BATCH_SIZE
-    );
-
-  console.log(
-    `Batch: ${safeIndex + 1}/${batchCount}`
-  );
-
-  console.log(
-    `Batch size: ${batch.length}`
-  );
-
-  const candidateMap =
-    new Map();
-
-  for (
-    const old of existing
-  ) {
-    if (
-      !old ||
-      !old.uri
-    ) {
-      continue;
-    }
-
-    const parsed =
-      parseUri(old.uri);
-
-    if (
-      !parsed ||
-      !parsed.outbound ||
-      !parsed.host ||
-      !parsed.port
-    ) {
-      continue;
-    }
-
-    candidateMap.set(
-      old.uri,
-      {
-        uri: old.uri,
-        ...parsed,
-        previousLatency:
-          old.latency
-      }
-    );
-  }
-
-  for (
-    const entry of batch
-  ) {
-    candidateMap.set(
-      entry.uri,
-      entry
-    );
-  }
-
-  const candidates =
-    [...candidateMap.values()];
-
-  console.log(
-    `Candidates to re-check: ${candidates.length}`
-  );
-
-  if (
-    candidates.length === 0
-  ) {
-    console.log(
-      'No nodes to check.'
-    );
-
-    fs.mkdirSync(
-      path.dirname(
-        CHECKED_PATH
-      ),
-      {
-        recursive: true
-      }
-    );
-
-    fs.writeFileSync(
-      CHECKED_PATH,
-      '[]'
-    );
-
-    return;
-  }
-
-  const tcpResults =
-    await mapLimit(
-      candidates,
-      CONCURRENCY,
-      async (entry) => {
-        const result =
-          await tcpCheck(
-            entry.host,
-            entry.port
-          );
-
-        if (!result.ok) {
-          return null;
-        }
-
-        return {
-          ...entry,
-          tcpLatency:
-            result.latency
-        };
-      }
-    );
-
-  const alive =
-    tcpResults.filter(
-      Boolean
-    );
-
-  console.log(
-    `TCP alive: ${alive.length}/${candidates.length}`
-  );
-
-  const checked =
-    await mapLimit(
-      alive,
-      XRAY_CONCURRENCY,
-      (entry) =>
-        checkNode(
-          entry,
-          xrayModule
-        )
-    );
-
-  const success =
-    checked.filter(
-      Boolean
-    );
-
-  console.log(
-    `REAL VPN + INTERNET alive: ${success.length}/${alive.length}`
-  );
-
-  const finalMap =
-    new Map();
-
-  for (
-    const node of success
-  ) {
-    finalMap.set(
-      node.uri,
-      {
-        uri: node.uri,
-        latency: node.latency
-      }
-    );
-  }
-
+function writeChecked(nodes) {
   const finalNodes =
-    [...finalMap.values()];
+    uniqueByUri(
+      nodes
+    );
 
   finalNodes.sort(
     (a, b) =>
@@ -763,39 +520,409 @@ async function main() {
     )
   );
 
-  console.log(
-    `Saved ${finalNodes.length} currently working nodes to ${CHECKED_PATH}`
-  );
+  return finalNodes;
+}
 
-  const oldSet =
-    new Set(
-      existing.map(
-        (x) => x.uri
-      )
-    );
-
-  const newSet =
-    new Set(
-      finalNodes.map(
-        (x) => x.uri
-      )
-    );
-
-  let removed = 0;
+function parseNodes(
+  rawUris,
+  parseUri
+) {
+  const parsed = [];
 
   for (
-    const uri of oldSet
+    const uri of rawUris
   ) {
+    const item =
+      parseUri(uri);
+
     if (
-      !newSet.has(uri)
+      !item ||
+      !item.outbound ||
+      !item.host ||
+      !item.port
     ) {
-      removed++;
+      continue;
+    }
+
+    parsed.push({
+      uri,
+      ...item
+    });
+  }
+
+  return uniqueByUri(
+    parsed
+  );
+}
+
+async function checkNodes(
+  nodes,
+  parseUri,
+  xrayModule
+) {
+  if (
+    nodes.length === 0
+  ) {
+    return [];
+  }
+
+  const parsed =
+    [];
+
+  for (
+    const entry of nodes
+  ) {
+    const item =
+      parseUri(entry.uri || entry);
+
+    if (
+      !item ||
+      !item.outbound ||
+      !item.host ||
+      !item.port
+    ) {
+      continue;
+    }
+
+    parsed.push({
+      uri:
+        entry.uri || entry,
+      ...item
+    });
+  }
+
+  const unique =
+    uniqueByUri(
+      parsed
+    );
+
+  const tcpResults =
+    await mapLimit(
+      unique,
+      CONCURRENCY,
+      async (entry) => {
+        const result =
+          await tcpCheck(
+            entry.host,
+            entry.port
+          );
+
+        if (!result.ok) {
+          addError(
+            `TCP ${entry.host}:${entry.port}`
+          );
+
+          return null;
+        }
+
+        return {
+          ...entry,
+          tcpLatency:
+            result.latency
+        };
+      }
+    );
+
+  const alive =
+    tcpResults.filter(
+      Boolean
+    );
+
+  console.log(
+    `TCP alive: ${alive.length}/${unique.length}`
+  );
+
+  const checked =
+    await mapLimit(
+      alive,
+      XRAY_CONCURRENCY,
+      (entry) =>
+        checkNode(
+          entry,
+          xrayModule
+        )
+    );
+
+  return checked.filter(
+    Boolean
+  );
+}
+
+function collectSources() {
+  console.log(
+    'Collecting fresh server sources...'
+  );
+
+  try {
+    execFileSync(
+      process.platform === 'win32'
+        ? 'npm.cmd'
+        : 'npm',
+      [
+        'run',
+        'collect'
+      ],
+      {
+        stdio: 'inherit',
+        timeout: 180000
+      }
+    );
+
+    return true;
+  } catch (error) {
+    console.error(
+      'Collect failed:',
+      cleanError(
+        error.message ||
+        error
+      )
+    );
+
+    return false;
+  }
+}
+
+async function main() {
+  const {
+    parseUri
+  } = await import(
+    './parser.js'
+  );
+
+  const xrayModule =
+    await import(
+      './xray.js'
+    );
+
+  const existing =
+    readJsonArray(
+      CHECKED_PATH
+    );
+
+  console.log(
+    `Currently tracked working nodes: ${existing.length}`
+  );
+
+  let workingExisting = [];
+
+  if (
+    existing.length > 0
+  ) {
+    console.log(
+      'Re-checking ALL currently working nodes...'
+    );
+
+    workingExisting =
+      await checkNodes(
+        existing,
+        parseUri,
+        xrayModule
+      );
+
+    console.log(
+      `Still working: ${workingExisting.length}/${existing.length}`
+    );
+  }
+
+  const deadCount =
+    Math.max(
+      0,
+      existing.length -
+      workingExisting.length
+    );
+
+  console.log(
+    `Dead/failed nodes: ${deadCount}`
+  );
+
+  if (
+    deadCount === 0 &&
+    existing.length > 0
+  ) {
+    writeChecked(
+      workingExisting
+    );
+
+    console.log(
+      'No dead nodes detected.'
+    );
+
+    console.log(
+      `Saved ${workingExisting.length} working nodes.`
+    );
+
+    if (
+      errorStats.size
+    ) {
+      console.log(
+        '\nFailure summary:'
+      );
+
+      for (
+        const [
+          reason,
+          count
+        ] of errorStats
+      ) {
+        console.log(
+          `${count}x ${reason}`
+        );
+      }
+    }
+
+    return;
+  }
+
+  const needed =
+    Math.max(
+      1,
+      deadCount
+    );
+
+  console.log(
+    `Need at least ${needed} replacement node(s).`
+  );
+
+  const knownUris =
+    new Set(
+      workingExisting.map(
+        (node) => node.uri
+      )
+    );
+
+  let allWorking =
+    [...workingExisting];
+
+  let replacements =
+    0;
+
+  for (
+    let round = 1;
+    round <= MAX_REPLACEMENT_ROUNDS;
+    round++
+  ) {
+    console.log(
+      `Replacement search round ${round}/${MAX_REPLACEMENT_ROUNDS}`
+    );
+
+    const collected =
+      collectSources();
+
+    if (!collected) {
+      break;
+    }
+
+    const rawUris =
+      readJsonArray(
+        RAW_PATH
+      );
+
+    const candidates =
+      parseNodes(
+        rawUris,
+        parseUri
+      ).filter(
+        (node) =>
+          !knownUris.has(
+            node.uri
+          )
+      );
+
+    console.log(
+      `Fresh unique candidates: ${candidates.length}`
+    );
+
+    if (
+      candidates.length === 0
+    ) {
+      console.log(
+        'No new candidates found.'
+      );
+
+      break;
+    }
+
+    const limitedCandidates =
+      candidates.slice(
+        0,
+        Math.max(
+          NEW_SERVER_BATCH,
+          needed * 10
+        )
+      );
+
+    console.log(
+      `Checking new candidates: ${limitedCandidates.length}`
+    );
+
+    const newWorking =
+      await checkNodes(
+        limitedCandidates,
+        parseUri,
+        xrayModule
+      );
+
+    for (
+      const node of newWorking
+    ) {
+      if (
+        knownUris.has(
+          node.uri
+        )
+      ) {
+        continue;
+      }
+
+      knownUris.add(
+        node.uri
+      );
+
+      allWorking.push(
+        node
+      );
+
+      replacements++;
+    }
+
+    console.log(
+      `Working replacements found: ${replacements}/${needed}`
+    );
+
+    if (
+      replacements >= needed
+    ) {
+      break;
     }
   }
 
-  console.log(
-    `Removed dead/failed old nodes: ${removed}`
+  allWorking =
+    uniqueByUri(
+      allWorking
+    );
+
+  writeChecked(
+    allWorking
   );
+
+  console.log(
+    `Final working nodes: ${allWorking.length}`
+  );
+
+  console.log(
+    `Removed dead nodes: ${deadCount}`
+  );
+
+  console.log(
+    `Added replacements: ${replacements}`
+  );
+
+  if (
+    replacements < needed
+  ) {
+    console.log(
+      `Replacement deficit: ${needed - replacements}`
+    );
+  }
 
   if (
     errorStats.size
