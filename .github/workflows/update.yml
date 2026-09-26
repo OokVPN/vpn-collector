@@ -63,52 +63,21 @@ jobs:
           xray-bin/xray version
           echo "XRAY_BIN=$(pwd)/xray-bin/xray" >> "$GITHUB_ENV"
 
-      - name: Collect sources
-        run: npm run collect
-
-      - name: Determine batch index
-        id: batch
-        run: |
-          COUNT=$(node -e "const d=require('./data/raw.json'); console.log(d.length)")
-
-          SIZE=200
-
-          BATCHES=$(( (COUNT + SIZE - 1) / SIZE ))
-
-          if [ "$BATCHES" -lt 1 ]; then
-            BATCHES=1
-          fi
-
-          INDEX=$(( ${{ github.run_number }} % BATCHES ))
-
-          echo "batch_index=$INDEX" >> "$GITHUB_OUTPUT"
-
-          echo "Selected batch $INDEX of $BATCHES"
-          echo "Total endpoints: $COUNT"
-
-      - name: Check nodes
+      - name: Check and refresh nodes
         env:
-          BATCH_SIZE: 200
-          BATCH_INDEX: ${{ steps.batch.outputs.batch_index }}
-
           MAX_LATENCY: 1000
-
           TCP_TIMEOUT: 5000
-
           XRAY_TIMEOUT: 10000
-
           CURL_TIMEOUT: 12000
-
           CONCURRENCY: 100
-
           XRAY_CONCURRENCY: 8
-
+          NEW_SERVER_BATCH: 200
+          MAX_REPLACEMENT_ROUNDS: 5
         run: npm run check
 
       - name: Generate subscription
         env:
           MAX_LATENCY: 1000
-
         run: npm run generate
 
       - name: Validate output
