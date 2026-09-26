@@ -2,6 +2,7 @@ name: Update VPN Subscription
 
 on:
   workflow_dispatch:
+
   schedule:
     - cron: '*/14 * * * *'
 
@@ -15,7 +16,9 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+
     timeout-minutes: 25
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,10 +34,9 @@ jobs:
       - name: Install Xray
         run: |
           set -e
-          # NOTE: /releases/latest only returns non-prerelease releases, and XTLS/Xray-core
-          # currently ships every release as a "Pre-release", so that endpoint returns nothing
-          # useful. Take the newest entry from the full release list instead.
+
           RELEASES_JSON=$(curl -sL https://api.github.com/repos/XTLS/Xray-core/releases)
+
           LATEST_URL=$(echo "$RELEASES_JSON" \
             | jq -r '[.[] | select(.assets != null and (.assets | length) > 0)][0].assets[] | select(.name == "Xray-linux-64.zip") | .browser_download_url')
 
@@ -45,10 +47,15 @@ jobs:
           fi
 
           echo "Downloading: $LATEST_URL"
+
           curl -L "$LATEST_URL" -o xray.zip
+
           mkdir -p xray-bin
+
           unzip -o xray.zip -d xray-bin
+
           chmod +x xray-bin/xray
+
           echo "$(pwd)/xray-bin" >> "$GITHUB_PATH"
 
       - name: Verify Xray installation
@@ -63,50 +70,115 @@ jobs:
         id: batch
         run: |
           COUNT=$(node -e "const d=require('./data/raw.json'); console.log(d.length)")
+
           SIZE=200
+
           BATCHES=$(( (COUNT + SIZE - 1) / SIZE ))
-          if [ "$BATCHES" -lt 1 ]; then BATCHES=1; fi
+
+          if [ "$BATCHES" -lt 1 ]; then
+            BATCHES=1
+          fi
+
           INDEX=$(( ${{ github.run_number }} % BATCHES ))
+
           echo "batch_index=$INDEX" >> "$GITHUB_OUTPUT"
-          echo "Selected batch $INDEX of $BATCHES (total endpoints: $COUNT)"
+
+          echo "Selected batch $INDEX of $BATCHES"
+          echo "Total endpoints: $COUNT"
 
       - name: Check nodes
         env:
           BATCH_SIZE: 200
           BATCH_INDEX: ${{ steps.batch.outputs.batch_index }}
+
           MAX_LATENCY: 1000
+
           TCP_TIMEOUT: 5000
+
           XRAY_TIMEOUT: 10000
+
           CURL_TIMEOUT: 12000
+
           CONCURRENCY: 100
-          XRAY_CONCURRENCY: 5
+
+          XRAY_CONCURRENCY: 8
+
         run: npm run check
 
       - name: Generate subscription
         env:
           MAX_LATENCY: 1000
+
         run: npm run generate
 
       - name: Validate output
         run: |
-          node -e "
-            const fs = require('fs');
-            const data = JSON.parse(fs.readFileSync('public/subscription.json', 'utf8'));
-            if (!Array.isArray(data) || data.length === 0) throw new Error('empty subscription');
-            if (data[0].remarks !== '🇪🇺 АВТО ⚡') throw new Error('AUTO missing or not first');
-            const hasNode = data[0].outbounds.some(o => typeof o.tag === 'string' && o.tag.startsWith('node-'));
-            if (!hasNode) throw new Error('AUTO has no working nodes');
-            console.log('Validation OK:', data.length, 'entries');
-          "
+          node - <<'NODE'
+          const fs = require('fs');
+
+          const data = JSON.parse(
+            fs.readFileSync(
+              'public/subscription.json',
+              'utf8'
+            )
+          );
+
+          if (
+            !Array.isArray(data) ||
+            data.length === 0
+          ) {
+            throw new Error(
+              'empty subscription'
+            );
+          }
+
+          if (
+            data[0].remarks !==
+            '🇪🇺 АВТО ⚡'
+          ) {
+            throw new Error(
+              'AUTO missing or not first'
+            );
+          }
+
+          const hasNode =
+            data[0].outbounds.some(
+              o =>
+                typeof o.tag === 'string' &&
+                o.tag.startsWith('node-')
+            );
+
+          if (!hasNode) {
+            throw new Error(
+              'AUTO has no working nodes'
+            );
+          }
+
+          console.log(
+            'Validation OK:',
+            data.length,
+            'entries'
+          );
+          NODE
 
       - name: Commit and push
         run: |
           git config user.name "vpn-collector-bot"
+
           git config user.email "actions@users.noreply.github.com"
-          git add data/raw.json data/checked.json data/nodes.json data/subscription.json public/subscription.json
+
+          git add \
+            data/raw.json \
+            data/checked.json \
+            data/nodes.json \
+            data/subscription.json \
+            public/subscription.json
+
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update subscription [skip ci]"
+            git commit \
+              -m "chore: update subscription [skip ci]"
+
             git push
           fi
