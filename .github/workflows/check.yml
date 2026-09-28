@@ -1,0 +1,89 @@
+name: Check URLs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check URLs
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import json
+          import subprocess
+
+          with open("sources.json", "r", encoding="utf-8") as f:
+              urls = json.load(f)
+
+          urls = list(dict.fromkeys(urls))
+
+          alive = []
+
+          for i, url in enumerate(urls, 1):
+              print(f"[{i}/{len(urls)}] {url}")
+
+              try:
+                  result = subprocess.run(
+                      [
+                          "curl",
+                          "-L",
+                          "-s",
+                          "-o", "/dev/null",
+                          "-w", "%{http_code}",
+                          "--connect-timeout", "10",
+                          "--max-time", "30",
+                          "-A", "Mozilla/5.0",
+                          url
+                      ],
+                      capture_output=True,
+                      text=True,
+                      timeout=35
+                  )
+
+                  code = result.stdout.strip()
+
+              except Exception as e:
+                  print(f"ERROR: {e}")
+                  continue
+
+              print(f"HTTP {code}")
+
+              if code not in ("403", "404"):
+                  alive.append(url)
+
+          with open("alive.json", "w", encoding="utf-8") as f:
+              json.dump(
+                  alive,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+              f.write("\n")
+
+          print()
+          print("================================")
+          print(f"Всего URL:       {len(urls)}")
+          print(f"Оставлено:       {len(alive)}")
+          print(f"Удалено 403/404: {len(urls) - len(alive)}")
+          print("================================")
+          PY
+
+      - name: Commit alive.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add alive.json
+
+          if git diff --cached --quiet; then
+            echo "alive.json не изменился"
+          else
+            git commit -m "Update alive.json"
+            git push
+          fi
