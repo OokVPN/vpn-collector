@@ -7,11 +7,13 @@ const RAW_PATH = path.resolve('data/raw.json');
 const CHECKED_PATH = path.resolve('data/checked.json');
 
 const MAX_LATENCY = Math.min(
-  Number(process.env.MAX_LATENCY || 1000),
+  Number(process.env.MAX_LATENCY || 700),
   1000
 );
 
-const TCP_TIMEOUT = Number(process.env.TCP_TIMEOUT || 5000);
+const TCP_TIMEOUT = Number(
+  process.env.TCP_TIMEOUT || 5000
+);
 
 const XRAY_TIMEOUT = Number(
   process.env.XRAY_TIMEOUT ||
@@ -22,18 +24,33 @@ const XRAY_TIMEOUT = Number(
 const CURL_TIMEOUT = Number(
   process.env.CURL_TIMEOUT ||
   process.env.HTTP_TIMEOUT ||
-  12000
+  10000
 );
 
-const CONCURRENCY = Number(process.env.CONCURRENCY || 100);
-const XRAY_CONCURRENCY = Number(process.env.XRAY_CONCURRENCY || 8);
+const PROBE_ROUNDS = Math.max(
+  3,
+  Number(process.env.PROBE_ROUNDS || 3)
+);
+
+const PROBE_DELAY_MS = Math.max(
+  100,
+  Number(process.env.PROBE_DELAY_MS || 400)
+);
+
+const CONCURRENCY = Number(
+  process.env.CONCURRENCY || 60
+);
+
+const XRAY_CONCURRENCY = Number(
+  process.env.XRAY_CONCURRENCY || 6
+);
 
 const NEW_SERVER_BATCH = Number(
-  process.env.NEW_SERVER_BATCH || 200
+  process.env.NEW_SERVER_BATCH || 300
 );
 
 const MAX_REPLACEMENT_ROUNDS = Number(
-  process.env.MAX_REPLACEMENT_ROUNDS || 5
+  process.env.MAX_REPLACEMENT_ROUNDS || 8
 );
 
 const INTERNET_TEST_URLS = [
@@ -42,9 +59,10 @@ const INTERNET_TEST_URLS = [
 ];
 
 const errorStats = new Map();
+
 let printedErrors = 0;
 
-const MAX_ERROR_PRINTS = 30;
+const MAX_ERROR_PRINTS = 50;
 
 function addError(reason) {
   errorStats.set(
@@ -59,7 +77,7 @@ function addError(reason) {
 }
 
 function cleanError(error) {
-  return String(error)
+  return String(error || '')
     .replace(/\r/g, ' ')
     .replace(/\n+/g, ' ')
     .replace(
@@ -115,7 +133,9 @@ function tcpCheck(host, port) {
 function randomPort() {
   return (
     20000 +
-    Math.floor(Math.random() * 20000)
+    Math.floor(
+      Math.random() * 20000
+    )
   );
 }
 
@@ -124,30 +144,41 @@ function curlThroughProxy(port, url) {
     const args = [
       '--silent',
       '--show-error',
-      '--location',
       '--max-redirs',
-      '3',
-      '--max-time',
-      String(
-        Math.ceil(
-          CURL_TIMEOUT / 1000
-        )
-      ),
+      '0',
+
       '--connect-timeout',
       String(
-        Math.min(
-          8,
+        Math.max(
+          3,
           Math.ceil(
             CURL_TIMEOUT / 1000
           )
         )
       ),
+
+      '--max-time',
+      String(
+        Math.max(
+          5,
+          Math.ceil(
+            CURL_TIMEOUT / 1000
+          )
+        )
+      ),
+
       '--proxy',
       `socks5h://127.0.0.1:${port}`,
+
+      '--noproxy',
+      '',
+
       '--output',
       '/dev/null',
+
       '--write-out',
       '%{http_code} %{time_total}',
+
       url
     ];
 
@@ -156,10 +187,22 @@ function curlThroughProxy(port, url) {
       args,
       {
         timeout:
-          CURL_TIMEOUT + 2000,
+          CURL_TIMEOUT + 3000,
 
         maxBuffer:
-          1024 * 1024
+          1024 * 1024,
+
+        env: {
+          ...process.env,
+
+          HTTP_PROXY: '',
+          HTTPS_PROXY: '',
+          ALL_PROXY: '',
+
+          http_proxy: '',
+          https_proxy: '',
+          all_proxy: ''
+        }
       },
       (
         error,
@@ -167,22 +210,24 @@ function curlThroughProxy(port, url) {
         stderr
       ) => {
         if (error) {
-          const message =
-            (stderr || '').trim() ||
-            error.message ||
-            'curl failed';
-
           resolve({
             ok: false,
-            error: cleanError(message)
+
+            error:
+              cleanError(
+                (stderr || '').trim() ||
+                error.message ||
+                'curl failed'
+              )
           });
 
           return;
         }
 
-        const parts = String(stdout)
-          .trim()
-          .split(/\s+/);
+        const parts =
+          String(stdout)
+            .trim()
+            .split(/\s+/);
 
         const status =
           Number(parts[0]);
@@ -193,6 +238,7 @@ function curlThroughProxy(port, url) {
         if (status !== 204) {
           resolve({
             ok: false,
+
             error:
               `HTTP ${status || 'unknown'}`
           });
@@ -200,48 +246,196 @@ function curlThroughProxy(port, url) {
           return;
         }
 
+        if (
+          !Number.isFinite(
+            timeTotal
+          )
+        ) {
+          resolve({
+            ok: false,
+
+            error:
+              'invalid latency'
+          });
+
+          return;
+        }
+
         resolve({
           ok: true,
+
           status,
+
           latency:
-            Number.isFinite(timeTotal)
-              ? Math.round(
-                  timeTotal * 1000
-                )
-              : null
+            Math.round(
+              timeTotal * 1000
+            )
         });
       }
     );
   });
 }
 
-async function internetThroughProxy(port) {
-  let lastError =
-    'all internet tests failed';
+async function internetProbe(
+  port,
+  url
+) {
+  const result =
+    await curlThroughProxy(
+      port,
+      url
+    );
 
-  for (
-    const url of INTERNET_TEST_URLS
+  if (!result.ok) {
+    return {
+      ok: false,
+      url,
+      error: result.error
+    };
+  }
+
+  if (
+    result.status !== 204
   ) {
-    const result =
-      await curlThroughProxy(
-        port,
-        url
-      );
-
-    if (result.ok) {
-      return {
-        ...result,
-        url
-      };
-    }
-
-    lastError =
-      `${url}: ${result.error}`;
+    return {
+      ok: false,
+      url,
+      error:
+        `unexpected HTTP ${result.status}`
+    };
   }
 
   return {
-    ok: false,
-    error: lastError
+    ok: true,
+    url,
+    status: result.status,
+    latency: result.latency
+  };
+}
+
+async function strictInternetCheck(
+  port,
+  label,
+  xray
+) {
+  const latencies = [];
+
+  for (
+    let round = 1;
+    round <= PROBE_ROUNDS;
+    round++
+  ) {
+    if (
+      !xray.isAlive()
+    ) {
+      return {
+        ok: false,
+        round,
+        error:
+          'Xray process died'
+      };
+    }
+
+    console.log(
+      `PROBE ${round}/${PROBE_ROUNDS} ${label}`
+    );
+
+    for (
+      const url of INTERNET_TEST_URLS
+    ) {
+      if (
+        !xray.isAlive()
+      ) {
+        return {
+          ok: false,
+          round,
+          url,
+          error:
+            'Xray process died during probe'
+        };
+      }
+
+      const result =
+        await internetProbe(
+          port,
+          url
+        );
+
+      if (!result.ok) {
+        return {
+          ok: false,
+          round,
+          url,
+          error: result.error
+        };
+      }
+
+      if (
+        result.latency >
+        MAX_LATENCY
+      ) {
+        return {
+          ok: false,
+          round,
+          url,
+          error:
+            `latency ${result.latency}ms > ${MAX_LATENCY}ms`
+        };
+      }
+
+      latencies.push(
+        result.latency
+      );
+
+      console.log(
+        `  OK ${result.latency}ms ${url}`
+      );
+    }
+
+    if (
+      round <
+      PROBE_ROUNDS
+    ) {
+      await new Promise(
+        (resolve) =>
+          setTimeout(
+            resolve,
+            PROBE_DELAY_MS
+          )
+      );
+    }
+  }
+
+  if (
+    latencies.length === 0
+  ) {
+    return {
+      ok: false,
+      error:
+        'no successful probes'
+    };
+  }
+
+  const maxLatency =
+    Math.max(
+      ...latencies
+    );
+
+  const averageLatency =
+    Math.round(
+      latencies.reduce(
+        (sum, value) =>
+          sum + value,
+        0
+      ) /
+      latencies.length
+    );
+
+  return {
+    ok: true,
+    latency: maxLatency,
+    averageLatency,
+    probes: latencies.length
   };
 }
 
@@ -311,14 +505,11 @@ async function checkNode(
       const out =
         xray.getOutput();
 
-      const message =
-        out.stderr ||
-        out.stdout ||
-        'SOCKS inbound did not start';
-
       addError(
         `${label} XRAY START ${cleanError(
-          message
+          out.stderr ||
+          out.stdout ||
+          'SOCKS inbound did not start'
         )}`
       );
 
@@ -326,42 +517,47 @@ async function checkNode(
     }
 
     const internet =
-      await internetThroughProxy(
-        localPort
+      await strictInternetCheck(
+        localPort,
+        label,
+        xray
       );
 
     if (!internet.ok) {
       addError(
-        `${label} INTERNET ${internet.error}`
+        `${label} ` +
+        `PROBE ${internet.round || '?'} ` +
+        `${internet.url || ''} ` +
+        `${internet.error || 'failed'}`
       );
 
       return null;
     }
 
-    const latency =
-      internet.latency ??
-      entry.tcpLatency;
-
     if (
-      typeof latency === 'number' &&
-      latency > MAX_LATENCY
+      internet.latency >
+      MAX_LATENCY
     ) {
       addError(
-        `${label} LATENCY ${latency}ms (> ${MAX_LATENCY})`
+        `${label} ` +
+        `LATENCY ${internet.latency}ms ` +
+        `(> ${MAX_LATENCY})`
       );
 
       return null;
     }
 
     console.log(
-      `PASS ${latency}ms ${label} ` +
-      `HTTP ${internet.status} ` +
-      `${internet.url}`
+      `PASS ${internet.latency}ms ` +
+      `(avg ${internet.averageLatency}ms) ` +
+      `${label} ` +
+      `${internet.probes} probes`
     );
 
     return {
       uri,
-      latency
+      latency:
+        internet.latency
     };
   } finally {
     if (xray) {
@@ -388,7 +584,8 @@ async function mapLimit(
 
   async function worker() {
     while (true) {
-      const i = index++;
+      const i =
+        index++;
 
       if (
         i >= items.length
@@ -436,7 +633,9 @@ async function mapLimit(
   return results;
 }
 
-function uniqueByUri(entries) {
+function uniqueByUri(
+  entries
+) {
   const map =
     new Map();
 
@@ -451,7 +650,9 @@ function uniqueByUri(entries) {
     }
 
     if (
-      !map.has(entry.uri)
+      !map.has(
+        entry.uri
+      )
     ) {
       map.set(
         entry.uri,
@@ -465,7 +666,9 @@ function uniqueByUri(entries) {
   ];
 }
 
-function readJsonArray(file) {
+function readJsonArray(
+  file
+) {
   if (
     !fs.existsSync(file)
   ) {
@@ -489,7 +692,9 @@ function readJsonArray(file) {
   }
 }
 
-function writeChecked(nodes) {
+function writeChecked(
+  nodes
+) {
   const finalNodes =
     uniqueByUri(
       nodes
@@ -532,22 +737,26 @@ function parseNodes(
   for (
     const uri of rawUris
   ) {
-    const item =
-      parseUri(uri);
+    try {
+      const item =
+        parseUri(uri);
 
-    if (
-      !item ||
-      !item.outbound ||
-      !item.host ||
-      !item.port
-    ) {
+      if (
+        !item ||
+        !item.outbound ||
+        !item.host ||
+        !item.port
+      ) {
+        continue;
+      }
+
+      parsed.push({
+        uri,
+        ...item
+      });
+    } catch {
       continue;
     }
-
-    parsed.push({
-      uri,
-      ...item
-    });
   }
 
   return uniqueByUri(
@@ -566,35 +775,54 @@ async function checkNodes(
     return [];
   }
 
-  const parsed =
-    [];
+  const parsed = [];
 
   for (
     const entry of nodes
   ) {
-    const item =
-      parseUri(entry.uri || entry);
+    try {
+      const uri =
+        entry.uri ||
+        entry;
 
-    if (
-      !item ||
-      !item.outbound ||
-      !item.host ||
-      !item.port
-    ) {
-      continue;
+      const item =
+        parseUri(uri);
+
+      if (
+        !item ||
+        !item.outbound ||
+        !item.host ||
+        !item.port
+      ) {
+        addError(
+          `PARSE ${String(uri).slice(0, 100)}`
+        );
+
+        continue;
+      }
+
+      parsed.push({
+        uri,
+        ...item
+      });
+    } catch (error) {
+      addError(
+        `PARSE ${cleanError(
+          error.message ||
+          error
+        )}`
+      );
     }
-
-    parsed.push({
-      uri:
-        entry.uri || entry,
-      ...item
-    });
   }
 
   const unique =
     uniqueByUri(
       parsed
     );
+
+  console.log(
+    `Parsed unique nodes: ${unique.length}`
+  );
 
   const tcpResults =
     await mapLimit(
@@ -615,6 +843,19 @@ async function checkNodes(
           return null;
         }
 
+        if (
+          result.latency >
+          MAX_LATENCY
+        ) {
+          addError(
+            `TCP SLOW ` +
+            `${entry.host}:${entry.port} ` +
+            `${result.latency}ms`
+          );
+
+          return null;
+        }
+
         return {
           ...entry,
           tcpLatency:
@@ -629,7 +870,8 @@ async function checkNodes(
     );
 
   console.log(
-    `TCP alive: ${alive.length}/${unique.length}`
+    `TCP passed: ` +
+    `${alive.length}/${unique.length}`
   );
 
   const checked =
@@ -643,9 +885,17 @@ async function checkNodes(
         )
     );
 
-  return checked.filter(
-    Boolean
+  const passed =
+    checked.filter(
+      Boolean
+    );
+
+  console.log(
+    `STRICT CHECK PASSED: ` +
+    `${passed.length}/${unique.length}`
   );
+
+  return passed;
 }
 
 function collectSources() {
@@ -682,6 +932,40 @@ function collectSources() {
   }
 }
 
+function printFailureSummary() {
+  if (
+    errorStats.size === 0
+  ) {
+    return;
+  }
+
+  console.log(
+    '\n========== FAILURE SUMMARY =========='
+  );
+
+  const sorted =
+    [...errorStats.entries()]
+      .sort(
+        (a, b) =>
+          b[1] - a[1]
+      );
+
+  for (
+    const [
+      reason,
+      count
+    ] of sorted
+  ) {
+    console.log(
+      `${count}x ${reason}`
+    );
+  }
+
+  console.log(
+    '=====================================\n'
+  );
+}
+
 async function main() {
   const {
     parseUri
@@ -700,7 +984,8 @@ async function main() {
     );
 
   console.log(
-    `Currently tracked working nodes: ${existing.length}`
+    `Currently tracked working nodes: ` +
+    `${existing.length}`
   );
 
   let workingExisting = [];
@@ -709,7 +994,7 @@ async function main() {
     existing.length > 0
   ) {
     console.log(
-      'Re-checking ALL currently working nodes...'
+      'Re-checking ALL existing nodes with strict probes...'
     );
 
     workingExisting =
@@ -720,7 +1005,8 @@ async function main() {
       );
 
     console.log(
-      `Still working: ${workingExisting.length}/${existing.length}`
+      `Still working: ` +
+      `${workingExisting.length}/${existing.length}`
     );
   }
 
@@ -748,27 +1034,10 @@ async function main() {
     );
 
     console.log(
-      `Saved ${workingExisting.length} working nodes.`
+      `Saved ${workingExisting.length} strictly verified nodes.`
     );
 
-    if (
-      errorStats.size
-    ) {
-      console.log(
-        '\nFailure summary:'
-      );
-
-      for (
-        const [
-          reason,
-          count
-        ] of errorStats
-      ) {
-        console.log(
-          `${count}x ${reason}`
-        );
-      }
-    }
+    printFailureSummary();
 
     return;
   }
@@ -786,15 +1055,15 @@ async function main() {
   const knownUris =
     new Set(
       workingExisting.map(
-        (node) => node.uri
+        (node) =>
+          node.uri
       )
     );
 
   let allWorking =
     [...workingExisting];
 
-  let replacements =
-    0;
+  let replacements = 0;
 
   for (
     let round = 1;
@@ -802,7 +1071,8 @@ async function main() {
     round++
   ) {
     console.log(
-      `Replacement search round ${round}/${MAX_REPLACEMENT_ROUNDS}`
+      `Replacement search round ` +
+      `${round}/${MAX_REPLACEMENT_ROUNDS}`
     );
 
     const collected =
@@ -829,7 +1099,8 @@ async function main() {
       );
 
     console.log(
-      `Fresh unique candidates: ${candidates.length}`
+      `Fresh unique candidates: ` +
+      `${candidates.length}`
     );
 
     if (
@@ -842,17 +1113,21 @@ async function main() {
       break;
     }
 
+    const batchSize =
+      Math.max(
+        NEW_SERVER_BATCH,
+        needed * 20
+      );
+
     const limitedCandidates =
       candidates.slice(
         0,
-        Math.max(
-          NEW_SERVER_BATCH,
-          needed * 10
-        )
+        batchSize
       );
 
     console.log(
-      `Checking new candidates: ${limitedCandidates.length}`
+      `Checking new candidates: ` +
+      `${limitedCandidates.length}`
     );
 
     const newWorking =
@@ -885,7 +1160,8 @@ async function main() {
     }
 
     console.log(
-      `Working replacements found: ${replacements}/${needed}`
+      `Strictly verified replacements: ` +
+      `${replacements}/${needed}`
     );
 
     if (
@@ -905,7 +1181,8 @@ async function main() {
   );
 
   console.log(
-    `Final working nodes: ${allWorking.length}`
+    `Final strictly verified nodes: ` +
+    `${allWorking.length}`
   );
 
   console.log(
@@ -920,28 +1197,12 @@ async function main() {
     replacements < needed
   ) {
     console.log(
-      `Replacement deficit: ${needed - replacements}`
+      `Replacement deficit: ` +
+      `${needed - replacements}`
     );
   }
 
-  if (
-    errorStats.size
-  ) {
-    console.log(
-      '\nFailure summary:'
-    );
-
-    for (
-      const [
-        reason,
-        count
-      ] of errorStats
-    ) {
-      console.log(
-        `${count}x ${reason}`
-      );
-    }
-  }
+  printFailureSummary();
 }
 
 main().catch(
