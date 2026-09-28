@@ -48,7 +48,7 @@ jobs:
 
           echo "Downloading: $LATEST_URL"
 
-          curl -L "$LATEST_URL" -o xray.zip
+          curl -fL "$LATEST_URL" -o xray.zip
 
           mkdir -p xray-bin
 
@@ -65,19 +65,21 @@ jobs:
 
       - name: Check and refresh nodes
         env:
-          MAX_LATENCY: 1000
+          MAX_LATENCY: 700
           TCP_TIMEOUT: 5000
           XRAY_TIMEOUT: 10000
-          CURL_TIMEOUT: 12000
-          CONCURRENCY: 100
-          XRAY_CONCURRENCY: 8
-          NEW_SERVER_BATCH: 200
-          MAX_REPLACEMENT_ROUNDS: 5
+          CURL_TIMEOUT: 10000
+          CONCURRENCY: 60
+          XRAY_CONCURRENCY: 6
+          PROBE_ROUNDS: 3
+          PROBE_DELAY_MS: 400
+          NEW_SERVER_BATCH: 300
+          MAX_REPLACEMENT_ROUNDS: 8
         run: npm run check
 
       - name: Generate subscription
         env:
-          MAX_LATENCY: 1000
+          MAX_LATENCY: 700
         run: npm run generate
 
       - name: Validate output
