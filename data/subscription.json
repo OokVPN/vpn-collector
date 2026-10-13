@@ -180,7 +180,7 @@
           "security": "reality",
           "realitySettings": {
             "serverName": "tomaz1337shellbuy.vvzzkontaktezzvv.garden",
-            "fingerprint": "firefox",
+            "fingerprint": "chrome",
             "publicKey": "s0ypPx0AL3k2KOk74tbm-aE-i7eIR_MYVzfLHZeLaUk",
             "shortId": "2e124af254a65e7c",
             "spiderX": ""
@@ -210,7 +210,7 @@
           "security": "reality",
           "realitySettings": {
             "serverName": "tomaz1337shellbuy.vvzzkontaktezzvv.garden",
-            "fingerprint": "chrome",
+            "fingerprint": "firefox",
             "publicKey": "s0ypPx0AL3k2KOk74tbm-aE-i7eIR_MYVzfLHZeLaUk",
             "shortId": "2e124af254a65e7c",
             "spiderX": ""
@@ -343,6 +343,39 @@
         "settings": {
           "vnext": [
             {
+              "address": "31.58.95.10",
+              "port": 443,
+              "users": [
+                {
+                  "id": "c6e3c24c-ce20-4ad5-8c8c-68cb05890ea8",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "reality",
+          "grpcSettings": {
+            "serviceName": "gdd-grpc",
+            "multiMode": false
+          },
+          "realitySettings": {
+            "serverName": "de-gdd-1.unturned-rust-dead.lol",
+            "fingerprint": "random",
+            "publicKey": "aYz4_13W8gtAXGBrWeqJXtExahAJ9kUPDapqeyAlYCk",
+            "shortId": "",
+            "spiderX": ""
+          }
+        },
+        "tag": "node-9"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
               "address": "216.9.226.22",
               "port": 443,
               "users": [
@@ -365,7 +398,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-9"
+        "tag": "node-10"
       },
       {
         "protocol": "vless",
@@ -395,36 +428,6 @@
             "spiderX": ""
           }
         },
-        "tag": "node-10"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "45.118.249.109",
-              "port": 443,
-              "users": [
-                {
-                  "id": "f804a3c6-1776-4d81-8563-3a5e78e9f074",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "www.fi.forge-relay.com",
-            "fingerprint": "firefox",
-            "publicKey": "tW28ur4PP6lSr5XeKLu1njwm_W2Cv83EOoBaMn7ivVg",
-            "shortId": "a1b2c3d4",
-            "spiderX": ""
-          }
-        },
         "tag": "node-11"
       },
       {
@@ -432,11 +435,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "45.118.249.109",
+              "address": "46.246.125.153",
               "port": 443,
               "users": [
                 {
-                  "id": "f804a3c6-1776-4d81-8563-3a5e78e9f074",
+                  "id": "a16a3e32-8d63-4dec-8c67-1361388a64ca",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -448,10 +451,10 @@
           "network": "tcp",
           "security": "reality",
           "realitySettings": {
-            "serverName": "www.fi.forge-relay.com",
-            "fingerprint": "firefox",
-            "publicKey": "tW28ur4PP6lSr5XeKLu1njwm_W2Cv83EOoBaMn7ivVg",
-            "shortId": "a1b2c3d4",
+            "serverName": "res.cdn.office.net",
+            "fingerprint": "random",
+            "publicKey": "ftglT-Ghp2FPiPlwyEAldfiAE1IL_AJ9UCkfCj0zk2I",
+            "shortId": "a83b77e064761e3c",
             "spiderX": ""
           }
         },
@@ -821,7 +824,7 @@
           "security": "reality",
           "realitySettings": {
             "serverName": "tomaz1337shellbuy.vvzzkontaktezzvv.garden",
-            "fingerprint": "firefox",
+            "fingerprint": "chrome",
             "publicKey": "s0ypPx0AL3k2KOk74tbm-aE-i7eIR_MYVzfLHZeLaUk",
             "shortId": "2e124af254a65e7c",
             "spiderX": ""
@@ -920,7 +923,7 @@
           "security": "reality",
           "realitySettings": {
             "serverName": "tomaz1337shellbuy.vvzzkontaktezzvv.garden",
-            "fingerprint": "chrome",
+            "fingerprint": "firefox",
             "publicKey": "s0ypPx0AL3k2KOk74tbm-aE-i7eIR_MYVzfLHZeLaUk",
             "shortId": "2e124af254a65e7c",
             "spiderX": ""
@@ -947,7 +950,7 @@
         }
       ]
     },
-    "remarks": "🇬🇧 🏳️ Великобритания #4"
+    "remarks": "🇬🇧 Великобритания #4"
   },
   {
     "dns": {
@@ -1343,7 +1346,109 @@
         }
       ]
     },
-    "remarks": "🇬🇧 Великобритания #8"
+    "remarks": "🇬🇧 🏳️ Великобритания #8"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.58.95.10",
+              "port": 443,
+              "users": [
+                {
+                  "id": "c6e3c24c-ce20-4ad5-8c8c-68cb05890ea8",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "security": "reality",
+          "grpcSettings": {
+            "serviceName": "gdd-grpc",
+            "multiMode": false
+          },
+          "realitySettings": {
+            "serverName": "de-gdd-1.unturned-rust-dead.lol",
+            "fingerprint": "random",
+            "publicKey": "aYz4_13W8gtAXGBrWeqJXtExahAJ9kUPDapqeyAlYCk",
+            "shortId": "",
+            "spiderX": ""
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇮🇩 Индонезия"
   },
   {
     "dns": {
@@ -1595,204 +1700,6 @@
         "settings": {
           "vnext": [
             {
-              "address": "45.118.249.109",
-              "port": 443,
-              "users": [
-                {
-                  "id": "f804a3c6-1776-4d81-8563-3a5e78e9f074",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "www.fi.forge-relay.com",
-            "fingerprint": "firefox",
-            "publicKey": "tW28ur4PP6lSr5XeKLu1njwm_W2Cv83EOoBaMn7ivVg",
-            "shortId": "a1b2c3d4",
-            "spiderX": ""
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇫🇮 Финляндия"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "45.118.249.109",
-              "port": 443,
-              "users": [
-                {
-                  "id": "f804a3c6-1776-4d81-8563-3a5e78e9f074",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "www.fi.forge-relay.com",
-            "fingerprint": "firefox",
-            "publicKey": "tW28ur4PP6lSr5XeKLu1njwm_W2Cv83EOoBaMn7ivVg",
-            "shortId": "a1b2c3d4",
-            "spiderX": ""
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇫🇮 Финляндия #2"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
               "address": "46.246.125.153",
               "port": 443,
               "users": [
@@ -1937,5 +1844,104 @@
       ]
     },
     "remarks": "🇸🇪 Швеция #2"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "46.246.125.153",
+              "port": 443,
+              "users": [
+                {
+                  "id": "a16a3e32-8d63-4dec-8c67-1361388a64ca",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "res.cdn.office.net",
+            "fingerprint": "random",
+            "publicKey": "ftglT-Ghp2FPiPlwyEAldfiAE1IL_AJ9UCkfCj0zk2I",
+            "shortId": "a83b77e064761e3c",
+            "spiderX": ""
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇸🇪 Швеция #3"
   }
 ]
