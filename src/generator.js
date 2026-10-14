@@ -565,6 +565,15 @@ async function main() {
       continue;
     }
 
+const security = parsed.outbound.streamSettings?.security;
+
+if (
+  parsed.type !== 'SS' &&
+  !['tls', 'reality'].includes(security)
+) {
+  continue;
+}
+    
     candidates.push({
       ...parsed,
       uri: item.uri,
