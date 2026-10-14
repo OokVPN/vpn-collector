@@ -1,79 +1,303 @@
 [
   {
     "tag": "node-1",
-    "remarks": "🇬🇧 Великобритания",
+    "remarks": "🇬🇧 🏳️ Великобритания",
     "countryCode": "GB",
-    "latency": 631,
+    "latency": 580,
     "type": "VLESS"
   },
   {
     "tag": "node-2",
-    "remarks": "🇬🇧 Великобритания #2",
+    "remarks": "🇬🇧 🏳️ Великобритания #2",
     "countryCode": "GB",
-    "latency": 632,
+    "latency": 585,
     "type": "VLESS"
   },
   {
     "tag": "node-3",
-    "remarks": "🇬🇧 🏳️ Великобритания #3",
+    "remarks": "🇬🇧 Великобритания #3",
     "countryCode": "GB",
-    "latency": 633,
+    "latency": 592,
     "type": "VLESS"
   },
   {
     "tag": "node-4",
     "remarks": "🇬🇧 Великобритания #4",
     "countryCode": "GB",
-    "latency": 637,
+    "latency": 595,
     "type": "VLESS"
   },
   {
     "tag": "node-5",
     "remarks": "🇬🇧 Великобритания #5",
     "countryCode": "GB",
-    "latency": 637,
+    "latency": 596,
     "type": "VLESS"
   },
   {
     "tag": "node-6",
     "remarks": "🇬🇧 🏳️ Великобритания #6",
     "countryCode": "GB",
-    "latency": 641,
+    "latency": 606,
     "type": "VLESS"
   },
   {
     "tag": "node-7",
     "remarks": "🇬🇧 Великобритания #7",
     "countryCode": "GB",
-    "latency": 641,
+    "latency": 621,
     "type": "VLESS"
   },
   {
     "tag": "node-8",
-    "remarks": "🇬🇧 🏳️ Великобритания #8",
+    "remarks": "🇬🇧 Великобритания #8",
     "countryCode": "GB",
-    "latency": 643,
+    "latency": 624,
     "type": "VLESS"
   },
   {
     "tag": "node-9",
-    "remarks": "🇫🇮 Финляндия",
-    "countryCode": "FI",
-    "latency": 681,
-    "type": "VLESS"
+    "remarks": "🇨🇦 Канада",
+    "countryCode": "CA",
+    "latency": 151,
+    "type": "SS"
   },
   {
     "tag": "node-10",
-    "remarks": "🇫🇮 Финляндия #2",
-    "countryCode": "FI",
-    "latency": 690,
-    "type": "VLESS"
+    "remarks": "🇨🇦 Канада #2",
+    "countryCode": "CA",
+    "latency": 242,
+    "type": "SS"
   },
   {
     "tag": "node-11",
-    "remarks": "🇫🇷 Франция",
-    "countryCode": "FR",
-    "latency": 662,
+    "remarks": "🇨🇦 Канада #3",
+    "countryCode": "CA",
+    "latency": 248,
+    "type": "SS"
+  },
+  {
+    "tag": "node-12",
+    "remarks": "🇨🇦 Канада #4",
+    "countryCode": "CA",
+    "latency": 307,
+    "type": "SS"
+  },
+  {
+    "tag": "node-13",
+    "remarks": "🇨🇦 Канада #5",
+    "countryCode": "CA",
+    "latency": 524,
+    "type": "SS"
+  },
+  {
+    "tag": "node-14",
+    "remarks": "🇺🇸 США",
+    "countryCode": "US",
+    "latency": 91,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-15",
+    "remarks": "🇺🇸 США #2",
+    "countryCode": "US",
+    "latency": 97,
+    "type": "SS"
+  },
+  {
+    "tag": "node-16",
+    "remarks": "🇺🇸 США #3",
+    "countryCode": "US",
+    "latency": 98,
+    "type": "SS"
+  },
+  {
+    "tag": "node-17",
+    "remarks": "🇺🇸 США #4",
+    "countryCode": "US",
+    "latency": 101,
+    "type": "SS"
+  },
+  {
+    "tag": "node-18",
+    "remarks": "🇺🇸 США #5",
+    "countryCode": "US",
+    "latency": 101,
+    "type": "SS"
+  },
+  {
+    "tag": "node-19",
+    "remarks": "🇺🇸 США #6",
+    "countryCode": "US",
+    "latency": 101,
+    "type": "SS"
+  },
+  {
+    "tag": "node-20",
+    "remarks": "🇺🇸 США #7",
+    "countryCode": "US",
+    "latency": 102,
+    "type": "SS"
+  },
+  {
+    "tag": "node-21",
+    "remarks": "🇺🇸 США #8",
+    "countryCode": "US",
+    "latency": 103,
+    "type": "SS"
+  },
+  {
+    "tag": "node-22",
+    "remarks": "🇺🇸 США #9",
+    "countryCode": "US",
+    "latency": 103,
+    "type": "SS"
+  },
+  {
+    "tag": "node-23",
+    "remarks": "🇺🇸 США #10",
+    "countryCode": "US",
+    "latency": 105,
+    "type": "SS"
+  },
+  {
+    "tag": "node-24",
+    "remarks": "🇺🇸 США #11",
+    "countryCode": "US",
+    "latency": 105,
+    "type": "SS"
+  },
+  {
+    "tag": "node-25",
+    "remarks": "🇺🇸 США #12",
+    "countryCode": "US",
+    "latency": 107,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-26",
+    "remarks": "🇺🇸 США #13",
+    "countryCode": "US",
+    "latency": 108,
+    "type": "SS"
+  },
+  {
+    "tag": "node-27",
+    "remarks": "🇺🇸 США #14",
+    "countryCode": "US",
+    "latency": 165,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-28",
+    "remarks": "🇺🇸 США #15",
+    "countryCode": "US",
+    "latency": 167,
+    "type": "SS"
+  },
+  {
+    "tag": "node-29",
+    "remarks": "🇺🇸 США #16",
+    "countryCode": "US",
+    "latency": 185,
+    "type": "SS"
+  },
+  {
+    "tag": "node-30",
+    "remarks": "🇺🇸 США #17",
+    "countryCode": "US",
+    "latency": 188,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-31",
+    "remarks": "🇺🇸 США #18",
+    "countryCode": "US",
+    "latency": 193,
+    "type": "SS"
+  },
+  {
+    "tag": "node-32",
+    "remarks": "🇺🇸 США #19",
+    "countryCode": "US",
+    "latency": 195,
+    "type": "SS"
+  },
+  {
+    "tag": "node-33",
+    "remarks": "🇺🇸 США #20",
+    "countryCode": "US",
+    "latency": 195,
+    "type": "SS"
+  },
+  {
+    "tag": "node-34",
+    "remarks": "🇺🇸 США #21",
+    "countryCode": "US",
+    "latency": 196,
+    "type": "SS"
+  },
+  {
+    "tag": "node-35",
+    "remarks": "🇺🇸 США #22",
+    "countryCode": "US",
+    "latency": 201,
+    "type": "SS"
+  },
+  {
+    "tag": "node-36",
+    "remarks": "🇺🇸 США #23",
+    "countryCode": "US",
+    "latency": 201,
+    "type": "SS"
+  },
+  {
+    "tag": "node-37",
+    "remarks": "🇺🇸 США #24",
+    "countryCode": "US",
+    "latency": 228,
+    "type": "SS"
+  },
+  {
+    "tag": "node-38",
+    "remarks": "🇺🇸 США #25",
+    "countryCode": "US",
+    "latency": 230,
+    "type": "SS"
+  },
+  {
+    "tag": "node-39",
+    "remarks": "🇺🇸 США #26",
+    "countryCode": "US",
+    "latency": 341,
+    "type": "SS"
+  },
+  {
+    "tag": "node-40",
+    "remarks": "🇺🇸 США #27",
+    "countryCode": "US",
+    "latency": 399,
+    "type": "SS"
+  },
+  {
+    "tag": "node-41",
+    "remarks": "🇺🇸 США #28",
+    "countryCode": "US",
+    "latency": 416,
+    "type": "SS"
+  },
+  {
+    "tag": "node-42",
+    "remarks": "🇫🇮 Финляндия",
+    "countryCode": "FI",
+    "latency": 634,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-43",
+    "remarks": "🇫🇮 Финляндия #2",
+    "countryCode": "FI",
+    "latency": 658,
     "type": "VLESS"
   }
 ]
