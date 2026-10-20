@@ -2,7 +2,6 @@ name: Update VPN Subscription
 
 on:
   workflow_dispatch:
-
   schedule:
     - cron: '*/14 * * * *'
 
@@ -16,7 +15,6 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-
     timeout-minutes: 25
 
     steps:
@@ -28,14 +26,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
       - name: Install Xray
         run: |
           set -e
 
-          RELEASES_JSON=$(curl -sL https://api.github.com/repos/XTLS/Xray-core/releases)
+          RELEASES_JSON=$(curl -fsSL https://api.github.com/repos/XTLS/Xray-core/releases)
 
           LATEST_URL=$(echo "$RELEASES_JSON" \
             | jq -r '[.[] | select(.assets != null and (.assets | length) > 0)][0].assets[] | select(.name == "Xray-linux-64.zip") | .browser_download_url')
@@ -47,15 +42,10 @@ jobs:
           fi
 
           echo "Downloading: $LATEST_URL"
-
           curl -fL "$LATEST_URL" -o xray.zip
-
           mkdir -p xray-bin
-
           unzip -o xray.zip -d xray-bin
-
           chmod +x xray-bin/xray
-
           echo "$(pwd)/xray-bin" >> "$GITHUB_PATH"
 
       - name: Verify Xray installation
@@ -66,13 +56,9 @@ jobs:
       - name: Check and refresh nodes
         env:
           MAX_LATENCY: 700
-          TCP_TIMEOUT: 5000
           XRAY_TIMEOUT: 10000
           CURL_TIMEOUT: 10000
-          CONCURRENCY: 60
           XRAY_CONCURRENCY: 6
-          PROBE_ROUNDS: 3
-          PROBE_DELAY_MS: 400
           NEW_SERVER_BATCH: 300
           MAX_REPLACEMENT_ROUNDS: 8
         run: npm run check
@@ -88,54 +74,33 @@ jobs:
           const fs = require('fs');
 
           const data = JSON.parse(
-            fs.readFileSync(
-              'public/subscription.json',
-              'utf8'
-            )
+            fs.readFileSync('public/subscription.json', 'utf8')
           );
 
-          if (
-            !Array.isArray(data) ||
-            data.length === 0
-          ) {
-            throw new Error(
-              'empty subscription'
-            );
+          if (!Array.isArray(data) || data.length === 0) {
+            throw new Error('empty subscription');
           }
 
-          if (
-            data[0].remarks !==
-            '🇪🇺 АВТО ⚡'
-          ) {
-            throw new Error(
-              'AUTO missing or not first'
-            );
+          if (data[0].remarks !== '🇪🇺 АВТО ⚡') {
+            throw new Error('AUTO missing or not first');
           }
 
-          const hasNode =
-            data[0].outbounds.some(
-              o =>
-                typeof o.tag === 'string' &&
-                o.tag.startsWith('node-')
-            );
+          const hasNode = data[0].outbounds.some(
+            (outbound) =>
+              typeof outbound.tag === 'string' &&
+              outbound.tag.startsWith('node-')
+          );
 
           if (!hasNode) {
-            throw new Error(
-              'AUTO has no working nodes'
-            );
+            throw new Error('AUTO has no working nodes');
           }
 
-          console.log(
-            'Validation OK:',
-            data.length,
-            'entries'
-          );
+          console.log('Validation OK:', data.length, 'entries');
           NODE
 
       - name: Commit and push
         run: |
           git config user.name "vpn-collector-bot"
-
           git config user.email "actions@users.noreply.github.com"
 
           git add \
@@ -148,8 +113,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit \
-              -m "chore: update subscription [skip ci]"
-
+            git commit -m "chore: update subscription [skip ci]"
             git push
           fi
