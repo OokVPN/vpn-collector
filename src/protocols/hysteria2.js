@@ -1,44 +1,75 @@
 export function parseHysteria2(uri) {
   try {
-    const normalized = uri.replace(/^hy2:\/\//, 'hysteria2://');
-    const u = new URL(normalized);
-    if (u.protocol !== 'hysteria2:') return null;
+    const normalized = uri.replace(/^hy2:\/\//i, 'hysteria2://');
+    const url = new URL(normalized);
+    if (url.protocol !== 'hysteria2:') return null;
 
-    const password = decodeURIComponent(u.username || '') || decodeURIComponent(u.searchParams.get('auth') || '');
-    const host = u.hostname;
-    const port = parseInt(u.port, 10);
-    if (!host || !port || !password) return null;
-
-    const p = u.searchParams;
-    const obfsType = p.get('obfs');
-
-    const outbound = {
-      protocol: 'hysteria2',
-      settings: {
-        servers: [
-          {
-            address: host,
-            port,
-            password
-          }
-        ]
-      },
-      streamSettings: {
-        network: 'hysteria2',
-        security: 'tls',
-        hysteria2Settings: {
-          password,
-          obfs: obfsType
-            ? { type: obfsType, password: p.get('obfs-password') || '' }
-            : undefined
-        },
-        tlsSettings: {
-          serverName: p.get('sni') || host
-        }
+    const decode = (value) => {
+      try {
+        return decodeURIComponent(value || '');
+      } catch {
+        return value || '';
       }
     };
 
-    return { host, port, outbound };
+    const host = url.hostname.replace(/^\[|\]$/g, '');
+    const port = Number.parseInt(url.port, 10);
+    const username = decode(url.username);
+    const password = decode(url.password);
+    const queryAuth = url.searchParams.get('auth') || '';
+    const auth = queryAuth || (password ? `${username}:${password}` : username);
+
+    if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !auth) return null;
+
+    const params = url.searchParams;
+    const serverName = params.get('sni') || host;
+    const alpnValue = params.get('alpn') || '';
+    const alpn = alpnValue ? alpnValue.split(',').map((item) => item.trim()).filter(Boolean) : ['h3'];
+    const fingerprint = params.get('fp') || '';
+    const allowInsecure = ['1', 'true', 'yes'].includes(String(params.get('insecure') || '').toLowerCase());
+
+    const hysteriaSettings = {
+      version: 2,
+      auth
+    };
+
+    const streamSettings = {
+      network: 'hysteria',
+      security: 'tls',
+      tlsSettings: {
+        serverName,
+        alpn,
+        ...(fingerprint ? { fingerprint } : {}),
+        ...(allowInsecure ? { allowInsecure: true } : {})
+      },
+      hysteriaSettings
+    };
+
+    const obfs = params.get('obfs') || '';
+    const obfsPassword = params.get('obfs-password') || '';
+    if (obfs) {
+      if (obfs.toLowerCase() !== 'salamander' || !obfsPassword) return null;
+      streamSettings.udpmasks = [
+        {
+          type: 'salamander',
+          settings: { password: obfsPassword }
+        }
+      ];
+    }
+
+    return {
+      host,
+      port,
+      outbound: {
+        protocol: 'hysteria',
+        settings: {
+          version: 2,
+          address: host,
+          port
+        },
+        streamSettings
+      }
+    };
   } catch {
     return null;
   }
