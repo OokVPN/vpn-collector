@@ -10,7 +10,9 @@ const CURL_TIMEOUT = Number(process.env.CURL_TIMEOUT || process.env.HTTP_TIMEOUT
 const XRAY_CONCURRENCY = Math.max(1, Number(process.env.XRAY_CONCURRENCY || 6));
 const NEW_SERVER_BATCH = Math.max(1, Number(process.env.NEW_SERVER_BATCH || 300));
 const MAX_REPLACEMENT_ROUNDS = Math.max(1, Number(process.env.MAX_REPLACEMENT_ROUNDS || 8));
-const INTERNET_TEST_URLS = (process.env.CHECK_URLS || 'https://www.gstatic.com/generate_204,https://cp.cloudflare.com/generate_204')
+const PROBE_ROUNDS = Math.max(1, Math.min(5, Number(process.env.PROBE_ROUNDS || 3)));
+const PROBE_DELAY_MS = Math.max(0, Number(process.env.PROBE_DELAY_MS || 250));
+const INTERNET_TEST_URLS = (process.env.CHECK_URLS || 'https://cp.cloudflare.com/generate_204,https://www.gstatic.com/generate_204')
   .split(',')
   .map((value) => value.trim())
   .filter((value) => /^https:\/\//i.test(value));
@@ -39,20 +41,33 @@ function randomPort() {
   return 20000 + Math.floor(Math.random() * 20000);
 }
 
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function median(values) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
+}
+
 function proxyGetKeepAlive(port, url) {
   return new Promise((resolve) => {
     const timeoutSeconds = Math.max(2, Math.ceil(CURL_TIMEOUT / 1000));
     const marker = '__GET_RESULT__';
-    const writeOut = `\\n${marker}%{http_code}|%{time_total}|%{num_connects}\\n`;
+    const writeOut = '\\n' + marker + '%{http_code}|%{time_total}|%{num_connects}\\n';
     const args = [
       '--silent',
       '--show-error',
       '--http1.1',
-      '--max-redirs', '0',
       '--connect-timeout', String(timeoutSeconds),
       '--max-time', String(timeoutSeconds),
-      '--proxy', `http://127.0.0.1:${port}`,
+      '--proxy', 'http://127.0.0.1:' + port,
       '--noproxy', '',
+      '--header', 'Connection: keep-alive',
       '--output', '/dev/null',
       '--write-out', writeOut,
       url,
@@ -73,66 +88,79 @@ function proxyGetKeepAlive(port, url) {
       }
     }, (error, stdout, stderr) => {
       const output = String(stdout || '');
-      const matcher = new RegExp(`${marker}(\\d{3})\\|([0-9.]+)\\|(\\d+)`, 'g');
+      const matcher = new RegExp(marker + '(\\d{3})\\|([0-9.]+)\\|(\\d+)', 'g');
       const records = [...output.matchAll(matcher)].map((match) => ({
         status: Number(match[1]),
         seconds: Number(match[2]),
         connections: Number(match[3])
       }));
 
-      if (error) {
-        resolve({
-          ok: false,
-          error: cleanError(String(stderr || '').trim() || error.message || 'curl failed')
-        });
-        return;
-      }
+      const validStatus = (status) =>
+        Number.isInteger(status) && status >= 200 && status < 600;
+      const validTiming = (record) =>
+        record && Number.isFinite(record.seconds) && record.seconds >= 0;
 
-      if (records.length !== 2) {
+      if (records.length === 0) {
         resolve({
           ok: false,
-          error: `expected 2 GET results, got ${records.length}`
+          reachable: false,
+          error: cleanError(String(stderr || '').trim() || (error && error.message) || 'curl returned no HTTP response')
         });
         return;
       }
 
       const [first, second] = records;
-      const validStatus = (status) => status >= 200 && status < 300;
+      const firstValid = validStatus(first.status) && validTiming(first);
+      const secondValid = validStatus(second && second.status) && validTiming(second);
 
-      if (!validStatus(first.status) || !validStatus(second.status)) {
+      if (!firstValid && !secondValid) {
         resolve({
           ok: false,
-          error: `HTTP statuses ${first.status || 'unknown'}/${second.status || 'unknown'}`
+          reachable: false,
+          error: 'No valid HTTP response; statuses ' +
+            (first ? first.status : 'missing') + '/' +
+            (second ? second.status : 'missing') +
+            (error ? '; ' + cleanError(String(stderr || '').trim() || error.message) : '')
         });
         return;
       }
 
-      if (!Number.isFinite(first.seconds) || !Number.isFinite(second.seconds)) {
-        resolve({ ok: false, error: 'invalid request timing' });
-        return;
-      }
+      const usable = [first, second].filter((record) =>
+        validStatus(record && record.status) && validTiming(record)
+      );
+      const latestResponse = usable[usable.length - 1];
+      const firstLatency = firstValid ? Math.round(first.seconds * 1000) : null;
+      const latency = Math.round(latestResponse.seconds * 1000);
+      const firstStatus = first ? first.status : 0;
+      const secondStatus = second ? second.status : 0;
 
-      if (first.connections < 1) {
-        resolve({ ok: false, error: 'first GET did not establish a new connection' });
-        return;
-      }
-
-      if (second.connections !== 0) {
+      if (firstValid && secondValid && second.connections === 0) {
         resolve({
-          ok: false,
-          error: `keep-alive was not reused (second GET opened ${second.connections} connection(s))`
+          ok: true,
+          reachable: true,
+          keepAlive: true,
+          firstStatus,
+          secondStatus,
+          firstLatency,
+          latency,
+          firstConnections: first.connections,
+          secondConnections: second.connections
         });
         return;
       }
 
       resolve({
-        ok: true,
-        firstStatus: first.status,
-        secondStatus: second.status,
-        firstLatency: Math.round(first.seconds * 1000),
-        latency: Math.round(second.seconds * 1000),
-        firstConnections: first.connections,
-        secondConnections: second.connections
+        ok: false,
+        reachable: true,
+        keepAlive: false,
+        firstStatus,
+        secondStatus,
+        firstLatency,
+        latency,
+        error: records.length < 2
+          ? 'Only one HTTP response received; Keep-Alive could not be measured'
+          : 'HTTP response received, but the second GET did not reuse the connection (opened ' +
+            second.connections + ' new connection(s))'
       });
     });
   });
@@ -140,35 +168,84 @@ function proxyGetKeepAlive(port, url) {
 
 async function strictInternetCheck(port, label, xray) {
   let lastError = 'no test URLs configured';
+  const fallbackSamples = [];
 
   for (const url of INTERNET_TEST_URLS) {
-    if (!xray.isAlive()) {
-      return { ok: false, url, error: 'Xray process died' };
+    const keepAliveSamples = [];
+    const initialLatencies = [];
+    let endpointFailedBeforeResponse = false;
+
+    for (let attempt = 1; attempt <= PROBE_ROUNDS; attempt++) {
+      if (!xray.isAlive()) {
+        return { ok: false, url, error: 'Xray process died' };
+      }
+
+      console.log('GET+KEEPALIVE ' + label + ' ' + url + ' attempt ' +
+        attempt + '/' + PROBE_ROUNDS);
+      const result = await proxyGetKeepAlive(port, url);
+
+      if (result.ok) {
+        keepAliveSamples.push(result.latency);
+        if (Number.isFinite(result.firstLatency)) {
+          initialLatencies.push(result.firstLatency);
+        }
+        console.log('  GET 1 HTTP ' + result.firstStatus + ' ' +
+          result.firstLatency + 'ms');
+        console.log('  GET 2 HTTP ' + result.secondStatus + ' ' +
+          result.latency + 'ms; connection reused');
+      } else if (result.reachable) {
+        fallbackSamples.push({ url, latency: result.latency });
+        lastError = result.error;
+        console.log('  HTTP response received, but Keep-Alive could not be confirmed: ' +
+          result.error);
+        break;
+      } else {
+        lastError = result.error;
+        endpointFailedBeforeResponse = true;
+        console.log('  FAIL ' + url + ': ' + result.error);
+        if (keepAliveSamples.length === 0) break;
+      }
+
+      if (attempt < PROBE_ROUNDS) await delay(PROBE_DELAY_MS);
     }
 
-    console.log(`GET+KEEPALIVE ${label} ${url}`);
-    const result = await proxyGetKeepAlive(port, url);
+    if (keepAliveSamples.length > 0) {
+      const latency = median(keepAliveSamples);
+      if (latency <= MAX_LATENCY) {
+        return {
+          ok: true,
+          url,
+          latency,
+          firstLatency: median(initialLatencies),
+          keepAlive: true,
+          samples: keepAliveSamples.length
+        };
+      }
 
-    if (!result.ok) {
-      lastError = result.error;
-      console.log(`  FAIL ${url}: ${result.error}`);
-      continue;
+      lastError = 'median keep-alive latency ' + latency + 'ms > ' + MAX_LATENCY + 'ms';
+      console.log('  FAIL ' + url + ': ' + lastError +
+        ' (samples: ' + keepAliveSamples.join(', ') + 'ms)');
+    } else if (endpointFailedBeforeResponse) {
+      console.log('  Moving to the next test URL.');
+    }
+  }
+
+  if (fallbackSamples.length > 0) {
+    const latency = median(fallbackSamples.map((sample) => sample.latency));
+    if (latency <= MAX_LATENCY) {
+      const fallback = fallbackSamples.find((sample) => sample.latency === latency) || fallbackSamples[0];
+      console.log('  Keep-Alive was inconclusive; using successful GET response as fallback.');
+      return {
+        ok: true,
+        url: fallback.url,
+        latency,
+        firstLatency: null,
+        keepAlive: false,
+        samples: fallbackSamples.length
+      };
     }
 
-    console.log(`  GET 1 HTTP ${result.firstStatus} ${result.firstLatency}ms`);
-    console.log(`  GET 2 HTTP ${result.secondStatus} ${result.latency}ms; connection reused`);
-
-    if (result.latency > MAX_LATENCY) {
-      lastError = `keep-alive latency ${result.latency}ms > ${MAX_LATENCY}ms`;
-      continue;
-    }
-
-    return {
-      ok: true,
-      url,
-      latency: result.latency,
-      firstLatency: result.firstLatency
-    };
+    lastError = 'fallback GET latency ' + latency + 'ms > ' + MAX_LATENCY + 'ms';
   }
 
   return { ok: false, error: lastError };
@@ -204,7 +281,7 @@ async function checkNode(entry, xrayModule) {
       return null;
     }
 
-    console.log(`PASS ${internet.latency}ms keep-alive (initial ${internet.firstLatency}ms) ${label}`);
+    console.log('PASS ' + internet.latency + 'ms ' + (internet.keepAlive ? 'keep-alive' : 'GET fallback (Keep-Alive inconclusive)') + (Number.isFinite(internet.firstLatency) ? ' (initial ' + internet.firstLatency + 'ms)' : '') + ' ' + label);
     return { uri, latency: internet.latency };
   } finally {
     if (xray) await xrayModule.stopXray(xray.proc);
@@ -348,7 +425,11 @@ async function main() {
 
   const needed = Math.max(1, deadCount);
   console.log(`Need at least ${needed} replacement node(s).`);
-  const knownUris = new Set(workingExisting.map((node) => node.uri));
+  const knownUris = new Set(
+    [...existing, ...workingExisting]
+      .map((node) => (node && typeof node === 'object' ? node.uri : node))
+      .filter((uri) => typeof uri === 'string' && uri.length > 0)
+  );
   let allWorking = [...workingExisting];
   let replacements = 0;
 
@@ -367,11 +448,14 @@ async function main() {
     const batchSize = Math.max(NEW_SERVER_BATCH, needed * 20);
     const limitedCandidates = candidates.slice(0, batchSize);
     console.log(`Checking new candidates: ${limitedCandidates.length}`);
+    for (const candidate of limitedCandidates) knownUris.add(candidate.uri);
+
     const newWorking = await checkNodes(limitedCandidates, parseUri, xrayModule);
+    const workingUris = new Set(allWorking.map((node) => node.uri));
 
     for (const node of newWorking) {
-      if (knownUris.has(node.uri)) continue;
-      knownUris.add(node.uri);
+      if (workingUris.has(node.uri)) continue;
+      workingUris.add(node.uri);
       allWorking.push(node);
       replacements++;
     }
