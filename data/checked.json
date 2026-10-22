@@ -1,15 +1,15 @@
 [
   {
     "uri": "vless://068c73f5-c2fc-4579-96be-6e37cfcf58ed@193.233.220.203:8443?path=/xhttp&security=reality&encryption=none&pbk=KZejN2d1cwCrITHNxFYQVZ4rpMTZzHgJd9p30MZm_3k&fp=firefox&type=xhttp&sni=cdn-us.cahmes.space&sid=6bd33a75ebc0f26e#🇺🇸🕊",
-    "latency": 661
+    "latency": 278
   },
   {
     "uri": "vless://068c73f5-c2fc-4579-96be-6e37cfcf58ed@45.12.63.165:8443?path=/xhttp&security=reality&encryption=none&pbk=LP7yXSC50lHfxW-BuRQ3OLDBNncF2KVnMgVJuX9XR2w&fp=firefox&type=xhttp&sni=cdn-de.cahmes.space&sid=35cd2022241da999#🇮🇱🕊",
-    "latency": 249
+    "latency": 229
   },
   {
     "uri": "vless://068c73f5-c2fc-4579-96be-6e37cfcf58ed@79.137.192.13:8443?path=/xhttp&security=reality&encryption=none&pbk=upBeYE6Fyy46znMKXx-jkC66hAgARHcwYIdjNB4yXl8&fp=firefox&type=xhttp&sni=cdn-pl.cahmes.space&sid=a7a3b3ffe0572fce#🇵🇱🕊",
-    "latency": 528
+    "latency": 202
   },
   {
     "uri": "vless://068c73f5-c2fc-4579-96be-6e37cfcf58ed@94.228.166.86:8443?path=/xhttp&security=reality&encryption=none&pbk=R3xeImGP5Bsx42LkRruIs3vIKHnPVR9aodbouAiemzM&fp=firefox&type=xhttp&sni=cdn-nl.cahmes.space&sid=d73a212e98084d3b#🌍🕊",
@@ -21,34 +21,38 @@
   },
   {
     "uri": "vless://3acb3c2b-680c-40a5-ac19-9eef6b061efa@85.155.149.9:20285?security=reality&encryption=none&pbk=snNVYSFAGMHIRMnzBZoFFTcu6KowqSFLSyRgmI9NSRU&headerType=none&fp=firefox&type=tcp&flow=xtls-rprx-vision&sni=metrika.yandex.ru&sid=5308d9ab#🇭🇰🕊",
-    "latency": 213
+    "latency": 190
   },
   {
     "uri": "vless://3acb3c2b-680c-40a5-ac19-9eef6b061efa@gonci.zaebalsanoproxyklinus.lol:20285?security=reality&encryption=none&pbk=snNVYSFAGMHIRMnzBZoFFTcu6KowqSFLSyRgmI9NSRU&headerType=none&fp=firefox&type=tcp&flow=xtls-rprx-vision&sni=metrika.yandex.ru&sid=5308d9ab#🇭🇰🕊",
-    "latency": 218
+    "latency": 191
   },
   {
     "uri": "vless://4ad3dbf5-2005-4d96-b56c-a0ca9905cab6@88.218.92.41:24694?security=reality&encryption=none&pbk=kaPztgo_2b2CKxytGWXzn6EauyNKr6Ho8xerGpSS-SQ&headerType=none&fp=firefox&type=tcp&flow=xtls-rprx-vision&sni=metrika.yandex.ru&sid=58301280#🇦🇲🕊",
-    "latency": 269
+    "latency": 264
+  },
+  {
+    "uri": "vless://4c346148-ece9-487a-bffb-ba5a399b2d71@188.225.83.133:443?mode=gun&security=reality&encryption=none&pbk=JqmkP6Fys7jN2Fu1iDJuWKVNPhlgHfy_pj1DHFVKVhw&fp=firefox&type=grpc&sni=xnodtwx.artemida.live&sid=a1b2c3d4e5f6a7b8#🌍🕊",
+    "latency": 211
+  },
+  {
+    "uri": "vless://4c346148-ece9-487a-bffb-ba5a399b2d71@xnodtwx.artemida.live:443?mode=gun&security=reality&encryption=none&pbk=JqmkP6Fys7jN2Fu1iDJuWKVNPhlgHfy_pj1DHFVKVhw&fp=firefox&type=grpc&sni=xnodtwx.artemida.live&sid=a1b2c3d4e5f6a7b8#🌍🕊",
+    "latency": 238
   },
   {
     "uri": "vless://6a2aff19-ff1f-4a13-96c8-a4d8986a9699@78.159.246.179:2053?path=/api/v1/upload&security=tls&encryption=none&insecure=0&host=randomquaint.net&fp=firefox&type=xhttp&allowInsecure=0&sni=randomquaint.net#🌍🕊",
-    "latency": 204
-  },
-  {
-    "uri": "vless://8bd04756-3beb-4348-82c9-d35453df50ce@sweedenqfds777.qcloud.surf:21221?security=reality&encryption=none&pbk=RtxGqCtQJeOyUwSe7k6oZOrQWV1hPbC-TMqqgxl9fn4&headerType=none&fp=firefox&type=tcp&flow=xtls-rprx-vision&sni=metrika.yandex.ru&sid=c430045c#🌍🕊",
-    "latency": 115
+    "latency": 207
   },
   {
     "uri": "vless://95a608b6-bff1-4e10-bb61-0a39f221bb7d@fitindoor.net:2053?mode=auto&path=/api/v1/upload&security=tls&alpn=h2,http/1.1&encryption=none&insecure=0&host=fitindoor.net&fp=firefox&type=xhttp&allowInsecure=0&sni=fitindoor.net#🌍🕊",
-    "latency": 256
+    "latency": 201
   },
   {
     "uri": "vless://95a608b6-bff1-4e10-bb61-0a39f221bb7d@randomquaint.net:2053?mode=auto&path=/api/v1/upload&security=tls&alpn=h2,http/1.1&encryption=none&insecure=0&host=randomquaint.net&fp=firefox&type=xhttp&allowInsecure=0&sni=randomquaint.net#🌍🕊",
-    "latency": 302
+    "latency": 222
   },
   {
     "uri": "vless://c6cfcc53-9271-4ef7-88c5-5141621c8db1@31.59.216.141:443?security=reality&encryption=none&pbk=7zsU1U-30jh-qqfmqZukMfoqHB75ksKFA5aQFi8LGW4&headerType=none&fp=firefox&type=tcp&flow=xtls-rprx-vision&sni=193.23.216.239.cdn-one.org&sid=70b4ca#🇩🇪🕊",
-    "latency": 100
+    "latency": 129
   }
 ]
