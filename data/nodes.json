@@ -1,9 +1,37 @@
 [
   {
     "tag": "node-1",
+    "remarks": "🇦🇲 Армения",
+    "countryCode": "AM",
+    "latency": 269,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-2",
     "remarks": "🇩🇪 Германия",
     "countryCode": "DE",
-    "latency": 136,
+    "latency": 100,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-3",
+    "remarks": "🇩🇪 Германия #2",
+    "countryCode": "DE",
+    "latency": 115,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-4",
+    "remarks": "🇭🇰 Гонконг",
+    "countryCode": "HK",
+    "latency": 213,
+    "type": "VLESS"
+  },
+  {
+    "tag": "node-5",
+    "remarks": "🇭🇰 Гонконг #2",
+    "countryCode": "HK",
+    "latency": 218,
     "type": "VLESS"
   }
 ]
