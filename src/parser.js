@@ -1,3 +1,6 @@
+import config from './config.js';
+import { sha1, isPublicIp } from './util.js';
+import net from 'node:net';
 import { parseVless } from './protocols/vless.js';
 import { parseVmess } from './protocols/vmess.js';
 import { parseTrojan } from './protocols/trojan.js';
@@ -5,210 +8,143 @@ import { parseShadowsocks } from './protocols/shadowsocks.js';
 import { parseSocks } from './protocols/socks.js';
 import { parseHysteria2 } from './protocols/hysteria2.js';
 
-const PREFIXES = [
-  'vless://',
-  'vmess://',
-  'trojan://',
-  'ss://',
-  'socks://',
-  'socks5://',
-  'hysteria2://',
-  'hy2://'
-];
+const SCHEMES = 'vless|vmess|trojan|ss|socks5?|hysteria2|hy2';
+const SCHEME_START = new RegExp(`^(?:${SCHEMES})://`, 'i');
+const EMBEDDED = new RegExp(`(?:${SCHEMES})://[^\\s"'<>\`]+`, 'gi');
+const BASE64_BODY = /^[A-Za-z0-9+/_-]+={0,2}$/;
+const INVISIBLE = /[\u200B-\u200D\u2060\uFEFF]/g;
 
-const URI_PATTERN =
-  /(?:vless|vmess|trojan|ss|socks5?|hysteria2|hy2):\/\/[^\s"'<>`]+/gi;
-
-function normalizeUri(uri) {
-  return uri
+function unescapeText(text) {
+  return text
     .replace(/&amp;/gi, '&')
-    .replace(/[),\]}]+$/g, '')
-    .replace(/[.!?;]+$/g, '')
-    .trim();
+    .replace(/\\u0026/gi, '&')
+    .replace(/\\\//g, '/');
 }
 
-function looksLikeUri(value) {
-  const line = value.trim().replace(/^\uFEFF/, '').toLowerCase();
-  return PREFIXES.some((prefix) => line.startsWith(prefix));
+function stripPunctuation(value) {
+  return value.replace(/[.,;:!?)\]}'"]+$/, '');
 }
 
-function b64decodeSafe(str) {
-  try {
-    let value = str
-      .trim()
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
+function unwrapLine(line) {
+  const cleaned = line
+    .trim()
+    .replace(/^[\s"'`\-*•>]+/, '')
+    .replace(/[\s"'`,]+$/, '');
+  return SCHEME_START.test(cleaned) ? cleaned : null;
+}
 
-    while (value.length % 4 !== 0) {
-      value += '=';
-    }
+function decodeBase64Text(value) {
+  if (value.length < 16 || !BASE64_BODY.test(value)) return null;
+  const decoded = Buffer.from(value, 'base64').toString('utf8');
+  if (!decoded || decoded.includes('\uFFFD')) return null;
+  return decoded;
+}
 
-    const decoded = Buffer.from(value, 'base64').toString('utf8');
+function walkJson(node, visit) {
+  if (typeof node === 'string') visit(node);
+  else if (Array.isArray(node)) node.forEach((item) => walkJson(item, visit));
+  else if (node && typeof node === 'object') Object.values(node).forEach((item) => walkJson(item, visit));
+}
 
-    if (!decoded || decoded.includes('\uFFFD')) {
-      return null;
-    }
+function collect(text, depth, found) {
+  const input = unescapeText(String(text || '').replace(INVISIBLE, '').replace(/\r/g, '')).trim();
+  if (!input) return;
 
-    return decoded;
-  } catch {
-    return null;
+  if (input[0] === '[' || input[0] === '{') {
+    try {
+      walkJson(JSON.parse(input), (value) => collect(value, depth + 1, found));
+      return;
+    } catch {}
   }
-}
 
-function dedupe(values) {
-  return [...new Set(values)];
-}
+  const rest = [];
+  for (const line of input.split('\n')) {
+    const uri = unwrapLine(line);
+    if (uri) found.add(uri);
+    else rest.push(line);
+  }
 
-function extractFromText(text) {
-  const matches = text.match(URI_PATTERN) || [];
+  const restText = rest.join('\n');
+  for (const match of restText.matchAll(EMBEDDED)) found.add(stripPunctuation(match[0]));
 
-  return matches
-    .map(normalizeUri)
-    .filter(looksLikeUri);
+  if (depth >= config.parser.maxDecodeDepth) return;
+
+  const before = found.size;
+  const whole = decodeBase64Text(restText.replace(/\s+/g, ''));
+  if (whole) collect(whole, depth + 1, found);
+  if (found.size > before) return;
+
+  for (const line of rest) {
+    const decoded = decodeBase64Text(line.trim());
+    if (decoded) collect(decoded, depth + 1, found);
+  }
 }
 
 export function extractUris(text) {
-  if (!text || typeof text !== 'string') {
-    return [];
-  }
-
-  const input = text
-    .replace(/^\uFEFF/, '')
-    .replace(/\r/g, '')
-    .trim();
-
-  if (!input) {
-    return [];
-  }
-
-  // 1. Extract links from raw text, HTML, JSON, or embedded content.
-  const directUris = extractFromText(input);
-
-  if (directUris.length > 0) {
-    return dedupe(directUris);
-  }
-
-  // 2. Try decoding the entire response as a Base64 subscription.
-  const joined = input
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .join('');
-
-  if (joined) {
-    const decoded = b64decodeSafe(joined);
-
-    if (decoded) {
-      const decodedUris = extractFromText(decoded);
-
-      if (decodedUris.length > 0) {
-        return dedupe(decodedUris);
-      }
-    }
-  }
-
-  // 3. Try decoding individual lines.
-  const decodedUris = [];
-
-  for (const line of input.split('\n')) {
-    const decoded = b64decodeSafe(line.trim());
-
-    if (!decoded) {
-      continue;
-    }
-
-    decodedUris.push(...extractFromText(decoded));
-  }
-
-  return dedupe(decodedUris);
+  if (!text || typeof text !== 'string') return [];
+  const found = new Set();
+  collect(text, 0, found);
+  return [...found];
 }
 
-function wrap(result) {
-  if (!result) {
-    return {
-      host: null,
-      port: null,
-      outbound: null
-    };
-  }
-
-  return result;
+function hostPattern(pattern) {
+  const escaped = pattern.toLowerCase().replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+  return new RegExp(`^${escaped}$`);
 }
 
-export function parseUri(uri) {
-  if (typeof uri !== 'string') {
-    return null;
-  }
+const REJECT_HOSTS = (config.parser.rejectHosts || []).map(hostPattern);
+const REJECT_IDS = new Set((config.parser.rejectIds || []).map((value) => value.toLowerCase()));
 
-  const value = uri.trim().replace(/^\uFEFF/, '');
-
-  if (value.startsWith('vless://')) {
-    return {
-      type: 'VLESS',
-      ...wrap(parseVless(value))
-    };
-  }
-
-  if (value.startsWith('vmess://')) {
-    return {
-      type: 'VMess',
-      ...wrap(parseVmess(value))
-    };
-  }
-
-  if (value.startsWith('trojan://')) {
-    return {
-      type: 'Trojan',
-      ...wrap(parseTrojan(value))
-    };
-  }
-
-  if (value.startsWith('ss://')) {
-    return {
-      type: 'SS',
-      ...wrap(parseShadowsocks(value))
-    };
-  }
-
-  if (
-    value.startsWith('socks://') ||
-    value.startsWith('socks5://')
-  ) {
-    return {
-      type: 'SOCKS',
-      ...wrap(parseSocks(value))
-    };
-  }
-
-  if (
-    value.startsWith('hysteria2://') ||
-    value.startsWith('hy2://')
-  ) {
-    return {
-      type: 'HY2',
-      ...wrap(parseHysteria2(value))
-    };
-  }
-
-  return null;
+function isPlaceholder(host, id) {
+  const normalized = String(host).toLowerCase();
+  if (REJECT_HOSTS.some((regex) => regex.test(normalized))) return true;
+  if (id && REJECT_IDS.has(String(id).toLowerCase())) return true;
+  if (config.parser.rejectPrivateAddresses && net.isIP(normalized) && !isPublicIp(normalized)) return true;
+  return false;
 }
 
 export function getRemark(uri) {
-  if (typeof uri !== 'string') {
-    return '';
-  }
-
-  const hashIndex = uri.indexOf('#');
-
-  if (hashIndex === -1) {
-    return '';
-  }
-
-  const remark = uri.slice(hashIndex + 1);
-
+  if (typeof uri !== 'string') return '';
+  const index = uri.indexOf('#');
+  if (index === -1) return '';
+  const remark = uri.slice(index + 1);
   try {
     return decodeURIComponent(remark);
   } catch {
     return remark;
   }
+}
+
+const PARSERS = [
+  [/^vless:\/\//i, 'VLESS', parseVless],
+  [/^vmess:\/\//i, 'VMess', parseVmess],
+  [/^trojan:\/\//i, 'Trojan', parseTrojan],
+  [/^ss:\/\//i, 'SS', parseShadowsocks],
+  [/^socks5?:\/\//i, 'SOCKS', parseSocks],
+  [/^(?:hysteria2|hy2):\/\//i, 'HY2', parseHysteria2]
+];
+
+export function parseUri(uri) {
+  if (typeof uri !== 'string') return null;
+  const value = uri.trim().replace(/^\uFEFF/, '');
+
+  for (const [pattern, type, parse] of PARSERS) {
+    if (!pattern.test(value)) continue;
+    const normalized = value.replace(pattern, (prefix) => prefix.toLowerCase());
+    const result = parse(normalized);
+    if (!result || !result.outbound || !result.host || !result.port) return null;
+    if (isPlaceholder(result.host, result.id)) return null;
+    return {
+      type,
+      host: result.host,
+      port: result.port,
+      outbound: result.outbound,
+      remark: result.remark || getRemark(value)
+    };
+  }
+  return null;
+}
+
+export function nodeKey(parsed) {
+  return sha1(JSON.stringify([parsed.type, parsed.host, parsed.port, parsed.outbound]));
 }
