@@ -75,7 +75,7 @@
     "relaxExclusionIfEmpty": true,
     "allowedSecurity": ["tls", "reality"],
     "plainProtocols": ["SS"],
-    "whiteTriggers": ["обход бс", "белые списки", "обход белых списков", "whitelist", "БС", "Обход"],
+    "whiteTriggers": ["БС", "Обход", "5G/LTE"],
     "whiteMark": "🏳️",
     "autoRemarks": "🇪🇺 АВТО ⚡",
     "dns": { "servers": ["1.1.1.1", "1.0.0.1"], "queryStrategy": "UseIP" },
