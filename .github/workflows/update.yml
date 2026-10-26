@@ -27,76 +27,37 @@ jobs:
           node-version: '22'
 
       - name: Install Xray
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          set -e
+          set -euo pipefail
 
-          RELEASES_JSON=$(curl -fsSL https://api.github.com/repos/XTLS/Xray-core/releases)
+          URL=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
+            https://api.github.com/repos/XTLS/Xray-core/releases/latest \
+            | jq -r '.assets[] | select(.name == "Xray-linux-64.zip") | .browser_download_url')
 
-          LATEST_URL=$(echo "$RELEASES_JSON" \
-            | jq -r '[.[] | select(.assets != null and (.assets | length) > 0)][0].assets[] | select(.name == "Xray-linux-64.zip") | .browser_download_url')
-
-          if [ -z "$LATEST_URL" ] || [ "$LATEST_URL" = "null" ]; then
-            echo "::error::Failed to resolve Xray-linux-64.zip download URL from GitHub API"
-            echo "$RELEASES_JSON" | head -c 500
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "::error::Failed to resolve Xray-linux-64.zip download URL"
             exit 1
           fi
 
-          echo "Downloading: $LATEST_URL"
-          curl -fL "$LATEST_URL" -o xray.zip
+          curl -fL "$URL" -o xray.zip
           mkdir -p xray-bin
           unzip -o xray.zip -d xray-bin
           chmod +x xray-bin/xray
-          echo "$(pwd)/xray-bin" >> "$GITHUB_PATH"
-
-      - name: Verify Xray installation
-        run: |
           xray-bin/xray version
           echo "XRAY_BIN=$(pwd)/xray-bin/xray" >> "$GITHUB_ENV"
 
       - name: Check and refresh nodes
         env:
-          MAX_LATENCY: 700
-          XRAY_TIMEOUT: 10000
-          CURL_TIMEOUT: 10000
-          XRAY_CONCURRENCY: 6
-          NEW_SERVER_BATCH: 300
-          MAX_REPLACEMENT_ROUNDS: 8
+          SOURCE_URLS: ${{ secrets.SOURCE_URLS }}
         run: npm run check
 
       - name: Generate subscription
-        env:
-          MAX_LATENCY: 700
         run: npm run generate
 
       - name: Validate output
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-
-          const data = JSON.parse(
-            fs.readFileSync('public/subscription.json', 'utf8')
-          );
-
-          if (!Array.isArray(data) || data.length === 0) {
-            throw new Error('empty subscription');
-          }
-
-          if (data[0].remarks !== '🇪🇺 АВТО ⚡') {
-            throw new Error('AUTO missing or not first');
-          }
-
-          const hasNode = data[0].outbounds.some(
-            (outbound) =>
-              typeof outbound.tag === 'string' &&
-              outbound.tag.startsWith('node-')
-          );
-
-          if (!hasNode) {
-            throw new Error('AUTO has no working nodes');
-          }
-
-          console.log('Validation OK:', data.length, 'entries');
-          NODE
+        run: npm run validate
 
       - name: Commit and push
         run: |
@@ -106,6 +67,8 @@ jobs:
           git add \
             data/raw.json \
             data/checked.json \
+            data/failed.json \
+            data/geoip-cache.json \
             data/nodes.json \
             data/subscription.json \
             public/subscription.json
@@ -114,5 +77,6 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: update subscription [skip ci]"
+            git pull --rebase --autostash
             git push
           fi
