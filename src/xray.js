@@ -4,10 +4,27 @@ import os from 'node:os';
 import net from 'node:net';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
+import config from './config.js';
+
+function xrayBinary() {
+  return process.env.XRAY_BIN || config.checker.xrayBinary;
+}
+
+export function getFreePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
+}
 
 export function buildCheckConfig(outbound, localPort) {
   return {
-    log: { loglevel: 'warning' },
+    log: { loglevel: config.checker.xrayLogLevel },
     inbounds: [
       {
         tag: 'check',
@@ -17,10 +34,7 @@ export function buildCheckConfig(outbound, localPort) {
         settings: { allowTransparent: false }
       }
     ],
-    outbounds: [
-      { ...outbound, tag: 'vpn' },
-      { tag: 'direct', protocol: 'freedom' }
-    ],
+    outbounds: [{ ...outbound, tag: 'vpn' }],
     routing: {
       domainStrategy: 'AsIs',
       rules: [{ type: 'field', inboundTag: ['check'], outboundTag: 'vpn' }]
@@ -28,16 +42,20 @@ export function buildCheckConfig(outbound, localPort) {
   };
 }
 
-export function writeTempConfig(config) {
+export function writeTempConfig(configObject) {
   const file = path.join(os.tmpdir(), `xray-check-${crypto.randomBytes(6).toString('hex')}.json`);
-  fs.writeFileSync(file, JSON.stringify(config));
+  fs.writeFileSync(file, JSON.stringify(configObject));
   return file;
 }
 
-export function waitForPort(port, timeoutMs) {
+export function waitForPort(port, timeoutMs, isAlive = () => true) {
   return new Promise((resolve) => {
     const started = Date.now();
     const attempt = () => {
+      if (!isAlive()) {
+        resolve(false);
+        return;
+      }
       const socket = net.createConnection({ host: '127.0.0.1', port });
       let finished = false;
       const done = (ok) => {
@@ -79,21 +97,17 @@ function runCommand(bin, args, timeoutMs) {
     }, timeoutMs);
 
     child.stdout.on('data', (data) => {
-      stdout += data.toString();
-      if (stdout.length > 12000) stdout = stdout.slice(-12000);
+      stdout = (stdout + data.toString()).slice(-12000);
     });
     child.stderr.on('data', (data) => {
-      stderr += data.toString();
-      if (stderr.length > 12000) stderr = stderr.slice(-12000);
+      stderr = (stderr + data.toString()).slice(-12000);
     });
-
     child.once('error', (error) => {
       if (finished) return;
       finished = true;
       clearTimeout(timer);
       resolve({ ok: false, code: null, stdout, stderr: error.message });
     });
-
     child.once('close', (code) => {
       if (finished) return;
       finished = true;
@@ -103,9 +117,8 @@ function runCommand(bin, args, timeoutMs) {
   });
 }
 
-export async function testConfig(configPath, timeoutMs = 10000) {
-  const bin = process.env.XRAY_BIN || 'xray';
-  const result = await runCommand(bin, ['run', '-test', '-config', configPath], timeoutMs);
+export async function testConfig(configPath, timeoutMs) {
+  const result = await runCommand(xrayBinary(), ['run', '-test', '-config', configPath], timeoutMs);
   if (!result.ok) {
     return { ok: false, output: result.stderr.trim() || result.stdout.trim() || `exit ${result.code}` };
   }
@@ -113,32 +126,29 @@ export async function testConfig(configPath, timeoutMs = 10000) {
 }
 
 export function startXray(configPath) {
-  const bin = process.env.XRAY_BIN || 'xray';
-  const proc = spawn(bin, ['run', '-config', configPath], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const proc = spawn(xrayBinary(), ['run', '-config', configPath], { stdio: ['ignore', 'pipe', 'pipe'] });
   let exited = false;
-  let stdoutBuf = '';
-  let stderrBuf = '';
+  let stdoutBuffer = '';
+  let stderrBuffer = '';
 
   proc.stdout.on('data', (data) => {
-    stdoutBuf += data.toString();
-    if (stdoutBuf.length > 16000) stdoutBuf = stdoutBuf.slice(-16000);
+    stdoutBuffer = (stdoutBuffer + data.toString()).slice(-16000);
   });
   proc.stderr.on('data', (data) => {
-    stderrBuf += data.toString();
-    if (stderrBuf.length > 16000) stderrBuf = stderrBuf.slice(-16000);
+    stderrBuffer = (stderrBuffer + data.toString()).slice(-16000);
   });
   proc.on('exit', () => {
     exited = true;
   });
   proc.on('error', (error) => {
     exited = true;
-    stderrBuf += `\n[spawn error] ${error.message}`;
+    stderrBuffer += `\n[spawn error] ${error.message}`;
   });
 
   return {
     proc,
     isAlive: () => !exited && proc.exitCode === null && !proc.killed,
-    getOutput: () => ({ stdout: stdoutBuf.trim(), stderr: stderrBuf.trim() })
+    getOutput: () => ({ stdout: stdoutBuffer.trim(), stderr: stderrBuffer.trim() })
   };
 }
 
