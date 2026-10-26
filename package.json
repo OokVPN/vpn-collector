@@ -6,6 +6,11 @@
   "scripts": {
     "collect": "node src/collector.js",
     "check": "node src/checker.cjs",
-    "generate": "node src/generator.js"
+    "generate": "node src/generator.js",
+    "validate": "node src/validate.js",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
