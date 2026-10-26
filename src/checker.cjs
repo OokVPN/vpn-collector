@@ -1,29 +1,26 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { execFile, execFileSync } = require('node:child_process');
+'use strict';
 
-const RAW_PATH = path.resolve('data/raw.json');
-const CHECKED_PATH = path.resolve('data/checked.json');
-const MAX_LATENCY = Math.min(Number(process.env.MAX_LATENCY || 700), 1000);
-const XRAY_TIMEOUT = Number(process.env.XRAY_TIMEOUT || process.env.XRAY_START_TIMEOUT || 10000);
-const CURL_TIMEOUT = Number(process.env.CURL_TIMEOUT || process.env.HTTP_TIMEOUT || 10000);
-const XRAY_CONCURRENCY = Math.max(1, Number(process.env.XRAY_CONCURRENCY || 6));
-const NEW_SERVER_BATCH = Math.max(1, Number(process.env.NEW_SERVER_BATCH || 300));
-const MAX_REPLACEMENT_ROUNDS = Math.max(1, Number(process.env.MAX_REPLACEMENT_ROUNDS || 8));
-const PROBE_ROUNDS = Math.max(1, Math.min(5, Number(process.env.PROBE_ROUNDS || 3)));
-const PROBE_DELAY_MS = Math.max(0, Number(process.env.PROBE_DELAY_MS || 250));
-const INTERNET_TEST_URLS = (process.env.CHECK_URLS || 'https://cp.cloudflare.com/generate_204,https://www.gstatic.com/generate_204')
-  .split(',')
-  .map((value) => value.trim())
-  .filter((value) => /^https:\/\//i.test(value));
+const fs = require('node:fs');
+const net = require('node:net');
+const { execFile } = require('node:child_process');
+
+const MARKER = '__CURL_RESULT__';
+const CLEAN_ENV = {
+  HTTP_PROXY: '',
+  HTTPS_PROXY: '',
+  ALL_PROXY: '',
+  http_proxy: '',
+  https_proxy: '',
+  all_proxy: ''
+};
 
 const errorStats = new Map();
 let printedErrors = 0;
-const MAX_ERROR_PRINTS = 50;
+let maxErrorPrints = 50;
 
 function addError(reason) {
   errorStats.set(reason, (errorStats.get(reason) || 0) + 1);
-  if (printedErrors < MAX_ERROR_PRINTS) {
+  if (printedErrors < maxErrorPrints) {
     console.log(`FAIL ${reason}`);
     printedErrors++;
   }
@@ -34,11 +31,7 @@ function cleanError(error) {
     .replace(/\r/g, ' ')
     .replace(/\n+/g, ' ')
     .replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, '<uuid>')
-    .slice(0, 500);
-}
-
-function randomPort() {
-  return 20000 + Math.floor(Math.random() * 20000);
+    .slice(0, 300);
 }
 
 function delay(ms) {
@@ -49,431 +42,360 @@ function median(values) {
   if (!values.length) return null;
   const sorted = [...values].sort((a, b) => a - b);
   const middle = Math.floor(sorted.length / 2);
-  return sorted.length % 2
-    ? sorted[middle]
-    : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
+  return sorted.length % 2 ? sorted[middle] : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
 }
 
-function proxyGetKeepAlive(port, url) {
+function parseTrace(body) {
+  const info = {};
+  for (const line of String(body).split('\n')) {
+    const index = line.indexOf('=');
+    if (index > 0) info[line.slice(0, index).trim()] = line.slice(index + 1).trim();
+  }
+  return info;
+}
+
+function tcpProbe(host, port, timeoutMs) {
   return new Promise((resolve) => {
-    const timeoutSeconds = Math.max(2, Math.ceil(CURL_TIMEOUT / 1000));
-    const marker = '__GET_RESULT__';
-    const writeOut = '\\n' + marker + '%{http_code}|%{time_total}|%{num_connects}\\n';
+    const socket = net.createConnection({ host, port });
+    let finished = false;
+    const done = (ok, error) => {
+      if (finished) return;
+      finished = true;
+      socket.destroy();
+      resolve({ ok, error });
+    };
+    socket.setTimeout(timeoutMs, () => done(false, 'timeout'));
+    socket.once('connect', () => done(true));
+    socket.once('error', (error) => done(false, error.code || error.message));
+  });
+}
+
+function isTcpBased(outbound) {
+  const network = outbound && outbound.streamSettings && outbound.streamSettings.network;
+  return outbound.protocol !== 'hysteria' && !['kcp', 'quic', 'hysteria'].includes(network);
+}
+
+function curlOnce(cfg, port, test) {
+  return new Promise((resolve) => {
+    const seconds = Math.max(2, Math.ceil(cfg.requestTimeoutMs / 1000));
     const args = [
       '--silent',
       '--show-error',
       '--http1.1',
-      '--connect-timeout', String(timeoutSeconds),
-      '--max-time', String(timeoutSeconds),
-      '--proxy', 'http://127.0.0.1:' + port,
+      '--connect-timeout', String(seconds),
+      '--max-time', String(seconds),
+      '--max-filesize', '65536',
+      '--proxy', `http://127.0.0.1:${port}`,
       '--noproxy', '',
-      '--header', 'Connection: keep-alive',
-      '--output', '/dev/null',
-      '--write-out', writeOut,
-      url,
-      url
+      '--write-out', `\n${MARKER}%{http_code}|%{time_total}`,
+      test.url
     ];
 
-    execFile('curl', args, {
-      timeout: CURL_TIMEOUT * 2 + 5000,
-      maxBuffer: 1024 * 1024,
-      env: {
-        ...process.env,
-        HTTP_PROXY: '',
-        HTTPS_PROXY: '',
-        ALL_PROXY: '',
-        http_proxy: '',
-        https_proxy: '',
-        all_proxy: ''
-      }
+    execFile(cfg.curlBinary, args, {
+      timeout: seconds * 1000 + 5000,
+      maxBuffer: 262144,
+      env: { ...process.env, ...CLEAN_ENV }
     }, (error, stdout, stderr) => {
       const output = String(stdout || '');
-      const matcher = new RegExp(marker + '(\\d{3})\\|([0-9.]+)\\|(\\d+)', 'g');
-      const records = [...output.matchAll(matcher)].map((match) => ({
-        status: Number(match[1]),
-        seconds: Number(match[2]),
-        connections: Number(match[3])
-      }));
+      const at = output.lastIndexOf(MARKER);
+      const timedOut = Boolean(error) && (error.code === 28 || error.killed === true);
 
-      const validStatus = (status) =>
-        Number.isInteger(status) && status >= 200 && status < 600;
-      const validTiming = (record) =>
-        record && Number.isFinite(record.seconds) && record.seconds >= 0;
+      let status = 0;
+      let totalSeconds = NaN;
+      let body = '';
+      if (at !== -1) {
+        body = output.slice(0, at);
+        const [code, total] = output.slice(at + MARKER.length).trim().split('|');
+        status = Number(code) || 0;
+        totalSeconds = Number(total);
+      }
 
-      if (records.length === 0) {
-        resolve({
-          ok: false,
-          reachable: false,
-          error: cleanError(String(stderr || '').trim() || (error && error.message) || 'curl returned no HTTP response')
-        });
+      if (error || status === 0 || !Number.isFinite(totalSeconds)) {
+        resolve({ ok: false, timedOut, error: cleanError(String(stderr || '').trim() || (error && error.message) || 'no HTTP response') });
         return;
       }
 
-      const [first, second] = records;
-      const firstValid = validStatus(first.status) && validTiming(first);
-      const secondValid = validStatus(second && second.status) && validTiming(second);
-
-      if (!firstValid && !secondValid) {
-        resolve({
-          ok: false,
-          reachable: false,
-          error: 'No valid HTTP response; statuses ' +
-            (first ? first.status : 'missing') + '/' +
-            (second ? second.status : 'missing') +
-            (error ? '; ' + cleanError(String(stderr || '').trim() || error.message) : '')
-        });
+      const expected = test.status || 204;
+      if (status !== expected) {
+        resolve({ ok: false, timedOut: false, error: `HTTP ${status}, expected ${expected}` });
         return;
       }
 
-      const usable = [first, second].filter((record) =>
-        validStatus(record && record.status) && validTiming(record)
-      );
-      const latestResponse = usable[usable.length - 1];
-      const firstLatency = firstValid ? Math.round(first.seconds * 1000) : null;
-      const latency = Math.round(latestResponse.seconds * 1000);
-      const firstStatus = first ? first.status : 0;
-      const secondStatus = second ? second.status : 0;
+      const result = { ok: true, latency: Math.max(1, Math.round(totalSeconds * 1000)) };
 
-      if (firstValid && secondValid && second.connections === 0) {
-        resolve({
-          ok: true,
-          reachable: true,
-          keepAlive: true,
-          firstStatus,
-          secondStatus,
-          firstLatency,
-          latency,
-          firstConnections: first.connections,
-          secondConnections: second.connections
-        });
+      if (test.kind === 'trace') {
+        const info = parseTrace(body);
+        if (!info.ip) {
+          resolve({ ok: false, timedOut: false, error: 'unexpected response body (no ip= field)' });
+          return;
+        }
+        result.exitIp = info.ip;
+        if (/^[A-Z]{2}$/.test(info.loc || '') && !['XX', 'T1'].includes(info.loc)) result.exitCountry = info.loc;
+      } else if (expected === 204 && body.trim() !== '') {
+        resolve({ ok: false, timedOut: false, error: 'HTTP 204 with a non-empty body' });
         return;
       }
 
-      resolve({
-        ok: false,
-        reachable: true,
-        keepAlive: false,
-        firstStatus,
-        secondStatus,
-        firstLatency,
-        latency,
-        error: records.length < 2
-          ? 'Only one HTTP response received; Keep-Alive could not be measured'
-          : 'HTTP response received, but the second GET did not reuse the connection (opened ' +
-            second.connections + ' new connection(s))'
-      });
+      resolve(result);
     });
   });
 }
 
-async function strictInternetCheck(port, label, xray) {
-  let lastError = 'no test URLs configured';
-  const fallbackSamples = [];
+async function probeThroughProxy(cfg, port, xray) {
+  let lastError = 'no tests configured';
+  let timeouts = 0;
 
-  for (const url of INTERNET_TEST_URLS) {
-    const keepAliveSamples = [];
-    const initialLatencies = [];
-    let endpointFailedBeforeResponse = false;
+  for (const test of cfg.tests) {
+    const samples = [];
+    let exitIp = null;
+    let exitCountry = null;
 
-    for (let attempt = 1; attempt <= PROBE_ROUNDS; attempt++) {
-      if (!xray.isAlive()) {
-        return { ok: false, url, error: 'Xray process died' };
-      }
-
-      console.log('GET+KEEPALIVE ' + label + ' ' + url + ' attempt ' +
-        attempt + '/' + PROBE_ROUNDS);
-      const result = await proxyGetKeepAlive(port, url);
-
+    for (let attempt = 1; attempt <= cfg.attemptsPerTest; attempt++) {
+      if (!xray.isAlive()) return { ok: false, error: 'Xray process died' };
+      const result = await curlOnce(cfg, port, test);
       if (result.ok) {
-        keepAliveSamples.push(result.latency);
-        if (Number.isFinite(result.firstLatency)) {
-          initialLatencies.push(result.firstLatency);
-        }
-        console.log('  GET 1 HTTP ' + result.firstStatus + ' ' +
-          result.firstLatency + 'ms');
-        console.log('  GET 2 HTTP ' + result.secondStatus + ' ' +
-          result.latency + 'ms; connection reused');
-      } else if (result.reachable) {
-        fallbackSamples.push({ url, latency: result.latency });
-        lastError = result.error;
-        console.log('  HTTP response received, but Keep-Alive could not be confirmed: ' +
-          result.error);
+        samples.push(result.latency);
+        exitIp = result.exitIp || exitIp;
+        exitCountry = result.exitCountry || exitCountry;
         break;
-      } else {
-        lastError = result.error;
-        endpointFailedBeforeResponse = true;
-        console.log('  FAIL ' + url + ': ' + result.error);
-        if (keepAliveSamples.length === 0) break;
       }
-
-      if (attempt < PROBE_ROUNDS) await delay(PROBE_DELAY_MS);
-    }
-
-    if (keepAliveSamples.length > 0) {
-      const latency = median(keepAliveSamples);
-      if (latency <= MAX_LATENCY) {
-        return {
-          ok: true,
-          url,
-          latency,
-          firstLatency: median(initialLatencies),
-          keepAlive: true,
-          samples: keepAliveSamples.length
-        };
+      lastError = `${test.url} ${result.error}`;
+      if (result.timedOut) {
+        timeouts++;
+        break;
       }
-
-      lastError = 'median keep-alive latency ' + latency + 'ms > ' + MAX_LATENCY + 'ms';
-      console.log('  FAIL ' + url + ': ' + lastError +
-        ' (samples: ' + keepAliveSamples.join(', ') + 'ms)');
-    } else if (endpointFailedBeforeResponse) {
-      console.log('  Moving to the next test URL.');
-    }
-  }
-
-  if (fallbackSamples.length > 0) {
-    const latency = median(fallbackSamples.map((sample) => sample.latency));
-    if (latency <= MAX_LATENCY) {
-      const fallback = fallbackSamples.find((sample) => sample.latency === latency) || fallbackSamples[0];
-      console.log('  Keep-Alive was inconclusive; using successful GET response as fallback.');
-      return {
-        ok: true,
-        url: fallback.url,
-        latency,
-        firstLatency: null,
-        keepAlive: false,
-        samples: fallbackSamples.length
-      };
+      await delay(cfg.retryDelayMs);
     }
 
-    lastError = 'fallback GET latency ' + latency + 'ms > ' + MAX_LATENCY + 'ms';
+    if (samples.length > 0) {
+      for (let round = 1; round < cfg.latencyRounds; round++) {
+        const result = await curlOnce(cfg, port, test);
+        if (result.ok) {
+          samples.push(result.latency);
+          exitIp = result.exitIp || exitIp;
+          exitCountry = result.exitCountry || exitCountry;
+        }
+      }
+      if (!xray.isAlive()) return { ok: false, error: 'Xray process died during the check' };
+      return { ok: true, url: test.url, latency: median(samples), exitIp, exitCountry };
+    }
+
+    if (timeouts >= cfg.timeoutsBeforeGiveUp) break;
   }
 
   return { ok: false, error: lastError };
 }
 
-async function checkNode(entry, xrayModule) {
-  const { uri, type, host, port, outbound } = entry;
+async function checkNode(entry, ctx) {
+  const { cfg, xray: xrayModule } = ctx;
+  const { type, host, port, outbound, uri } = entry;
   const label = `${type} ${host}:${port}`;
-  const localPort = randomPort();
-  const config = xrayModule.buildCheckConfig(outbound, localPort);
-  const configPath = xrayModule.writeTempConfig(config);
+
+  if (isTcpBased(outbound)) {
+    const tcp = await tcpProbe(host, port, cfg.tcpPrecheckTimeoutMs);
+    if (!tcp.ok) {
+      addError(`${label} TCP ${tcp.error}`);
+      return null;
+    }
+  }
+
+  const localPort = await xrayModule.getFreePort();
+  const configPath = xrayModule.writeTempConfig(xrayModule.buildCheckConfig(outbound, localPort));
   let xray;
 
   try {
-    const valid = await xrayModule.testConfig(configPath, XRAY_TIMEOUT);
+    const valid = await xrayModule.testConfig(configPath, cfg.xrayStartTimeoutMs);
     if (!valid.ok) {
       addError(`${label} XRAY CONFIG ${cleanError(valid.output)}`);
       return null;
     }
 
     xray = xrayModule.startXray(configPath);
-    const ready = await xrayModule.waitForPort(localPort, XRAY_TIMEOUT);
-
+    const ready = await xrayModule.waitForPort(localPort, cfg.xrayStartTimeoutMs, xray.isAlive);
     if (!ready || !xray.isAlive()) {
       const output = xray.getOutput();
       addError(`${label} XRAY START ${cleanError(output.stderr || output.stdout || 'HTTP inbound did not start')}`);
       return null;
     }
 
-    const internet = await strictInternetCheck(localPort, label, xray);
-    if (!internet.ok) {
-      addError(`${label} HTTP GET ${internet.url || ''} ${internet.error || 'failed'}`);
+    const probe = await ctx.probe(cfg, localPort, xray);
+    if (!probe.ok) {
+      addError(`${label} ${cleanError(probe.error)}`);
       return null;
     }
 
-    console.log('PASS ' + internet.latency + 'ms ' + (internet.keepAlive ? 'keep-alive' : 'GET fallback (Keep-Alive inconclusive)') + (Number.isFinite(internet.firstLatency) ? ' (initial ' + internet.firstLatency + 'ms)' : '') + ' ' + label);
-    return { uri, latency: internet.latency };
+    console.log(`PASS ${probe.latency}ms ${label}${probe.exitCountry ? ` exit ${probe.exitCountry}` : ''}`);
+    return {
+      uri,
+      latency: probe.latency,
+      ...(probe.exitIp ? { exitIp: probe.exitIp } : {}),
+      ...(probe.exitCountry ? { exitCountry: probe.exitCountry } : {}),
+      checkedAt: new Date().toISOString()
+    };
   } finally {
     if (xray) await xrayModule.stopXray(xray.proc);
     xrayModule.cleanupConfig(configPath);
   }
 }
 
-async function mapLimit(items, limit, fn) {
-  const results = new Array(items.length);
-  let index = 0;
-
-  async function worker() {
-    while (true) {
-      const current = index++;
-      if (current >= items.length) return;
-      try {
-        results[current] = await fn(items[current], current);
-      } catch (error) {
-        addError(`WORKER ${cleanError(error.message || error)}`);
-        results[current] = null;
-      }
+function parseEntries(items, ctx) {
+  const parsed = [];
+  const seen = new Set();
+  for (const item of items) {
+    const uri = typeof item === 'string' ? item : item && item.uri;
+    if (typeof uri !== 'string') continue;
+    const result = ctx.parser.parseUri(uri);
+    if (!result) {
+      addError(`PARSE ${uri.slice(0, 60).replace(/[?#].*$/, '')}`);
+      continue;
     }
+    const key = ctx.parser.nodeKey(result);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    parsed.push({ uri, key, prev: typeof item === 'object' ? item : { uri }, ...result });
   }
-
-  const workers = Math.max(1, Math.min(limit, items.length));
-  await Promise.all(Array.from({ length: workers }, worker));
-  return results;
+  return parsed;
 }
 
-function uniqueByUri(entries) {
-  const values = new Map();
-  for (const entry of entries) {
-    if (!entry || !entry.uri || values.has(entry.uri)) continue;
-    values.set(entry.uri, entry);
-  }
-  return [...values.values()];
-}
-
-function readJsonArray(file) {
-  if (!fs.existsSync(file)) return [];
-  try {
-    const value = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return Array.isArray(value) ? value : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeChecked(nodes) {
-  const finalNodes = uniqueByUri(nodes).sort((a, b) => a.uri.localeCompare(b.uri));
-  fs.mkdirSync(path.dirname(CHECKED_PATH), { recursive: true });
-  fs.writeFileSync(CHECKED_PATH, JSON.stringify(finalNodes, null, 2));
-  return finalNodes;
-}
-
-function parseNodes(rawUris, parseUri) {
-  const parsed = [];
-  for (const uri of rawUris) {
+async function checkEntries(entries, ctx) {
+  const passed = [];
+  const failed = [];
+  const skipped = [];
+  const results = await ctx.util.mapLimit(entries, ctx.cfg.concurrency, async (entry) => {
+    if (Date.now() > ctx.deadline) return { skipped: true };
     try {
-      const item = parseUri(uri);
-      if (!item || !item.outbound || !item.host || !item.port) continue;
-      parsed.push({ uri, ...item });
-    } catch {}
-  }
-  return uniqueByUri(parsed);
-}
-
-async function checkNodes(nodes, parseUri, xrayModule) {
-  if (nodes.length === 0) return [];
-  const parsed = [];
-
-  for (const entry of nodes) {
-    try {
-      const uri = entry.uri || entry;
-      const item = parseUri(uri);
-      if (!item || !item.outbound || !item.host || !item.port) {
-        addError(`PARSE ${String(uri).slice(0, 100)}`);
-        continue;
-      }
-      parsed.push({ uri, ...item });
+      return { result: await checkNode(entry, ctx) };
     } catch (error) {
-      addError(`PARSE ${cleanError(error.message || error)}`);
+      addError(`WORKER ${cleanError(error.message || error)}`);
+      return { result: null };
     }
-  }
+  });
 
-  const unique = uniqueByUri(parsed);
-  console.log(`Parsed unique nodes: ${unique.length}`);
+  results.forEach((outcome, index) => {
+    const entry = entries[index];
+    if (outcome.skipped) skipped.push(entry);
+    else if (outcome.result) passed.push({ ...outcome.result, key: entry.key });
+    else failed.push(entry);
+  });
 
-  const checked = await mapLimit(unique, XRAY_CONCURRENCY, (entry) => checkNode(entry, xrayModule));
-  const passed = checked.filter(Boolean);
-  console.log(`STRICT CHECK PASSED: ${passed.length}/${unique.length}`);
-  return passed;
-}
-
-function collectSources() {
-  console.log('Collecting fresh server sources...');
-  try {
-    execFileSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'collect'], {
-      stdio: 'inherit',
-      timeout: 180000
-    });
-    return true;
-  } catch (error) {
-    console.error('Collect failed:', cleanError(error.message || error));
-    return false;
-  }
+  return { passed, failed, skipped };
 }
 
 function printFailureSummary() {
   if (errorStats.size === 0) return;
   console.log('\n========== FAILURE SUMMARY ==========');
-  const sorted = [...errorStats.entries()].sort((a, b) => b[1] - a[1]);
+  const sorted = [...errorStats.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40);
   for (const [reason, count] of sorted) console.log(`${count}x ${reason}`);
   console.log('=====================================\n');
 }
 
+function stripKey(entry) {
+  const { key, ...rest } = entry;
+  return rest;
+}
+
 async function main() {
-  const { parseUri } = await import('./parser.js');
-  const xrayModule = await import('./xray.js');
-  const existing = readJsonArray(CHECKED_PATH);
+  const config = (await import('./config.js')).default;
+  const { resolvePath } = await import('./config.js');
+  const parser = await import('./parser.js');
+  const xray = await import('./xray.js');
+  const util = await import('./util.js');
+  const { collectAll } = await import('./collector.js');
+
+  const cfg = config.checker;
+  maxErrorPrints = cfg.maxErrorLines;
+
+  const ctx = {
+    cfg,
+    parser,
+    xray,
+    util,
+    probe: probeThroughProxy,
+    deadline: Date.now() + cfg.deadlineMinutes * 60000
+  };
+
+  const checkedPath = resolvePath(config.paths.checked);
+  const failedPath = resolvePath(config.paths.failed);
+  const retryMs = cfg.failedRetryMinutes * 60000;
+
+  const stored = util.readJson(checkedPath, []);
+  const existing = parseEntries(Array.isArray(stored) ? stored : [], ctx);
+  const failedStore = util.readJson(failedPath, {});
+  const failedMap = new Map(
+    Object.entries(failedStore && typeof failedStore === 'object' ? failedStore : {})
+      .filter(([, time]) => Date.now() - Number(time) < retryMs)
+  );
 
   console.log(`Currently tracked working nodes: ${existing.length}`);
-  let workingExisting = [];
+  let working = [];
 
   if (existing.length > 0) {
-    console.log('Re-checking all existing nodes with HTTP GET + Keep-Alive...');
-    workingExisting = await checkNodes(existing, parseUri, xrayModule);
-    console.log(`Still working: ${workingExisting.length}/${existing.length}`);
+    console.log('Re-checking tracked nodes through Xray...');
+    const rechecked = await checkEntries(existing, ctx);
+    working = [...rechecked.passed, ...rechecked.skipped.map((entry) => ({ ...entry.prev, key: entry.key }))];
+    for (const entry of rechecked.failed) failedMap.set(entry.key, Date.now());
+    console.log(`Still working: ${working.length}/${existing.length}`);
   }
 
-  const deadCount = Math.max(0, existing.length - workingExisting.length);
+  const deadCount = existing.length - working.length;
   console.log(`Dead/failed nodes: ${deadCount}`);
 
-  if (deadCount === 0 && existing.length > 0) {
-    writeChecked(workingExisting);
-    console.log('No dead nodes detected.');
-    console.log(`Saved ${workingExisting.length} strictly verified nodes.`);
-    printFailureSummary();
-    return;
-  }
+  const known = new Set([...working.map((node) => node.key), ...failedMap.keys()]);
+  let added = 0;
+  const wanted = Math.max(0, cfg.targetNodes - working.length);
 
-  const needed = Math.max(1, deadCount);
-  console.log(`Need at least ${needed} replacement node(s).`);
-  const knownUris = new Set(
-    [...existing, ...workingExisting]
-      .map((node) => (node && typeof node === 'object' ? node.uri : node))
-      .filter((uri) => typeof uri === 'string' && uri.length > 0)
-  );
-  let allWorking = [...workingExisting];
-  let replacements = 0;
+  if (wanted > 0) {
+    console.log(`Need ${wanted} more node(s) to reach the target of ${cfg.targetNodes}.`);
+    console.log('Collecting fresh server sources...');
+    let uris = [];
+    try {
+      uris = (await collectAll()).uris;
+    } catch (error) {
+      console.error('Collect failed:', cleanError(error.message || error));
+      uris = util.readJson(resolvePath(config.paths.raw), []);
+    }
 
-  for (let round = 1; round <= MAX_REPLACEMENT_ROUNDS; round++) {
-    console.log(`Replacement search round ${round}/${MAX_REPLACEMENT_ROUNDS}`);
-    if (!collectSources()) break;
-
-    const rawUris = readJsonArray(RAW_PATH);
-    const candidates = parseNodes(rawUris, parseUri).filter((node) => !knownUris.has(node.uri));
+    const candidates = parseEntries(uris, ctx).filter((node) => !known.has(node.key));
     console.log(`Fresh unique candidates: ${candidates.length}`);
-    if (candidates.length === 0) {
-      console.log('No new candidates found.');
-      break;
+
+    for (let round = 1; round <= cfg.maxRounds && candidates.length > 0; round++) {
+      if (Date.now() > ctx.deadline) {
+        console.log('Deadline reached, stopping the search.');
+        break;
+      }
+      const batch = candidates.splice(0, cfg.batchSize);
+      console.log(`Replacement search round ${round}/${cfg.maxRounds}: checking ${batch.length} candidate(s)`);
+      const outcome = await checkEntries(batch, ctx);
+      console.log(`STRICT CHECK PASSED: ${outcome.passed.length}/${batch.length}`);
+
+      for (const node of outcome.passed) {
+        working.push(node);
+        known.add(node.key);
+        added++;
+      }
+      for (const entry of outcome.failed) failedMap.set(entry.key, Date.now());
+      if (working.length >= cfg.targetNodes) break;
     }
-
-    const batchSize = Math.max(NEW_SERVER_BATCH, needed * 20);
-    const limitedCandidates = candidates.slice(0, batchSize);
-    console.log(`Checking new candidates: ${limitedCandidates.length}`);
-    for (const candidate of limitedCandidates) knownUris.add(candidate.uri);
-
-    const newWorking = await checkNodes(limitedCandidates, parseUri, xrayModule);
-    const workingUris = new Set(allWorking.map((node) => node.uri));
-
-    for (const node of newWorking) {
-      if (workingUris.has(node.uri)) continue;
-      workingUris.add(node.uri);
-      allWorking.push(node);
-      replacements++;
-    }
-
-    console.log(`Strictly verified replacements: ${replacements}/${needed}`);
-    if (replacements >= needed) break;
   }
 
-  allWorking = uniqueByUri(allWorking);
-  writeChecked(allWorking);
-  console.log(`Final strictly verified nodes: ${allWorking.length}`);
+  working.sort((a, b) => (a.latency || Infinity) - (b.latency || Infinity));
+  if (working.length > cfg.maxTrackedNodes) working = working.slice(0, cfg.maxTrackedNodes);
+  working.sort((a, b) => a.uri.localeCompare(b.uri));
+
+  util.writeJson(checkedPath, working.map(stripKey));
+  util.writeJson(failedPath, Object.fromEntries([...failedMap.entries()].sort()));
+
+  console.log(`Final strictly verified nodes: ${working.length}`);
   console.log(`Removed dead nodes: ${deadCount}`);
-  console.log(`Added replacements: ${replacements}`);
-  if (replacements < needed) console.log(`Replacement deficit: ${needed - replacements}`);
+  console.log(`Added nodes: ${added}`);
   printFailureSummary();
 }
 
-main().catch((error) => {
-  console.error('CHECKER FATAL:', error);
-  process.exit(1);
-});
+module.exports = { curlOnce, probeThroughProxy, tcpProbe, parseTrace, isTcpBased };
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error('CHECKER FATAL:', error);
+    process.exit(1);
+  });
+    }
