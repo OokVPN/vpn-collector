@@ -1,28 +1,27 @@
+import { cleanHost, parsePort, safeDecode } from './common.js';
+
 export function parseSocks(uri) {
   try {
-    const u = new URL(uri);
-    if (u.protocol !== 'socks:' && u.protocol !== 'socks5:') return null;
+    const url = new URL(uri);
+    if (url.protocol !== 'socks:' && url.protocol !== 'socks5:') return null;
 
-    const host = u.hostname;
-    const port = parseInt(u.port, 10);
+    const host = cleanHost(url.hostname);
+    const port = parsePort(url.port, 1080);
     if (!host || !port) return null;
 
-    const users = [];
-    if (u.username) {
-      users.push({
-        user: decodeURIComponent(u.username),
-        pass: decodeURIComponent(u.password || '')
-      });
-    }
+    const users = url.username
+      ? [{ user: safeDecode(url.username), pass: safeDecode(url.password || '') }]
+      : [];
 
-    const outbound = {
-      protocol: 'socks',
-      settings: {
-        servers: [{ address: host, port, users }]
+    return {
+      host,
+      port,
+      id: url.username || '',
+      outbound: {
+        protocol: 'socks',
+        settings: { servers: [{ address: host, port, users }] }
       }
     };
-
-    return { host, port, outbound };
   } catch {
     return null;
   }
