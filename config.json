@@ -1,0 +1,99 @@
+{
+  "paths": {
+    "sources": ["sources.json"],
+    "raw": "data/raw.json",
+    "checked": "data/checked.json",
+    "failed": "data/failed.json",
+    "nodes": "data/nodes.json",
+    "subscriptionData": "data/subscription.json",
+    "subscriptionPublic": "public/subscription.json",
+    "geoipCache": "data/geoip-cache.json"
+  },
+  "collector": {
+    "timeoutMs": 20000,
+    "retries": 2,
+    "retryDelayMs": 1500,
+    "concurrency": 8,
+    "userAgent": "vpn-collector/2.0",
+    "maxBodyBytes": 10485760,
+    "extraSourcesEnv": "SOURCE_URLS"
+  },
+  "parser": {
+    "maxDecodeDepth": 3,
+    "rejectHosts": ["localhost", "*.local", "*.invalid", "example.com", "example.org", "example.net"],
+    "rejectIds": ["00000000-0000-0000-0000-000000000000"],
+    "rejectPrivateAddresses": true
+  },
+  "checker": {
+    "concurrency": 10,
+    "xrayBinary": "xray",
+    "curlBinary": "curl",
+    "xrayLogLevel": "warning",
+    "xrayStartTimeoutMs": 10000,
+    "requestTimeoutMs": 10000,
+    "tcpPrecheckTimeoutMs": 6000,
+    "attemptsPerTest": 2,
+    "timeoutsBeforeGiveUp": 2,
+    "latencyRounds": 2,
+    "retryDelayMs": 300,
+    "tests": [
+      { "url": "https://www.cloudflare.com/cdn-cgi/trace", "status": 200, "kind": "trace" },
+      { "url": "https://cp.cloudflare.com/generate_204", "status": 204 },
+      { "url": "https://www.gstatic.com/generate_204", "status": 204 }
+    ],
+    "targetNodes": 30,
+    "maxTrackedNodes": 300,
+    "batchSize": 300,
+    "maxRounds": 8,
+    "deadlineMinutes": 18,
+    "failedRetryMinutes": 180,
+    "maxErrorLines": 50
+  },
+  "geoip": {
+    "ttlDays": 30,
+    "timeoutMs": 6000,
+    "concurrency": 4,
+    "quorum": 2,
+    "maxQueriesPerIp": 4,
+    "maxFailuresPerProvider": 8,
+    "maxIpsPerHost": 2,
+    "useRemarkFlagHint": true,
+    "providers": [
+      { "name": "ipwho.is", "url": "https://ipwho.is/{ip}", "code": "country_code", "ok": { "success": true } },
+      { "name": "country.is", "url": "https://api.country.is/{ip}", "code": "country" },
+      { "name": "geojs", "url": "https://get.geojs.io/v1/ip/country/{ip}.json", "code": "country" },
+      { "name": "ipapi.co", "url": "https://ipapi.co/{ip}/json/", "code": "country_code", "failIf": "error" },
+      { "name": "ip-api", "url": "http://ip-api.com/json/{ip}?fields=status,countryCode", "code": "countryCode", "ok": { "status": "success" } }
+    ]
+  },
+  "generator": {
+    "locale": "ru",
+    "unknownCountryName": "Неизвестно",
+    "countryNameOverrides": { "US": "США", "HK": "Гонконг", "MO": "Макао", "CZ": "Чехия" },
+    "excludeCountries": ["RU"],
+    "keepExcludedWhenWhitelisted": true,
+    "relaxExclusionIfEmpty": true,
+    "allowedSecurity": ["tls", "reality"],
+    "plainProtocols": ["SS"],
+    "whiteTriggers": ["обход бс", "белые списки", "обход белых списков", "whitelist", "БС", "Обход"],
+    "whiteMark": "🏳️",
+    "autoRemarks": "🇪🇺 АВТО ⚡",
+    "dns": { "servers": ["1.1.1.1", "1.0.0.1"], "queryStrategy": "UseIP" },
+    "inbounds": { "listen": "127.0.0.1", "socksPort": 10808, "httpPort": 10809, "sniffing": ["http", "tls", "quic"] },
+    "routing": { "domainStrategy": "IPIfNonMatch", "domainMatcher": "hybrid", "bittorrentDirect": true },
+    "balancer": {
+      "tag": "Super_Balancer",
+      "maxRTT": "15s",
+      "expected": 2,
+      "baselines": ["1s", "3s", "10s"],
+      "tolerance": 0.01,
+      "fallbackTag": "direct"
+    },
+    "observatory": {
+      "timeout": "10s",
+      "interval": "1m",
+      "sampling": 1,
+      "destination": "https://www.gstatic.com/generate_204"
+    }
+  }
+}
