@@ -4,16 +4,16 @@
     "remarks": "🇧🇬 Болгария",
     "countryCode": "BG",
     "geoSource": "exit",
-    "latency": 7737,
+    "latency": 809,
     "type": "VLESS",
-    "exitIp": "88.80.148.179"
+    "exitIp": "88.80.147.183"
   },
   {
     "tag": "node-2",
     "remarks": "🇬🇧 Великобритания",
     "countryCode": "GB",
     "geoSource": "exit",
-    "latency": 339,
+    "latency": 309,
     "type": "VLESS",
     "exitIp": "143.246.182.99"
   },
@@ -22,7 +22,7 @@
     "remarks": "🇬🇧 Великобритания #2",
     "countryCode": "GB",
     "geoSource": "exit",
-    "latency": 697,
+    "latency": 463,
     "type": "VMess",
     "exitIp": "57.128.189.52"
   },
@@ -31,7 +31,7 @@
     "remarks": "🇬🇧 Великобритания #3",
     "countryCode": "GB",
     "geoSource": "exit",
-    "latency": 1117,
+    "latency": 724,
     "type": "VLESS",
     "exitIp": "45.43.75.111"
   },
@@ -40,7 +40,7 @@
     "remarks": "🇬🇧 Великобритания #4",
     "countryCode": "GB",
     "geoSource": "exit",
-    "latency": 1378,
+    "latency": 749,
     "type": "VLESS",
     "exitIp": "45.43.75.111"
   },
@@ -49,16 +49,16 @@
     "remarks": "🇩🇪 Германия",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 379,
+    "latency": 374,
     "type": "VLESS",
-    "exitIp": "185.240.84.205"
+    "exitIp": "185.240.84.201"
   },
   {
     "tag": "node-7",
     "remarks": "🇩🇪 Германия #2",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 382,
+    "latency": 377,
     "type": "VLESS",
     "exitIp": "185.240.84.205"
   },
@@ -67,52 +67,52 @@
     "remarks": "🇩🇪 Германия #3",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 382,
+    "latency": 379,
     "type": "VLESS",
-    "exitIp": "185.240.84.201"
+    "exitIp": "185.240.84.205"
   },
   {
     "tag": "node-9",
     "remarks": "🇩🇪 Германия #4",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 473,
+    "latency": 403,
     "type": "VLESS",
-    "exitIp": "178.17.50.66"
+    "exitIp": "109.122.196.211"
   },
   {
     "tag": "node-10",
     "remarks": "🇩🇪 Германия #5",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 773,
-    "type": "VLESS",
-    "exitIp": "2a0b:4141:820:cb1::2"
+    "latency": 520,
+    "type": "VMess",
+    "exitIp": "57.129.83.11"
   },
   {
     "tag": "node-11",
     "remarks": "🇩🇪 Германия #6",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 1748,
-    "type": "VMess",
-    "exitIp": "57.129.83.11"
+    "latency": 551,
+    "type": "VLESS",
+    "exitIp": "178.17.49.207"
   },
   {
     "tag": "node-12",
     "remarks": "🇩🇪 Германия #7",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 1786,
+    "latency": 751,
     "type": "VLESS",
-    "exitIp": "109.122.196.211"
+    "exitIp": "178.17.49.207"
   },
   {
     "tag": "node-13",
     "remarks": "🇩🇪 Германия #8",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 1891,
+    "latency": 1272,
     "type": "VLESS",
     "exitIp": "31.76.249.121"
   },
@@ -121,7 +121,7 @@
     "remarks": "🇩🇪 Германия #9",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 3137,
+    "latency": 2891,
     "type": "VLESS",
     "exitIp": "188.241.241.36"
   },
@@ -130,124 +130,124 @@
     "remarks": "🇳🇱 Нидерланды",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 549,
-    "type": "VLESS",
-    "exitIp": "154.86.119.62"
+    "latency": 425,
+    "type": "Trojan",
+    "exitIp": "51.158.185.190"
   },
   {
     "tag": "node-16",
     "remarks": "🇳🇱 Нидерланды #2",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 637,
-    "type": "Trojan",
-    "exitIp": "51.158.160.53"
-  },
-  {
-    "tag": "node-17",
-    "remarks": "🇳🇱 Нидерланды #3",
-    "countryCode": "NL",
-    "geoSource": "exit",
-    "latency": 667,
+    "latency": 659,
     "type": "VLESS",
     "exitIp": "2a12:5940:6363::2"
   },
   {
-    "tag": "node-18",
-    "remarks": "🇳🇱 🏳️ Нидерланды #4",
+    "tag": "node-17",
+    "remarks": "🇳🇱 🏳️ Нидерланды #3",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 823,
+    "latency": 700,
     "type": "VLESS",
-    "exitIp": "89.125.193.31"
+    "exitIp": "89.125.193.21"
+  },
+  {
+    "tag": "node-18",
+    "remarks": "🇳🇱 Нидерланды #4",
+    "countryCode": "NL",
+    "geoSource": "exit",
+    "latency": 703,
+    "type": "VLESS",
+    "exitIp": "89.125.193.22"
   },
   {
     "tag": "node-19",
-    "remarks": "🇳🇱 🏳️ Нидерланды #5",
+    "remarks": "🇳🇱 Нидерланды #5",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 836,
+    "latency": 704,
     "type": "VLESS",
-    "exitIp": "89.125.193.32"
+    "exitIp": "89.125.193.30"
   },
   {
     "tag": "node-20",
-    "remarks": "🇳🇱 Нидерланды #6",
+    "remarks": "🇳🇱 🏳️ Нидерланды #6",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 874,
+    "latency": 705,
     "type": "VLESS",
-    "exitIp": "89.125.193.22"
+    "exitIp": "89.125.193.32"
   },
   {
     "tag": "node-21",
     "remarks": "🇳🇱 🏳️ Нидерланды #7",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 1023,
+    "latency": 707,
     "type": "VLESS",
-    "exitIp": "89.125.193.31"
+    "exitIp": "89.125.193.33"
   },
   {
     "tag": "node-22",
-    "remarks": "🇳🇱 Нидерланды #8",
+    "remarks": "🇳🇱 🏳️ Нидерланды #8",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 1052,
+    "latency": 710,
     "type": "VLESS",
-    "exitIp": "89.125.193.31"
+    "exitIp": "89.125.193.23"
   },
   {
     "tag": "node-23",
     "remarks": "🇳🇱 🏳️ Нидерланды #9",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 1263,
+    "latency": 717,
     "type": "VLESS",
-    "exitIp": "89.125.193.31"
+    "exitIp": "89.125.193.22"
   },
   {
     "tag": "node-24",
-    "remarks": "🇳🇱 🏳️ Нидерланды #10",
+    "remarks": "🇳🇱 Нидерланды #10",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 1298,
+    "latency": 720,
     "type": "VLESS",
-    "exitIp": "89.125.193.23"
+    "exitIp": "89.125.193.20"
   },
   {
     "tag": "node-25",
     "remarks": "🇳🇱 Нидерланды #11",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 1747,
+    "latency": 831,
     "type": "VLESS",
-    "exitIp": "89.125.193.31"
+    "exitIp": "154.86.119.62"
   },
   {
     "tag": "node-26",
     "remarks": "🇵🇱 Польша",
     "countryCode": "PL",
     "geoSource": "exit",
-    "latency": 1164,
+    "latency": 629,
     "type": "VLESS",
-    "exitIp": "2.56.126.115"
+    "exitIp": "2.26.6.1"
   },
   {
     "tag": "node-27",
     "remarks": "🇵🇱 Польша #2",
     "countryCode": "PL",
     "geoSource": "exit",
-    "latency": 1173,
+    "latency": 787,
     "type": "VLESS",
-    "exitIp": "2.26.6.1"
+    "exitIp": "2.56.126.115"
   },
   {
     "tag": "node-28",
     "remarks": "🇵🇱 Польша #3",
     "countryCode": "PL",
     "geoSource": "exit",
-    "latency": 3839,
+    "latency": 789,
     "type": "VLESS",
     "exitIp": "217.60.33.182"
   },
@@ -256,7 +256,7 @@
     "remarks": "🇷🇺 🏳️ Россия",
     "countryCode": "RU",
     "geoSource": "geoip",
-    "latency": 841,
+    "latency": 817,
     "type": "VLESS"
   },
   {
@@ -264,7 +264,7 @@
     "remarks": "🇸🇬 Сингапур",
     "countryCode": "SG",
     "geoSource": "exit",
-    "latency": 914,
+    "latency": 950,
     "type": "VLESS",
     "exitIp": "45.77.40.28"
   },
@@ -273,7 +273,7 @@
     "remarks": "🇸🇬 Сингапур #2",
     "countryCode": "SG",
     "geoSource": "exit",
-    "latency": 938,
+    "latency": 951,
     "type": "VLESS",
     "exitIp": "45.77.40.28"
   },
@@ -282,7 +282,7 @@
     "remarks": "🇸🇬 Сингапур #3",
     "countryCode": "SG",
     "geoSource": "exit",
-    "latency": 1006,
+    "latency": 959,
     "type": "VLESS",
     "exitIp": "45.77.40.28"
   },
@@ -291,104 +291,88 @@
     "remarks": "🇸🇬 Сингапур #4",
     "countryCode": "SG",
     "geoSource": "exit",
-    "latency": 7944,
+    "latency": 1606,
     "type": "VMess",
     "exitIp": "8.219.97.17"
   },
   {
     "tag": "node-34",
-    "remarks": "🇸🇮 Словения",
-    "countryCode": "SI",
-    "geoSource": "exit",
-    "latency": 3248,
-    "type": "VLESS",
-    "exitIp": "92.42.201.102"
-  },
-  {
-    "tag": "node-35",
-    "remarks": "🇸🇮 Словения #2",
-    "countryCode": "SI",
-    "geoSource": "exit",
-    "latency": 3693,
-    "type": "VLESS",
-    "exitIp": "92.42.201.107"
-  },
-  {
-    "tag": "node-36",
     "remarks": "🇺🇸 США",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 196,
+    "latency": 151,
     "type": "VMess",
     "exitIp": "2603:c028:4501:3d88:b782:2bc:9b2c:f38a"
   },
   {
-    "tag": "node-37",
+    "tag": "node-35",
     "remarks": "🇺🇸 США #2",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 198,
+    "latency": 155,
     "type": "VMess",
     "exitIp": "2603:c028:4501:3d88:b782:2bc:9b2c:f38a"
   },
   {
-    "tag": "node-38",
+    "tag": "node-36",
     "remarks": "🇺🇸 США #3",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 372,
+    "latency": 377,
     "type": "VMess",
     "exitIp": "47.88.79.34"
   },
   {
-    "tag": "node-39",
+    "tag": "node-37",
     "remarks": "🇺🇸 США #4",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 1063,
+    "latency": 552,
     "type": "VLESS",
     "exitIp": "201.58.187.145"
   },
   {
-    "tag": "node-40",
+    "tag": "node-38",
     "remarks": "🇺🇸 США #5",
     "countryCode": "US",
-    "geoSource": "geoip",
-    "latency": 1173,
-    "type": "VMess"
-  },
-  {
-    "tag": "node-41",
-    "remarks": "🇺🇸 США #6",
-    "countryCode": "US",
     "geoSource": "exit",
-    "latency": 2605,
+    "latency": 1106,
     "type": "VLESS",
     "exitIp": "72.56.41.232"
   },
   {
-    "tag": "node-42",
-    "remarks": "🇺🇸 США #7",
+    "tag": "node-39",
+    "remarks": "🇺🇸 США #6",
     "countryCode": "US",
-    "geoSource": "geoip",
-    "latency": 3670,
-    "type": "VMess"
+    "geoSource": "exit",
+    "latency": 2132,
+    "type": "VMess",
+    "exitIp": "207.244.230.92"
   },
   {
-    "tag": "node-43",
+    "tag": "node-40",
     "remarks": "🇫🇮 Финляндия",
     "countryCode": "FI",
     "geoSource": "exit",
-    "latency": 1872,
+    "latency": 529,
     "type": "VLESS",
     "exitIp": "2.26.55.145"
   },
   {
-    "tag": "node-44",
+    "tag": "node-41",
+    "remarks": "🇫🇷 Франция",
+    "countryCode": "FR",
+    "geoSource": "exit",
+    "latency": 555,
+    "type": "VMess",
+    "exitIp": "79.137.99.194"
+  },
+  {
+    "tag": "node-42",
     "remarks": "🇪🇪 Эстония",
     "countryCode": "EE",
     "geoSource": "exit",
-    "latency": 982,
+    "latency": 419,
     "type": "VLESS",
     "exitIp": "132.243.65.0"
   }
