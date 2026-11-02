@@ -80,13 +80,7 @@
             "node-52",
             "node-53",
             "node-54",
-            "node-55",
-            "node-56",
-            "node-57",
-            "node-58",
-            "node-59",
-            "node-60",
-            "node-61"
+            "node-55"
           ],
           "strategy": {
             "type": "leastLoad",
@@ -152,7 +146,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "av.neuroniko.com",
+              "address": "185.126.236.125",
               "port": 8443,
               "users": [
                 {
@@ -182,7 +176,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "185.126.236.125",
+              "address": "av.neuroniko.com",
               "port": 8443,
               "users": [
                 {
@@ -228,53 +222,61 @@
         "tag": "node-3"
       },
       {
-        "protocol": "vmess",
+        "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "www.ubuntuupdates.com",
+              "address": "sundaylanzgem.site",
               "port": 443,
               "users": [
                 {
-                  "id": "83b09a64-1eaf-4c4d-89ed-866d4b6b8115",
-                  "alterId": 0,
-                  "security": "auto"
+                  "id": "50a87e21-f0e2-4b53-a787-91adfe748f63",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
                 }
               ]
             }
           ]
         },
         "streamSettings": {
-          "network": "ws",
-          "security": "tls",
-          "wsSettings": {
-            "path": "/truth",
-            "headers": {
-              "Host": "www.ubuntuupdates.com"
-            }
-          },
-          "tlsSettings": {
-            "serverName": "www.ubuntuupdates.com"
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "sundaylanzgem.site",
+            "fingerprint": "qq",
+            "publicKey": "-BN9yCN0ECqxOPoJOan1-CIMEYc5e7wdJwaeDxsUM20",
+            "shortId": "",
+            "spiderX": ""
           }
         },
         "tag": "node-4"
       },
       {
-        "protocol": "trojan",
+        "protocol": "vless",
         "settings": {
-          "servers": [
+          "vnext": [
             {
-              "address": "193.108.119.96",
+              "address": "de-2.ffpn.pro",
               "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+              "users": [
+                {
+                  "id": "727a9178-d7f0-4142-8205-b0d19959ded0",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
             }
           ]
         },
         "streamSettings": {
           "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "learn.iloverussia2026.com"
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "de-2.ffpn.pro",
+            "fingerprint": "firefox",
+            "publicKey": "DCpi9-1rSXxBnEIAQ9U3mTqHivk7vHJRV_T2pWw5vCc",
+            "shortId": "681fc2dd643bc2f3",
+            "spiderX": ""
           }
         },
         "tag": "node-5"
@@ -313,87 +315,6 @@
         "settings": {
           "servers": [
             {
-              "address": "193.108.119.15",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "courses.iloverussia2026.com",
-            "fingerprint": "chrome"
-          }
-        },
-        "tag": "node-7"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "de-2.ffpn.pro",
-              "port": 443,
-              "users": [
-                {
-                  "id": "727a9178-d7f0-4142-8205-b0d19959ded0",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "de-2.ffpn.pro",
-            "fingerprint": "firefox",
-            "publicKey": "DCpi9-1rSXxBnEIAQ9U3mTqHivk7vHJRV_T2pWw5vCc",
-            "shortId": "681fc2dd643bc2f3",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-8"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "130.49.177.193",
-              "port": 443,
-              "users": [
-                {
-                  "id": "727a9178-d7f0-4142-8205-b0d19959ded0",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "de-2.ffpn.pro",
-            "fingerprint": "firefox",
-            "publicKey": "DCpi9-1rSXxBnEIAQ9U3mTqHivk7vHJRV_T2pWw5vCc",
-            "shortId": "681fc2dd643bc2f3",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-9"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
               "address": "193.108.119.78",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
@@ -408,7 +329,7 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-10"
+        "tag": "node-7"
       },
       {
         "protocol": "vmess",
@@ -440,67 +361,105 @@
             "serverName": "www.gptcloudai.com"
           }
         },
-        "tag": "node-11"
+        "tag": "node-8"
       },
       {
-        "protocol": "vless",
+        "protocol": "trojan",
         "settings": {
-          "vnext": [
+          "servers": [
             {
-              "address": "c3f630g.es4.h1clayd.click",
+              "address": "193.108.119.15",
               "port": 443,
-              "users": [
-                {
-                  "id": "fafc7c16-f890-45ee-a856-02df225172dd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "grpc",
-          "security": "reality",
-          "grpcSettings": {
-            "serviceName": "7e802b075a7c",
-            "multiMode": false
-          },
-          "realitySettings": {
-            "serverName": "c3f630g.es4.h1clayd.click",
-            "fingerprint": "firefox",
-            "publicKey": "BzM-6A4DGbjpquuwUmotiamNZlamur11IXX5Xyh_wBg",
-            "shortId": "2d2d5faf568b584d",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-12"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "83.171.241.199",
-              "port": 443,
-              "users": [
-                {
-                  "id": "fafc7c16-f890-45ee-a856-02df225172dd",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
           ]
         },
         "streamSettings": {
           "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "898305t.es4.h1clayd.click",
-            "fingerprint": "firefox",
-            "publicKey": "qF1f5MNrOiov0tyPftS96_Osal5sWTL4keXlW32UtV8",
-            "shortId": "f06b6d8a57f5fd8f",
-            "spiderX": ""
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "courses.iloverussia2026.com",
+            "fingerprint": "chrome"
+          }
+        },
+        "tag": "node-9"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "193.108.119.96",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "learn.iloverussia2026.com"
+          }
+        },
+        "tag": "node-10"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "216.152.147.74",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "api.connectingpeoplewithgreatjobs.com"
+          }
+        },
+        "tag": "node-11"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "216.152.147.93",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "connectingpeoplewithgreatjobs.com"
+          }
+        },
+        "tag": "node-12"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "216.152.147.89",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "node-13"
@@ -530,66 +489,6 @@
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.89",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "www.connectingpeoplewithgreatjobs.com"
-          }
-        },
-        "tag": "node-15"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "216.152.147.93",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "connectingpeoplewithgreatjobs.com"
-          }
-        },
-        "tag": "node-16"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "216.152.147.74",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "api.connectingpeoplewithgreatjobs.com"
-          }
-        },
-        "tag": "node-17"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
               "address": "216.152.147.201",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
@@ -603,7 +502,7 @@
             "serverName": "resources.connectingpeoplewithgreatjobs.com"
           }
         },
-        "tag": "node-18"
+        "tag": "node-15"
       },
       {
         "protocol": "trojan",
@@ -623,7 +522,7 @@
             "serverName": "connectwithtopemployersandfindidealjobs.com"
           }
         },
-        "tag": "node-19"
+        "tag": "node-16"
       },
       {
         "protocol": "vless",
@@ -653,7 +552,127 @@
             "spiderX": ""
           }
         },
+        "tag": "node-17"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "78.159.250.214",
+              "port": 443,
+              "users": [
+                {
+                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "qq.utiltools.site",
+            "fingerprint": "firefox",
+            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
+            "shortId": "00000000",
+            "spiderX": ""
+          }
+        },
+        "tag": "node-18"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "78.159.250.214",
+              "port": 443,
+              "users": [
+                {
+                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "qq.utiltools.site",
+            "fingerprint": "chrome",
+            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
+            "shortId": "",
+            "spiderX": ""
+          }
+        },
+        "tag": "node-19"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "qq.utiltools.site",
+              "port": 443,
+              "users": [
+                {
+                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "qq.utiltools.site",
+            "fingerprint": "chrome",
+            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
+            "shortId": "",
+            "spiderX": ""
+          }
+        },
         "tag": "node-20"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "78.159.250.214",
+              "port": 443,
+              "users": [
+                {
+                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "qq.utiltools.site",
+            "fingerprint": "chrome",
+            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
+            "shortId": "00000000",
+            "spiderX": ""
+          }
+        },
+        "tag": "node-21"
       },
       {
         "protocol": "vless",
@@ -686,127 +705,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-21"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "78.159.250.214",
-              "port": 443,
-              "users": [
-                {
-                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "qq.utiltools.site",
-            "fingerprint": "firefox",
-            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
-            "shortId": "00000000",
-            "spiderX": ""
-          }
-        },
         "tag": "node-22"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "78.159.250.214",
-              "port": 443,
-              "users": [
-                {
-                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "qq.utiltools.site",
-            "fingerprint": "chrome",
-            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
-            "shortId": "",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-23"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "78.159.250.214",
-              "port": 443,
-              "users": [
-                {
-                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "qq.utiltools.site",
-            "fingerprint": "chrome",
-            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
-            "shortId": "00000000",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-24"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "qq.utiltools.site",
-              "port": 443,
-              "users": [
-                {
-                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "qq.utiltools.site",
-            "fingerprint": "chrome",
-            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
-            "shortId": "",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-25"
       },
       {
         "protocol": "vless",
@@ -839,7 +738,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-26"
+        "tag": "node-23"
       },
       {
         "protocol": "trojan",
@@ -859,59 +758,7 @@
             "serverName": "browseexecutivejobopeningsandenhanceleadershipcareer.com"
           }
         },
-        "tag": "node-27"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "2.26.6.1",
-              "port": 2087,
-              "users": [
-                {
-                  "id": "b9fdc03f-389b-4cda-9be4-155b623bee15",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "2.26.6.1",
-            "fingerprint": "ios"
-          }
-        },
-        "tag": "node-28"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "2.26.6.1",
-              "port": 2087,
-              "users": [
-                {
-                  "id": "b9fdc03f-389b-4cda-9be4-155b623bee15",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "2.26.6.1",
-            "fingerprint": "firefox"
-          }
-        },
-        "tag": "node-29"
+        "tag": "node-24"
       },
       {
         "protocol": "vless",
@@ -942,7 +789,7 @@
             "serverName": "wstg.datasynctrue.online"
           }
         },
-        "tag": "node-30"
+        "tag": "node-25"
       },
       {
         "protocol": "trojan",
@@ -962,80 +809,7 @@
             "serverName": "searchcreativejobsandshowcaseyourartistictalents.com"
           }
         },
-        "tag": "node-31"
-      },
-      {
-        "protocol": "vmess",
-        "settings": {
-          "vnext": [
-            {
-              "address": "172.66.203.67",
-              "port": 443,
-              "users": [
-                {
-                  "id": "0cf6d970-3f1d-4aae-a989-92a8f76ae3db",
-                  "alterId": 0,
-                  "security": "auto"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "ws",
-          "security": "tls",
-          "wsSettings": {
-            "path": "/ws?ed=2048",
-            "headers": {
-              "Host": "vmess.lbw666.dpdns.org"
-            }
-          },
-          "tlsSettings": {
-            "serverName": "vmess.lbw666.dpdns.org",
-            "fingerprint": "chrome"
-          }
-        },
-        "tag": "node-32"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "170.101.101.67",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
-          }
-        },
-        "tag": "node-33"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "170.101.101.53",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "www.explorecreativejobsandenhanceyourcareerportfolio.com"
-          }
-        },
-        "tag": "node-34"
+        "tag": "node-26"
       },
       {
         "protocol": "trojan",
@@ -1055,14 +829,14 @@
             "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
-        "tag": "node-35"
+        "tag": "node-27"
       },
       {
         "protocol": "trojan",
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.218",
+              "address": "170.101.101.53",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1072,17 +846,17 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "www.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
-        "tag": "node-36"
+        "tag": "node-28"
       },
       {
         "protocol": "trojan",
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.224",
+              "address": "170.101.101.67",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1092,30 +866,10 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
-        "tag": "node-37"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "169.197.140.245",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
-          }
-        },
-        "tag": "node-38"
+        "tag": "node-29"
       },
       {
         "protocol": "trojan",
@@ -1135,7 +889,68 @@
             "serverName": "api.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
-        "tag": "node-39"
+        "tag": "node-30"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "169.197.140.224",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+          }
+        },
+        "tag": "node-31"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "169.197.140.245",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+          }
+        },
+        "tag": "node-32"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "66.163.112.171",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "learn.unlockyourfuturefindyourperfectcareer.com",
+            "fingerprint": "chrome"
+          }
+        },
+        "tag": "node-33"
       },
       {
         "protocol": "trojan",
@@ -1156,7 +971,27 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-40"
+        "tag": "node-34"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "167.88.61.20",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
+          }
+        },
+        "tag": "node-35"
       },
       {
         "protocol": "trojan",
@@ -1176,27 +1011,7 @@
             "serverName": "cdn.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
-        "tag": "node-41"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "167.88.61.193",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
-          }
-        },
-        "tag": "node-42"
+        "tag": "node-36"
       },
       {
         "protocol": "trojan",
@@ -1216,7 +1031,47 @@
             "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
-        "tag": "node-43"
+        "tag": "node-37"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "167.88.61.193",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
+          }
+        },
+        "tag": "node-38"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "167.88.61.85",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
+          }
+        },
+        "tag": "node-39"
       },
       {
         "protocol": "vmess",
@@ -1248,14 +1103,14 @@
             "serverName": "rib9jxayoqjgn2kw.v.3dns.vip"
           }
         },
-        "tag": "node-44"
+        "tag": "node-40"
       },
       {
         "protocol": "trojan",
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.85",
+              "address": "169.197.140.218",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1265,58 +1120,49 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
-        "tag": "node-45"
+        "tag": "node-41"
       },
       {
-        "protocol": "trojan",
+        "protocol": "vmess",
         "settings": {
-          "servers": [
+          "vnext": [
             {
-              "address": "66.163.112.171",
+              "address": "www.ubuntuupdates.com",
               "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+              "users": [
+                {
+                  "id": "83b09a64-1eaf-4c4d-89ed-866d4b6b8115",
+                  "alterId": 0,
+                  "security": "auto"
+                }
+              ]
             }
           ]
         },
         "streamSettings": {
-          "network": "tcp",
+          "network": "ws",
           "security": "tls",
-          "tlsSettings": {
-            "serverName": "learn.unlockyourfuturefindyourperfectcareer.com",
-            "fingerprint": "chrome"
-          }
-        },
-        "tag": "node-46"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "167.88.61.20",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+          "wsSettings": {
+            "path": "/truth",
+            "headers": {
+              "Host": "www.ubuntuupdates.com"
             }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
+          },
           "tlsSettings": {
-            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "www.ubuntuupdates.com"
           }
         },
-        "tag": "node-47"
+        "tag": "node-42"
       },
       {
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "sundaylanzgem.site",
+              "address": "usatimewebnew.space",
               "port": 443,
               "users": [
                 {
@@ -1332,14 +1178,44 @@
           "network": "tcp",
           "security": "reality",
           "realitySettings": {
-            "serverName": "sundaylanzgem.site",
-            "fingerprint": "qq",
-            "publicKey": "-BN9yCN0ECqxOPoJOan1-CIMEYc5e7wdJwaeDxsUM20",
+            "serverName": "usatimewebnew.space",
+            "fingerprint": "chrome",
+            "publicKey": "FFsBozg2vRN-wNNsv6Y97sbr4EF5aIHiYF7-xHa_9Fk",
             "shortId": "",
             "spiderX": ""
           }
         },
-        "tag": "node-48"
+        "tag": "node-43"
+      },
+      {
+        "protocol": "vmess",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.windowssearchtools.com",
+              "port": 443,
+              "users": [
+                {
+                  "id": "ba1116e2-8c2f-4e3d-8e50-c954360cf970",
+                  "alterId": 0,
+                  "security": "auto"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "wsSettings": {
+            "path": "/truth"
+          },
+          "tlsSettings": {
+            "serverName": "www.windowssearchtools.com",
+            "fingerprint": "chrome"
+          }
+        },
+        "tag": "node-44"
       },
       {
         "protocol": "vless",
@@ -1371,7 +1247,39 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-49"
+        "tag": "node-45"
+      },
+      {
+        "protocol": "vmess",
+        "settings": {
+          "vnext": [
+            {
+              "address": "chatgpt.com",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "60441548-b68e-43b2-8191-e3b884be4b3c",
+                  "alterId": 0,
+                  "security": "auto"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "wsSettings": {
+            "path": "/lMnsZUN4/",
+            "headers": {
+              "Host": "v2ray1.dozapp.xyz"
+            }
+          },
+          "tlsSettings": {
+            "serverName": "v2ray1.dozapp.xyz"
+          }
+        },
+        "tag": "node-46"
       },
       {
         "protocol": "vmess",
@@ -1400,7 +1308,7 @@
             "serverName": "v2ray1.dozapp.xyz"
           }
         },
-        "tag": "node-50"
+        "tag": "node-47"
       },
       {
         "protocol": "vmess",
@@ -1432,7 +1340,7 @@
             "serverName": "vmess.lbw666.dpdns.org"
           }
         },
-        "tag": "node-51"
+        "tag": "node-48"
       },
       {
         "protocol": "vmess",
@@ -1467,18 +1375,18 @@
             ]
           }
         },
-        "tag": "node-52"
+        "tag": "node-49"
       },
       {
         "protocol": "vmess",
         "settings": {
           "vnext": [
             {
-              "address": "chatgpt.com",
-              "port": 8443,
+              "address": "172.66.203.67",
+              "port": 443,
               "users": [
                 {
-                  "id": "60441548-b68e-43b2-8191-e3b884be4b3c",
+                  "id": "0cf6d970-3f1d-4aae-a989-92a8f76ae3db",
                   "alterId": 0,
                   "security": "auto"
                 }
@@ -1490,46 +1398,17 @@
           "network": "ws",
           "security": "tls",
           "wsSettings": {
-            "path": "/lMnsZUN4/",
+            "path": "/ws?ed=2048",
             "headers": {
-              "Host": "v2ray1.dozapp.xyz"
+              "Host": "vmess.lbw666.dpdns.org"
             }
           },
           "tlsSettings": {
-            "serverName": "v2ray1.dozapp.xyz"
+            "serverName": "vmess.lbw666.dpdns.org",
+            "fingerprint": "chrome"
           }
         },
-        "tag": "node-53"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "usatimewebnew.space",
-              "port": 443,
-              "users": [
-                {
-                  "id": "50a87e21-f0e2-4b53-a787-91adfe748f63",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "usatimewebnew.space",
-            "fingerprint": "chrome",
-            "publicKey": "FFsBozg2vRN-wNNsv6Y97sbr4EF5aIHiYF7-xHa_9Fk",
-            "shortId": "",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-54"
+        "tag": "node-50"
       },
       {
         "protocol": "vless",
@@ -1572,67 +1451,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-55"
-      },
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "2.56.3.106",
-              "port": 443,
-              "users": [
-                {
-                  "id": "727a9178-d7f0-4142-8205-b0d19959ded0",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "bol.com",
-            "fingerprint": "edge",
-            "publicKey": "yyXZsa238GRW90w5DweXAdRTtVSuK9oZF_dihKQ41So",
-            "shortId": "9e5a335de26d1f5a",
-            "spiderX": ""
-          }
-        },
-        "tag": "node-56"
-      },
-      {
-        "protocol": "vmess",
-        "settings": {
-          "vnext": [
-            {
-              "address": "www.windowssearchtools.com",
-              "port": 443,
-              "users": [
-                {
-                  "id": "ba1116e2-8c2f-4e3d-8e50-c954360cf970",
-                  "alterId": 0,
-                  "security": "auto"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "ws",
-          "security": "tls",
-          "wsSettings": {
-            "path": "/truth"
-          },
-          "tlsSettings": {
-            "serverName": "www.windowssearchtools.com",
-            "fingerprint": "chrome"
-          }
-        },
-        "tag": "node-57"
+        "tag": "node-51"
       },
       {
         "protocol": "trojan",
@@ -1652,7 +1471,7 @@
             "serverName": "advanceyouremploymentskillsandcareerdevelopmenthub.com"
           }
         },
-        "tag": "node-58"
+        "tag": "node-52"
       },
       {
         "protocol": "vless",
@@ -1682,7 +1501,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-59"
+        "tag": "node-53"
       },
       {
         "protocol": "vless",
@@ -1715,7 +1534,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-60"
+        "tag": "node-54"
       },
       {
         "protocol": "vless",
@@ -1748,7 +1567,7 @@
             "spiderX": ""
           }
         },
-        "tag": "node-61"
+        "tag": "node-55"
       },
       {
         "protocol": "freedom",
@@ -1822,13 +1641,7 @@
         "node-52",
         "node-53",
         "node-54",
-        "node-55",
-        "node-56",
-        "node-57",
-        "node-58",
-        "node-59",
-        "node-60",
-        "node-61"
+        "node-55"
       ]
     },
     "remarks": "🇪🇺 АВТО ⚡"
@@ -1886,7 +1699,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "av.neuroniko.com",
+              "address": "185.126.236.125",
               "port": 8443,
               "users": [
                 {
@@ -1985,7 +1798,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "185.126.236.125",
+              "address": "av.neuroniko.com",
               "port": 8443,
               "users": [
                 {
@@ -2169,206 +1982,17 @@
     ],
     "outbounds": [
       {
-        "protocol": "vmess",
-        "settings": {
-          "vnext": [
-            {
-              "address": "www.ubuntuupdates.com",
-              "port": 443,
-              "users": [
-                {
-                  "id": "83b09a64-1eaf-4c4d-89ed-866d4b6b8115",
-                  "alterId": 0,
-                  "security": "auto"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "ws",
-          "security": "tls",
-          "wsSettings": {
-            "path": "/truth",
-            "headers": {
-              "Host": "www.ubuntuupdates.com"
-            }
-          },
-          "tlsSettings": {
-            "serverName": "www.ubuntuupdates.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇬🇧 Великобритания"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "193.108.119.96",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "learn.iloverussia2026.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇩🇪 Германия"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
         "protocol": "vless",
         "settings": {
           "vnext": [
             {
-              "address": "193.148.253.194",
-              "port": 25362,
+              "address": "sundaylanzgem.site",
+              "port": 443,
               "users": [
                 {
-                  "id": "36fb6650-8a50-42b5-9f66-06538806f32c",
-                  "encryption": "none"
+                  "id": "50a87e21-f0e2-4b53-a787-91adfe748f63",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
                 }
               ]
             }
@@ -2378,10 +2002,10 @@
           "network": "tcp",
           "security": "reality",
           "realitySettings": {
-            "serverName": "www.chip.de",
-            "fingerprint": "chrome",
-            "publicKey": "hFee7zTreqlv_wccK_8zxN5v23hj9u-DshByvGf-KAA",
-            "shortId": "23732d14a527990d",
+            "serverName": "sundaylanzgem.site",
+            "fingerprint": "qq",
+            "publicKey": "-BN9yCN0ECqxOPoJOan1-CIMEYc5e7wdJwaeDxsUM20",
+            "shortId": "",
             "spiderX": ""
           }
         },
@@ -2406,97 +2030,7 @@
         }
       ]
     },
-    "remarks": "🇩🇪 Германия #2"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "193.108.119.15",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "courses.iloverussia2026.com",
-            "fingerprint": "chrome"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇩🇪 Германия #3"
+    "remarks": "🇩🇪 Германия"
   },
   {
     "dns": {
@@ -2595,7 +2129,7 @@
         }
       ]
     },
-    "remarks": "🇩🇪 Германия #4"
+    "remarks": "🇩🇪 Германия #2"
   },
   {
     "dns": {
@@ -2650,13 +2184,12 @@
         "settings": {
           "vnext": [
             {
-              "address": "130.49.177.193",
-              "port": 443,
+              "address": "193.148.253.194",
+              "port": 25362,
               "users": [
                 {
-                  "id": "727a9178-d7f0-4142-8205-b0d19959ded0",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
+                  "id": "36fb6650-8a50-42b5-9f66-06538806f32c",
+                  "encryption": "none"
                 }
               ]
             }
@@ -2666,10 +2199,10 @@
           "network": "tcp",
           "security": "reality",
           "realitySettings": {
-            "serverName": "de-2.ffpn.pro",
-            "fingerprint": "firefox",
-            "publicKey": "DCpi9-1rSXxBnEIAQ9U3mTqHivk7vHJRV_T2pWw5vCc",
-            "shortId": "681fc2dd643bc2f3",
+            "serverName": "www.chip.de",
+            "fingerprint": "chrome",
+            "publicKey": "hFee7zTreqlv_wccK_8zxN5v23hj9u-DshByvGf-KAA",
+            "shortId": "23732d14a527990d",
             "spiderX": ""
           }
         },
@@ -2694,7 +2227,7 @@
         }
       ]
     },
-    "remarks": "🇩🇪 Германия #5"
+    "remarks": "🇩🇪 Германия #3"
   },
   {
     "dns": {
@@ -2784,7 +2317,7 @@
         }
       ]
     },
-    "remarks": "🇩🇪 Германия #6"
+    "remarks": "🇩🇪 Германия #4"
   },
   {
     "dns": {
@@ -2885,6 +2418,185 @@
         }
       ]
     },
+    "remarks": "🇩🇪 Германия #5"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "193.108.119.15",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "courses.iloverussia2026.com",
+            "fingerprint": "chrome"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇩🇪 Германия #6"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "193.108.119.96",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "learn.iloverussia2026.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
     "remarks": "🇩🇪 Германия #7"
   },
   {
@@ -2936,212 +2648,11 @@
     ],
     "outbounds": [
       {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "c3f630g.es4.h1clayd.click",
-              "port": 443,
-              "users": [
-                {
-                  "id": "fafc7c16-f890-45ee-a856-02df225172dd",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "grpc",
-          "security": "reality",
-          "grpcSettings": {
-            "serviceName": "7e802b075a7c",
-            "multiMode": false
-          },
-          "realitySettings": {
-            "serverName": "c3f630g.es4.h1clayd.click",
-            "fingerprint": "firefox",
-            "publicKey": "BzM-6A4DGbjpquuwUmotiamNZlamur11IXX5Xyh_wBg",
-            "shortId": "2d2d5faf568b584d",
-            "spiderX": ""
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇪🇸 Испания"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "83.171.241.199",
-              "port": 443,
-              "users": [
-                {
-                  "id": "fafc7c16-f890-45ee-a856-02df225172dd",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "898305t.es4.h1clayd.click",
-            "fingerprint": "firefox",
-            "publicKey": "qF1f5MNrOiov0tyPftS96_Osal5sWTL4keXlW32UtV8",
-            "shortId": "f06b6d8a57f5fd8f",
-            "spiderX": ""
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇪🇸 Испания #2"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
         "protocol": "trojan",
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.85",
+              "address": "216.152.147.74",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3151,7 +2662,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "cdn.connectingpeoplewithgreatjobs.com"
+            "serverName": "api.connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "proxy"
@@ -3176,95 +2687,6 @@
       ]
     },
     "remarks": "🇨🇦 Канада"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "216.152.147.89",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "www.connectingpeoplewithgreatjobs.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇨🇦 Канада #2"
   },
   {
     "dns": {
@@ -3353,6 +2775,95 @@
         }
       ]
     },
+    "remarks": "🇨🇦 Канада #2"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "216.152.147.89",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.connectingpeoplewithgreatjobs.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
     "remarks": "🇨🇦 Канада #3"
   },
   {
@@ -3408,7 +2919,7 @@
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.74",
+              "address": "216.152.147.85",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3418,7 +2929,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "api.connectingpeoplewithgreatjobs.com"
+            "serverName": "cdn.connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "proxy"
@@ -3774,29 +3285,26 @@
         "settings": {
           "vnext": [
             {
-              "address": "212.34.128.120",
+              "address": "78.159.250.214",
               "port": 443,
               "users": [
                 {
-                  "id": "6da2c981-8c77-4340-bda3-93399b7aea26",
-                  "encryption": "none"
+                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
                 }
               ]
             }
           ]
         },
         "streamSettings": {
-          "network": "xhttp",
+          "network": "tcp",
           "security": "reality",
-          "xhttpSettings": {
-            "path": "/v2/sync/af2c0c",
-            "mode": "auto"
-          },
           "realitySettings": {
-            "serverName": "podcasts.blog-forme.ru",
+            "serverName": "qq.utiltools.site",
             "fingerprint": "firefox",
-            "publicKey": "nalACuCZjV1sZx7QOH6yAIDio8mFI0FgVKYQvQHBKS4",
-            "shortId": "fb3a5f2d4ca346ed",
+            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
+            "shortId": "00000000",
             "spiderX": ""
           }
         },
@@ -3893,9 +3401,9 @@
           "security": "reality",
           "realitySettings": {
             "serverName": "qq.utiltools.site",
-            "fingerprint": "firefox",
+            "fingerprint": "chrome",
             "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
-            "shortId": "00000000",
+            "shortId": "",
             "spiderX": ""
           }
         },
@@ -3920,7 +3428,7 @@
         }
       ]
     },
-    "remarks": "🇳🇱 Нидерланды #3"
+    "remarks": "🇳🇱 🏳️ Нидерланды #3"
   },
   {
     "dns": {
@@ -3975,7 +3483,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "78.159.250.214",
+              "address": "qq.utiltools.site",
               "port": 443,
               "users": [
                 {
@@ -4173,26 +3681,29 @@
         "settings": {
           "vnext": [
             {
-              "address": "qq.utiltools.site",
+              "address": "212.34.128.120",
               "port": 443,
               "users": [
                 {
-                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
+                  "id": "6da2c981-8c77-4340-bda3-93399b7aea26",
+                  "encryption": "none"
                 }
               ]
             }
           ]
         },
         "streamSettings": {
-          "network": "tcp",
+          "network": "xhttp",
           "security": "reality",
+          "xhttpSettings": {
+            "path": "/v2/sync/af2c0c",
+            "mode": "auto"
+          },
           "realitySettings": {
-            "serverName": "qq.utiltools.site",
-            "fingerprint": "chrome",
-            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
-            "shortId": "",
+            "serverName": "podcasts.blog-forme.ru",
+            "fingerprint": "firefox",
+            "publicKey": "nalACuCZjV1sZx7QOH6yAIDio8mFI0FgVKYQvQHBKS4",
+            "shortId": "fb3a5f2d4ca346ed",
             "spiderX": ""
           }
         },
@@ -4217,7 +3728,7 @@
         }
       ]
     },
-    "remarks": "🇳🇱 🏳️ Нидерланды #6"
+    "remarks": "🇳🇱 Нидерланды #6"
   },
   {
     "dns": {
@@ -4463,196 +3974,6 @@
         "settings": {
           "vnext": [
             {
-              "address": "2.26.6.1",
-              "port": 2087,
-              "users": [
-                {
-                  "id": "b9fdc03f-389b-4cda-9be4-155b623bee15",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "2.26.6.1",
-            "fingerprint": "ios"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇵🇱 Польша #2"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "2.26.6.1",
-              "port": 2087,
-              "users": [
-                {
-                  "id": "b9fdc03f-389b-4cda-9be4-155b623bee15",
-                  "encryption": "none"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "2.26.6.1",
-            "fingerprint": "firefox"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇵🇱 Польша #3"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
               "address": "188.225.33.141",
               "port": 443,
               "users": [
@@ -4838,34 +4159,21 @@
     ],
     "outbounds": [
       {
-        "protocol": "vmess",
+        "protocol": "trojan",
         "settings": {
-          "vnext": [
+          "servers": [
             {
-              "address": "172.66.203.67",
+              "address": "170.101.101.211",
               "port": 443,
-              "users": [
-                {
-                  "id": "0cf6d970-3f1d-4aae-a989-92a8f76ae3db",
-                  "alterId": 0,
-                  "security": "auto"
-                }
-              ]
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
           ]
         },
         "streamSettings": {
-          "network": "ws",
+          "network": "tcp",
           "security": "tls",
-          "wsSettings": {
-            "path": "/ws?ed=2048",
-            "headers": {
-              "Host": "vmess.lbw666.dpdns.org"
-            }
-          },
           "tlsSettings": {
-            "serverName": "vmess.lbw666.dpdns.org",
-            "fingerprint": "chrome"
+            "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "proxy"
@@ -4890,95 +4198,6 @@
       ]
     },
     "remarks": "🇺🇸 США"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "170.101.101.67",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇺🇸 США #2"
   },
   {
     "dns": {
@@ -5067,363 +4286,96 @@
         }
       ]
     },
+    "remarks": "🇺🇸 США #2"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "170.101.101.67",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
     "remarks": "🇺🇸 США #3"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "170.101.101.211",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇺🇸 США #4"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "169.197.140.218",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇺🇸 США #5"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "169.197.140.224",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇺🇸 США #6"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "169.197.140.245",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇺🇸 США #7"
   },
   {
     "dns": {
@@ -5512,7 +4464,275 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #8"
+    "remarks": "🇺🇸 США #4"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "169.197.140.224",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #5"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "169.197.140.245",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #6"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "66.163.112.171",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "learn.unlockyourfuturefindyourperfectcareer.com",
+            "fingerprint": "chrome"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #7"
   },
   {
     "dns": {
@@ -5579,6 +4799,95 @@
           "tlsSettings": {
             "serverName": "blog.unlockyourfuturefindyourperfectcareer.com",
             "fingerprint": "chrome"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #8"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "167.88.61.20",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -5746,7 +5055,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.193",
+              "address": "167.88.61.175",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -5756,7 +5065,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -5835,7 +5144,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.175",
+              "address": "167.88.61.193",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -5845,7 +5154,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -5870,6 +5179,95 @@
       ]
     },
     "remarks": "🇺🇸 США #12"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "167.88.61.85",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #13"
   },
   {
     "dns": {
@@ -5970,95 +5368,6 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #13"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "167.88.61.85",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
     "remarks": "🇺🇸 США #14"
   },
   {
@@ -6114,7 +5423,7 @@
         "settings": {
           "servers": [
             {
-              "address": "66.163.112.171",
+              "address": "169.197.140.218",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -6124,8 +5433,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "learn.unlockyourfuturefindyourperfectcareer.com",
-            "fingerprint": "chrome"
+            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "proxy"
@@ -6200,21 +5508,33 @@
     ],
     "outbounds": [
       {
-        "protocol": "trojan",
+        "protocol": "vmess",
         "settings": {
-          "servers": [
+          "vnext": [
             {
-              "address": "167.88.61.20",
+              "address": "www.ubuntuupdates.com",
               "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+              "users": [
+                {
+                  "id": "83b09a64-1eaf-4c4d-89ed-866d4b6b8115",
+                  "alterId": 0,
+                  "security": "auto"
+                }
+              ]
             }
           ]
         },
         "streamSettings": {
-          "network": "tcp",
+          "network": "ws",
           "security": "tls",
+          "wsSettings": {
+            "path": "/truth",
+            "headers": {
+              "Host": "www.ubuntuupdates.com"
+            }
+          },
           "tlsSettings": {
-            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "www.ubuntuupdates.com"
           }
         },
         "tag": "proxy"
@@ -6293,7 +5613,7 @@
         "settings": {
           "vnext": [
             {
-              "address": "sundaylanzgem.site",
+              "address": "usatimewebnew.space",
               "port": 443,
               "users": [
                 {
@@ -6309,9 +5629,9 @@
           "network": "tcp",
           "security": "reality",
           "realitySettings": {
-            "serverName": "sundaylanzgem.site",
-            "fingerprint": "qq",
-            "publicKey": "-BN9yCN0ECqxOPoJOan1-CIMEYc5e7wdJwaeDxsUM20",
+            "serverName": "usatimewebnew.space",
+            "fingerprint": "chrome",
+            "publicKey": "FFsBozg2vRN-wNNsv6Y97sbr4EF5aIHiYF7-xHa_9Fk",
             "shortId": "",
             "spiderX": ""
           }
@@ -6338,6 +5658,105 @@
       ]
     },
     "remarks": "🇺🇸 США #17"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vmess",
+        "settings": {
+          "vnext": [
+            {
+              "address": "www.windowssearchtools.com",
+              "port": 443,
+              "users": [
+                {
+                  "id": "ba1116e2-8c2f-4e3d-8e50-c954360cf970",
+                  "alterId": 0,
+                  "security": "auto"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "wsSettings": {
+            "path": "/truth"
+          },
+          "tlsSettings": {
+            "serverName": "www.windowssearchtools.com",
+            "fingerprint": "chrome"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #18"
   },
   {
     "dns": {
@@ -6438,7 +5857,108 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #18"
+    "remarks": "🇺🇸 США #19"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "vmess",
+        "settings": {
+          "vnext": [
+            {
+              "address": "chatgpt.com",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "60441548-b68e-43b2-8191-e3b884be4b3c",
+                  "alterId": 0,
+                  "security": "auto"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "wsSettings": {
+            "path": "/lMnsZUN4/",
+            "headers": {
+              "Host": "v2ray1.dozapp.xyz"
+            }
+          },
+          "tlsSettings": {
+            "serverName": "v2ray1.dozapp.xyz"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #20"
   },
   {
     "dns": {
@@ -6536,7 +6056,7 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #19"
+    "remarks": "🇺🇸 США #21"
   },
   {
     "dns": {
@@ -6637,7 +6157,7 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #20"
+    "remarks": "🇺🇸 США #22"
   },
   {
     "dns": {
@@ -6741,7 +6261,7 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #21"
+    "remarks": "🇺🇸 США #23"
   },
   {
     "dns": {
@@ -6796,11 +6316,11 @@
         "settings": {
           "vnext": [
             {
-              "address": "chatgpt.com",
-              "port": 8443,
+              "address": "172.66.203.67",
+              "port": 443,
               "users": [
                 {
-                  "id": "60441548-b68e-43b2-8191-e3b884be4b3c",
+                  "id": "0cf6d970-3f1d-4aae-a989-92a8f76ae3db",
                   "alterId": 0,
                   "security": "auto"
                 }
@@ -6812,13 +6332,14 @@
           "network": "ws",
           "security": "tls",
           "wsSettings": {
-            "path": "/lMnsZUN4/",
+            "path": "/ws?ed=2048",
             "headers": {
-              "Host": "v2ray1.dozapp.xyz"
+              "Host": "vmess.lbw666.dpdns.org"
             }
           },
           "tlsSettings": {
-            "serverName": "v2ray1.dozapp.xyz"
+            "serverName": "vmess.lbw666.dpdns.org",
+            "fingerprint": "chrome"
           }
         },
         "tag": "proxy"
@@ -6842,106 +6363,7 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #22"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "usatimewebnew.space",
-              "port": 443,
-              "users": [
-                {
-                  "id": "50a87e21-f0e2-4b53-a787-91adfe748f63",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "usatimewebnew.space",
-            "fingerprint": "chrome",
-            "publicKey": "FFsBozg2vRN-wNNsv6Y97sbr4EF5aIHiYF7-xHa_9Fk",
-            "shortId": "",
-            "spiderX": ""
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇺🇸 США #23"
+    "remarks": "🇺🇸 США #24"
   },
   {
     "dns": {
@@ -7054,204 +6476,6 @@
       ]
     },
     "remarks": "🇫🇮 Финляндия"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vless",
-        "settings": {
-          "vnext": [
-            {
-              "address": "2.56.3.106",
-              "port": 443,
-              "users": [
-                {
-                  "id": "727a9178-d7f0-4142-8205-b0d19959ded0",
-                  "encryption": "none",
-                  "flow": "xtls-rprx-vision"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "reality",
-          "realitySettings": {
-            "serverName": "bol.com",
-            "fingerprint": "edge",
-            "publicKey": "yyXZsa238GRW90w5DweXAdRTtVSuK9oZF_dihKQ41So",
-            "shortId": "9e5a335de26d1f5a",
-            "spiderX": ""
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇫🇮 Финляндия #2"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "vmess",
-        "settings": {
-          "vnext": [
-            {
-              "address": "www.windowssearchtools.com",
-              "port": 443,
-              "users": [
-                {
-                  "id": "ba1116e2-8c2f-4e3d-8e50-c954360cf970",
-                  "alterId": 0,
-                  "security": "auto"
-                }
-              ]
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "ws",
-          "security": "tls",
-          "wsSettings": {
-            "path": "/truth"
-          },
-          "tlsSettings": {
-            "serverName": "www.windowssearchtools.com",
-            "fingerprint": "chrome"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇫🇷 Франция"
   },
   {
     "dns": {
