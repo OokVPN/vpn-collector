@@ -4,7 +4,7 @@
     "remarks": "🇧🇷 Бразилия",
     "countryCode": "BR",
     "geoSource": "exit",
-    "latency": 497,
+    "latency": 611,
     "type": "Trojan",
     "exitIp": "216.238.104.154"
   },
@@ -13,7 +13,7 @@
     "remarks": "🇩🇪 Германия",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 415,
+    "latency": 484,
     "type": "Trojan",
     "exitIp": "193.108.119.15"
   },
@@ -22,313 +22,293 @@
     "remarks": "🇩🇪 Германия #2",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 415,
+    "latency": 487,
     "type": "Trojan",
-    "exitIp": "193.108.119.96"
+    "exitIp": "193.108.119.134"
   },
   {
     "tag": "node-4",
     "remarks": "🇩🇪 Германия #3",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 428,
+    "latency": 497,
     "type": "Trojan",
-    "exitIp": "193.108.119.34"
+    "exitIp": "193.108.119.81"
   },
   {
     "tag": "node-5",
     "remarks": "🇩🇪 Германия #4",
     "countryCode": "DE",
     "geoSource": "exit",
-    "latency": 543,
+    "latency": 718,
     "type": "VLESS",
     "exitIp": "130.49.177.193"
   },
   {
     "tag": "node-6",
-    "remarks": "🇩🇪 Германия #5",
-    "countryCode": "DE",
-    "geoSource": "exit",
-    "latency": 561,
-    "type": "VMess",
-    "exitIp": "57.129.83.11"
-  },
-  {
-    "tag": "node-7",
     "remarks": "🇨🇦 Канада",
     "countryCode": "CA",
     "geoSource": "exit",
-    "latency": 151,
+    "latency": 1338,
     "type": "Trojan",
-    "exitIp": "216.152.147.93"
+    "exitIp": "216.152.147.85"
   },
   {
-    "tag": "node-8",
+    "tag": "node-7",
     "remarks": "🇨🇦 Канада #2",
     "countryCode": "CA",
     "geoSource": "exit",
-    "latency": 152,
+    "latency": 2088,
+    "type": "Trojan",
+    "exitIp": "216.152.147.74"
+  },
+  {
+    "tag": "node-8",
+    "remarks": "🇨🇦 Канада #3",
+    "countryCode": "CA",
+    "geoSource": "exit",
+    "latency": 2091,
     "type": "Trojan",
     "exitIp": "216.152.147.152"
   },
   {
     "tag": "node-9",
-    "remarks": "🇨🇦 Канада #3",
-    "countryCode": "CA",
-    "geoSource": "exit",
-    "latency": 153,
-    "type": "Trojan",
-    "exitIp": "216.152.147.48"
-  },
-  {
-    "tag": "node-10",
     "remarks": "🇨🇦 Канада #4",
     "countryCode": "CA",
     "geoSource": "exit",
-    "latency": 157,
+    "latency": 2559,
     "type": "Trojan",
-    "exitIp": "216.152.147.74"
+    "exitIp": "216.152.147.89"
   },
   {
-    "tag": "node-11",
+    "tag": "node-10",
     "remarks": "🇨🇦 Канада #5",
     "countryCode": "CA",
     "geoSource": "exit",
-    "latency": 161,
+    "latency": 2652,
     "type": "Trojan",
-    "exitIp": "216.152.147.152"
+    "exitIp": "216.152.147.85"
   },
   {
-    "tag": "node-12",
+    "tag": "node-11",
     "remarks": "🇲🇽 Мексика",
     "countryCode": "MX",
     "geoSource": "exit",
-    "latency": 169,
+    "latency": 217,
     "type": "Trojan",
     "exitIp": "216.238.80.100"
   },
   {
-    "tag": "node-13",
+    "tag": "node-12",
     "remarks": "🇳🇱 Нидерланды",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 454,
+    "latency": 542,
     "type": "VLESS",
     "exitIp": "138.124.245.102"
   },
   {
-    "tag": "node-14",
+    "tag": "node-13",
     "remarks": "🇳🇱 🏳️ Нидерланды #2",
     "countryCode": "NL",
     "geoSource": "exit",
-    "latency": 757,
+    "latency": 846,
     "type": "VLESS",
-    "exitIp": "89.125.193.42"
+    "exitIp": "89.125.193.45"
   },
   {
-    "tag": "node-15",
+    "tag": "node-14",
     "remarks": "🇵🇱 Польша",
     "countryCode": "PL",
     "geoSource": "exit",
-    "latency": 480,
+    "latency": 501,
     "type": "Trojan",
     "exitIp": "70.34.252.255"
   },
   {
-    "tag": "node-16",
+    "tag": "node-15",
     "remarks": "🇸🇬 Сингапур",
     "countryCode": "SG",
     "geoSource": "exit",
-    "latency": 889,
+    "latency": 801,
     "type": "Trojan",
     "exitIp": "149.28.130.108"
   },
   {
-    "tag": "node-17",
+    "tag": "node-16",
     "remarks": "🇺🇸 США",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 121,
-    "type": "Trojan",
-    "exitIp": "169.197.140.169"
-  },
-  {
-    "tag": "node-18",
-    "remarks": "🇺🇸 США #2",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 124,
-    "type": "Trojan",
-    "exitIp": "169.197.140.214"
-  },
-  {
-    "tag": "node-19",
-    "remarks": "🇺🇸 США #3",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 134,
-    "type": "Trojan",
-    "exitIp": "169.197.140.208"
-  },
-  {
-    "tag": "node-20",
-    "remarks": "🇺🇸 США #4",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 135,
+    "latency": 197,
     "type": "Trojan",
     "exitIp": "169.197.140.171"
   },
   {
-    "tag": "node-21",
+    "tag": "node-17",
+    "remarks": "🇺🇸 США #2",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 201,
+    "type": "Trojan",
+    "exitIp": "169.197.140.224"
+  },
+  {
+    "tag": "node-18",
+    "remarks": "🇺🇸 США #3",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 203,
+    "type": "Trojan",
+    "exitIp": "169.197.140.224"
+  },
+  {
+    "tag": "node-19",
+    "remarks": "🇺🇸 США #4",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 203,
+    "type": "Trojan",
+    "exitIp": "169.197.140.224"
+  },
+  {
+    "tag": "node-20",
     "remarks": "🇺🇸 США #5",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 145,
+    "latency": 237,
     "type": "Trojan",
-    "exitIp": "170.101.101.237"
+    "exitIp": "66.163.112.242"
   },
   {
-    "tag": "node-22",
+    "tag": "node-21",
     "remarks": "🇺🇸 США #6",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 148,
+    "latency": 238,
+    "type": "Trojan",
+    "exitIp": "66.163.112.242"
+  },
+  {
+    "tag": "node-22",
+    "remarks": "🇺🇸 США #7",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 260,
     "type": "Trojan",
     "exitIp": "170.101.101.19"
   },
   {
     "tag": "node-23",
-    "remarks": "🇺🇸 США #7",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 157,
-    "type": "Trojan",
-    "exitIp": "170.101.101.67"
-  },
-  {
-    "tag": "node-24",
     "remarks": "🇺🇸 США #8",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 231,
+    "latency": 279,
     "type": "Trojan",
-    "exitIp": "66.163.112.147"
+    "exitIp": "170.101.101.112"
   },
   {
-    "tag": "node-25",
+    "tag": "node-24",
     "remarks": "🇺🇸 США #9",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 235,
+    "latency": 282,
     "type": "Trojan",
-    "exitIp": "66.163.112.242"
+    "exitIp": "170.101.101.131"
   },
   {
-    "tag": "node-26",
+    "tag": "node-25",
     "remarks": "🇺🇸 США #10",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 289,
+    "latency": 351,
     "type": "Trojan",
-    "exitIp": "167.88.61.175"
+    "exitIp": "167.88.61.198"
   },
   {
-    "tag": "node-27",
+    "tag": "node-26",
     "remarks": "🇺🇸 США #11",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 291,
-    "type": "Trojan",
-    "exitIp": "167.88.61.85"
-  },
-  {
-    "tag": "node-28",
-    "remarks": "🇺🇸 США #12",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 298,
-    "type": "Trojan",
-    "exitIp": "167.88.61.175"
-  },
-  {
-    "tag": "node-29",
-    "remarks": "🇺🇸 США #13",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 301,
-    "type": "Trojan",
-    "exitIp": "167.88.61.159"
-  },
-  {
-    "tag": "node-30",
-    "remarks": "🇺🇸 США #14",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 302,
-    "type": "Trojan",
-    "exitIp": "167.88.61.20"
-  },
-  {
-    "tag": "node-31",
-    "remarks": "🇺🇸 США #15",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 385,
+    "latency": 458,
     "type": "VMess",
     "exitIp": "64.181.219.110"
   },
   {
-    "tag": "node-32",
-    "remarks": "🇺🇸 США #16",
+    "tag": "node-27",
+    "remarks": "🇺🇸 США #12",
     "countryCode": "US",
     "geoSource": "exit",
-    "latency": 706,
+    "latency": 601,
+    "type": "Trojan",
+    "exitIp": "167.88.61.159"
+  },
+  {
+    "tag": "node-28",
+    "remarks": "🇺🇸 США #13",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 734,
+    "type": "Trojan",
+    "exitIp": "167.88.61.85"
+  },
+  {
+    "tag": "node-29",
+    "remarks": "🇺🇸 США #14",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 977,
+    "type": "Trojan",
+    "exitIp": "167.88.61.20"
+  },
+  {
+    "tag": "node-30",
+    "remarks": "🇺🇸 США #15",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 978,
+    "type": "Trojan",
+    "exitIp": "167.88.61.198"
+  },
+  {
+    "tag": "node-31",
+    "remarks": "🇺🇸 США #16",
+    "countryCode": "US",
+    "geoSource": "geoip",
+    "latency": 1139,
+    "type": "VMess"
+  },
+  {
+    "tag": "node-32",
+    "remarks": "🇺🇸 США #17",
+    "countryCode": "US",
+    "geoSource": "geoip",
+    "latency": 4393,
+    "type": "VMess"
+  },
+  {
+    "tag": "node-33",
+    "remarks": "🇺🇸 США #18",
+    "countryCode": "US",
+    "geoSource": "exit",
+    "latency": 5018,
     "type": "VMess",
     "exitIp": "207.244.230.92"
   },
   {
-    "tag": "node-33",
-    "remarks": "🇺🇸 США #17",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 1165,
-    "type": "VMess",
-    "exitIp": "2603:c028:4501:3d88:b782:2bc:9b2c:f38a"
-  },
-  {
     "tag": "node-34",
-    "remarks": "🇺🇸 США #18",
-    "countryCode": "US",
-    "geoSource": "exit",
-    "latency": 1176,
-    "type": "VMess",
-    "exitIp": "2603:c028:4501:3d88:b782:2bc:9b2c:f38a"
-  },
-  {
-    "tag": "node-35",
-    "remarks": "🇫🇷 Франция",
-    "countryCode": "FR",
-    "geoSource": "exit",
-    "latency": 626,
-    "type": "VMess",
-    "exitIp": "79.137.99.194"
-  },
-  {
-    "tag": "node-36",
     "remarks": "🇨🇱 Чили",
     "countryCode": "CL",
     "geoSource": "exit",
-    "latency": 428,
+    "latency": 545,
     "type": "Trojan",
     "exitIp": "64.176.7.205"
   },
   {
-    "tag": "node-37",
+    "tag": "node-35",
     "remarks": "🇸🇪 Швеция",
     "countryCode": "SE",
     "geoSource": "exit",
-    "latency": 490,
+    "latency": 1398,
     "type": "VLESS",
     "exitIp": "46.29.255.123"
   }
