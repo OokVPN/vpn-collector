@@ -143,26 +143,6 @@
         "settings": {
           "servers": [
             {
-              "address": "193.108.119.96",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "learn.iloverussia2026.com"
-          }
-        },
-        "tag": "node-2"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
               "address": "193.108.119.15",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
@@ -175,6 +155,26 @@
           "tlsSettings": {
             "serverName": "courses.iloverussia2026.com",
             "fingerprint": "chrome"
+          }
+        },
+        "tag": "node-2"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "193.108.119.96",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "learn.iloverussia2026.com"
           }
         },
         "tag": "node-3"
@@ -235,6 +235,26 @@
         "settings": {
           "servers": [
             {
+              "address": "216.152.147.93",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "connectingpeoplewithgreatjobs.com"
+          }
+        },
+        "tag": "node-6"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
               "address": "216.152.147.201",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
@@ -248,47 +268,7 @@
             "serverName": "resources.connectingpeoplewithgreatjobs.com"
           }
         },
-        "tag": "node-6"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "216.152.147.74",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "api.connectingpeoplewithgreatjobs.com"
-          }
-        },
         "tag": "node-7"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "216.152.147.85",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "cdn.connectingpeoplewithgreatjobs.com"
-          }
-        },
-        "tag": "node-8"
       },
       {
         "protocol": "trojan",
@@ -308,14 +288,14 @@
             "serverName": "www.connectingpeoplewithgreatjobs.com"
           }
         },
-        "tag": "node-9"
+        "tag": "node-8"
       },
       {
         "protocol": "trojan",
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.93",
+              "address": "216.152.147.74",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -325,7 +305,27 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "connectingpeoplewithgreatjobs.com"
+            "serverName": "api.connectingpeoplewithgreatjobs.com"
+          }
+        },
+        "tag": "node-9"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "216.152.147.85",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "cdn.connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "node-10"
@@ -455,7 +455,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.193",
+              "address": "170.101.101.67",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -465,7 +465,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "node-16"
@@ -475,7 +475,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.20",
+              "address": "170.101.101.53",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -485,7 +485,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "www.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "node-17"
@@ -495,7 +495,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.175",
+              "address": "170.101.101.211",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -505,7 +505,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "node-18"
@@ -515,7 +515,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.85",
+              "address": "169.197.140.169",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -525,7 +525,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "api.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "node-19"
@@ -535,7 +535,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.198",
+              "address": "169.197.140.224",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -545,7 +545,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "cdn.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "node-20"
@@ -555,7 +555,7 @@
         "settings": {
           "servers": [
             {
-              "address": "66.163.112.13",
+              "address": "169.197.140.218",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -565,11 +565,30 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "blog.unlockyourfuturefindyourperfectcareer.com",
-            "fingerprint": "chrome"
+            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "node-21"
+      },
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "169.197.140.245",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+          }
+        },
+        "tag": "node-22"
       },
       {
         "protocol": "trojan",
@@ -590,26 +609,6 @@
             "fingerprint": "chrome"
           }
         },
-        "tag": "node-22"
-      },
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "169.197.140.169",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "api.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
-          }
-        },
         "tag": "node-23"
       },
       {
@@ -617,7 +616,7 @@
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.245",
+              "address": "66.163.112.13",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -627,7 +626,8 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "blog.unlockyourfuturefindyourperfectcareer.com",
+            "fingerprint": "chrome"
           }
         },
         "tag": "node-24"
@@ -637,7 +637,7 @@
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.218",
+              "address": "167.88.61.175",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -647,7 +647,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "node-25"
@@ -657,7 +657,7 @@
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.224",
+              "address": "167.88.61.20",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -667,7 +667,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "node-26"
@@ -677,7 +677,7 @@
         "settings": {
           "servers": [
             {
-              "address": "170.101.101.211",
+              "address": "167.88.61.193",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -687,7 +687,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
+            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "node-27"
@@ -697,7 +697,7 @@
         "settings": {
           "servers": [
             {
-              "address": "170.101.101.67",
+              "address": "167.88.61.85",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -707,7 +707,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
+            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "node-28"
@@ -717,7 +717,7 @@
         "settings": {
           "servers": [
             {
-              "address": "170.101.101.53",
+              "address": "167.88.61.198",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -727,7 +727,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "www.explorecreativejobsandenhanceyourcareerportfolio.com"
+            "serverName": "cdn.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "node-29"
@@ -1007,7 +1007,7 @@
         "settings": {
           "servers": [
             {
-              "address": "193.108.119.96",
+              "address": "193.108.119.15",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1017,7 +1017,8 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "learn.iloverussia2026.com"
+            "serverName": "courses.iloverussia2026.com",
+            "fingerprint": "chrome"
           }
         },
         "tag": "proxy"
@@ -1096,7 +1097,7 @@
         "settings": {
           "servers": [
             {
-              "address": "193.108.119.15",
+              "address": "193.108.119.96",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1106,8 +1107,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "courses.iloverussia2026.com",
-            "fingerprint": "chrome"
+            "serverName": "learn.iloverussia2026.com"
           }
         },
         "tag": "proxy"
@@ -1375,7 +1375,7 @@
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.201",
+              "address": "216.152.147.93",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1385,7 +1385,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.connectingpeoplewithgreatjobs.com"
+            "serverName": "connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "proxy"
@@ -1464,7 +1464,7 @@
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.74",
+              "address": "216.152.147.201",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1474,7 +1474,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "api.connectingpeoplewithgreatjobs.com"
+            "serverName": "resources.connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "proxy"
@@ -1499,95 +1499,6 @@
       ]
     },
     "remarks": "🇨🇦 Канада #2"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "216.152.147.85",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "cdn.connectingpeoplewithgreatjobs.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
-    "remarks": "🇨🇦 Канада #3"
   },
   {
     "dns": {
@@ -1676,6 +1587,95 @@
         }
       ]
     },
+    "remarks": "🇨🇦 Канада #3"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "216.152.147.74",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "api.connectingpeoplewithgreatjobs.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
     "remarks": "🇨🇦 Канада #4"
   },
   {
@@ -1731,7 +1731,7 @@
         "settings": {
           "servers": [
             {
-              "address": "216.152.147.93",
+              "address": "216.152.147.85",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -1741,7 +1741,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "connectingpeoplewithgreatjobs.com"
+            "serverName": "cdn.connectingpeoplewithgreatjobs.com"
           }
         },
         "tag": "proxy"
@@ -2285,7 +2285,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.193",
+              "address": "170.101.101.67",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -2295,7 +2295,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "proxy"
@@ -2374,7 +2374,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.20",
+              "address": "170.101.101.53",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -2384,7 +2384,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "www.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "proxy"
@@ -2463,7 +2463,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.175",
+              "address": "170.101.101.211",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -2473,7 +2473,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
           }
         },
         "tag": "proxy"
@@ -2552,7 +2552,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.85",
+              "address": "169.197.140.169",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -2562,7 +2562,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "api.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "proxy"
@@ -2641,7 +2641,7 @@
         "settings": {
           "servers": [
             {
-              "address": "167.88.61.198",
+              "address": "169.197.140.224",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -2651,7 +2651,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "cdn.browseseniorrolesandenhanceyourcareertoday.com"
+            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "proxy"
@@ -2730,7 +2730,7 @@
         "settings": {
           "servers": [
             {
-              "address": "66.163.112.13",
+              "address": "169.197.140.218",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -2740,8 +2740,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "blog.unlockyourfuturefindyourperfectcareer.com",
-            "fingerprint": "chrome"
+            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
           }
         },
         "tag": "proxy"
@@ -2766,6 +2765,95 @@
       ]
     },
     "remarks": "🇺🇸 США #6"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "protocol": "trojan",
+        "settings": {
+          "servers": [
+            {
+              "address": "169.197.140.245",
+              "port": 443,
+              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "freedom",
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "tag": "block"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "proxy"
+        }
+      ]
+    },
+    "remarks": "🇺🇸 США #7"
   },
   {
     "dns": {
@@ -2855,95 +2943,6 @@
         }
       ]
     },
-    "remarks": "🇺🇸 США #7"
-  },
-  {
-    "dns": {
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1"
-      ],
-      "queryStrategy": "UseIP"
-    },
-    "inbounds": [
-      {
-        "tag": "socks",
-        "port": 10808,
-        "listen": "127.0.0.1",
-        "protocol": "socks",
-        "settings": {
-          "udp": true,
-          "auth": "noauth"
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      },
-      {
-        "tag": "http",
-        "port": 10809,
-        "listen": "127.0.0.1",
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "enabled": true,
-          "routeOnly": false,
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ]
-        }
-      }
-    ],
-    "outbounds": [
-      {
-        "protocol": "trojan",
-        "settings": {
-          "servers": [
-            {
-              "address": "169.197.140.169",
-              "port": 443,
-              "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
-            }
-          ]
-        },
-        "streamSettings": {
-          "network": "tcp",
-          "security": "tls",
-          "tlsSettings": {
-            "serverName": "api.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
-          }
-        },
-        "tag": "proxy"
-      },
-      {
-        "protocol": "freedom",
-        "tag": "direct"
-      },
-      {
-        "protocol": "blackhole",
-        "tag": "block"
-      }
-    ],
-    "routing": {
-      "domainStrategy": "IPIfNonMatch",
-      "rules": [
-        {
-          "type": "field",
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
-        }
-      ]
-    },
     "remarks": "🇺🇸 США #8"
   },
   {
@@ -2999,7 +2998,7 @@
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.245",
+              "address": "66.163.112.13",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3009,7 +3008,8 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "www.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "blog.unlockyourfuturefindyourperfectcareer.com",
+            "fingerprint": "chrome"
           }
         },
         "tag": "proxy"
@@ -3088,7 +3088,7 @@
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.218",
+              "address": "167.88.61.175",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3098,7 +3098,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "learn.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "blog.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -3177,7 +3177,7 @@
         "settings": {
           "servers": [
             {
-              "address": "169.197.140.224",
+              "address": "167.88.61.20",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3187,7 +3187,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "resources.discoverfreshgraduatejobsstartyourprofessionaljourney.com"
+            "serverName": "api.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -3266,7 +3266,7 @@
         "settings": {
           "servers": [
             {
-              "address": "170.101.101.211",
+              "address": "167.88.61.193",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3276,7 +3276,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "api.explorecreativejobsandenhanceyourcareerportfolio.com"
+            "serverName": "browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -3355,7 +3355,7 @@
         "settings": {
           "servers": [
             {
-              "address": "170.101.101.67",
+              "address": "167.88.61.85",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3365,7 +3365,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "courses.explorecreativejobsandenhanceyourcareerportfolio.com"
+            "serverName": "resources.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
@@ -3444,7 +3444,7 @@
         "settings": {
           "servers": [
             {
-              "address": "170.101.101.53",
+              "address": "167.88.61.198",
               "port": 443,
               "password": "0ab6c98dae3b48e8b9c4a776b6c9c19a"
             }
@@ -3454,7 +3454,7 @@
           "network": "tcp",
           "security": "tls",
           "tlsSettings": {
-            "serverName": "www.explorecreativejobsandenhanceyourcareerportfolio.com"
+            "serverName": "cdn.browseseniorrolesandenhanceyourcareertoday.com"
           }
         },
         "tag": "proxy"
